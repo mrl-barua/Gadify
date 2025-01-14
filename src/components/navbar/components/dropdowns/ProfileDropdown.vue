@@ -22,6 +22,7 @@
             :key="item.name"
             class="menu-item px-4 text-base cursor-pointer h-8"
             v-bind="resolveLinkAttribute(item)"
+            @click="item.name === 'logout' ? handleLogout() : null"
           >
             <VaIcon :name="item.icon" class="pr-1" color="secondary" />
             {{ t(`user.${item.name}`) }}
@@ -36,8 +37,10 @@
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useColors } from 'vuestic-ui'
-
+import { useColors, useToast } from 'vuestic-ui'
+import { logoutApiService } from '../../../../repository/authenticationRepository' // Adjust the path as necessary
+import { useJwtStore } from '../../../../stores/jwtHandler'
+const { init } = useToast()
 const { colors, setHSLAColor } = useColors()
 const hoverColor = computed(() => setHSLAColor(colors.focus, { a: 0.1 }))
 
@@ -123,6 +126,19 @@ const isShown = ref(false)
 
 const resolveLinkAttribute = (item: ProfileListItem) => {
   return item.to ? { to: { name: item.to } } : item.href ? { href: item.href, target: '_blank' } : {}
+}
+
+const handleLogout = () => {
+  logoutApiService
+    .logout(useJwtStore().getToken as string)
+    .then(() => {
+      useJwtStore().clearToken()
+      console.log('Logged out successfully')
+      init({ message: 'Logout successful', color: 'danger' })
+    })
+    .catch((error: any) => {
+      console.error('Error logging out:', error)
+    })
 }
 </script>
 

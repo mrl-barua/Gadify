@@ -14,3 +14,16 @@ export const loginApiService = {
     return apiClient.post('/api/login', { userName, password })
   },
 }
+export const logoutApiService = {
+  logout: (token: string) => {
+    return apiClient.post(
+      '/api/logout',
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    )
+  },
+}

@@ -43,7 +43,7 @@ import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useForm, useToast } from 'vuestic-ui'
 import { validators } from '../../services/utils'
-import { loginApiService } from '../../repository/loginRepository'
+import { loginApiService } from '../../repository/authenticationRepository'
 import { useJwtStore } from '../../stores/jwtHandler'
 
 const { validate } = useForm('form')
@@ -60,9 +60,14 @@ const formData = reactive({
 const submit = async () => {
   if (validate()) {
     try {
+      // Call the API service
       const response = await loginApiService.login(formData.email, formData.password)
+      const data = response.data
+      console.log(data.token)
+      // Handle success
       init({ message: response.data.message || 'Login successful', color: 'success' })
 
+      // Save token and decode it
       const token = response.data.token
       jwtStore.setToken(token)
       if (formData.keepLoggedIn) {
@@ -71,6 +76,7 @@ const submit = async () => {
         sessionStorage.setItem('token', token)
       }
 
+      // Redirect to the dashboard
       push({ name: 'dashboard' })
     } catch (error: any) {
       // Handle errors (e.g., invalid credentials)
