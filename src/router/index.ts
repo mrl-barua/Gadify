@@ -8,13 +8,13 @@ import RouteViewComponent from '../layouts/RouterBypass.vue'
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/:pathMatch(.*)*',
-    redirect: { name: 'dashboard' },
+    redirect: { name: '404' },
   },
   {
     name: 'admin',
     path: '/',
     component: AppLayout,
-    redirect: { name: 'dashboard' },
+    redirect: { name: 'login' },
     children: [
       {
         name: 'dashboard',
@@ -101,6 +101,17 @@ const routes: Array<RouteRecordRaw> = [
     ],
   },
   {
+    path: '/evaluation',
+    component: AuthLayout,
+    children: [
+      {
+        name: 'manage-document',
+        path: 'manage-document',
+        component: () => import('../pages/auth/Login.vue'),
+      },
+    ],
+  },
+  {
     name: '404',
     path: '/404',
     component: () => import('../pages/404.vue'),
@@ -113,7 +124,7 @@ const router = createRouter({
     if (savedPosition) {
       return savedPosition
     }
-    // For some reason using documentation example doesn't scroll on page navigation.
+
     if (to.hash) {
       return { el: to.hash, behavior: 'smooth' }
     } else {

@@ -5,13 +5,7 @@
       New to Gadify?
       <RouterLink :to="{ name: 'signup' }" class="font-semibold text-primary">Sign up</RouterLink>
     </p>
-    <VaInput
-      v-model="formData.email"
-      :rules="[validators.required, validators.email]"
-      class="mb-4"
-      label="Email"
-      type="email"
-    />
+    <VaInput v-model="formData.email" class="mb-4" label="Email" type="email" />
     <VaValue v-slot="isPasswordVisible" :default-value="false">
       <VaInput
         v-model="formData.password"
@@ -49,21 +43,42 @@ import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useForm, useToast } from 'vuestic-ui'
 import { validators } from '../../services/utils'
+import { loginApiService } from '../../repository/loginRepository'
+import { useJwtStore } from '../../stores/jwtHandler'
 
 const { validate } = useForm('form')
 const { push } = useRouter()
 const { init } = useToast()
+const jwtStore = useJwtStore()
 
 const formData = reactive({
-  email: '',
-  password: '',
+  email: 'test',
+  password: '12345',
   keepLoggedIn: false,
 })
 
-const submit = () => {
+const submit = async () => {
   if (validate()) {
-    init({ message: "You've successfully logged in", color: 'success' })
-    push({ name: 'dashboard' })
+    try {
+      const response = await loginApiService.login(formData.email, formData.password)
+      init({ message: response.data.message || 'Login successful', color: 'success' })
+
+      const token = response.data.token
+      jwtStore.setToken(token)
+      if (formData.keepLoggedIn) {
+        localStorage.setItem('token', token)
+      } else {
+        sessionStorage.setItem('token', token)
+      }
+
+      push({ name: 'dashboard' })
+    } catch (error: any) {
+      // Handle errors (e.g., invalid credentials)
+      init({
+        message: error.response?.data?.message || 'Login failed. Please try again.',
+        color: 'danger',
+      })
+    }
   }
 }
 </script>

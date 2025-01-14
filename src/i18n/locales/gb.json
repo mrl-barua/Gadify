@@ -54,7 +54,10 @@
     "404": "404",
     "faq": "FAQ",
     "users": "Users",
-    "projects": "Projects"
+    "projects": "Projects",
+
+    "evaluation": "Evaluation",
+    "manage-document": "Manage Document"
   },
   "messages": {
     "all": "See all messages",

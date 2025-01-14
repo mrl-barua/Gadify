@@ -19,58 +19,15 @@ export default {
       },
     },
     {
-      name: 'users',
-      displayName: 'menu.users',
+      name: 'evaluation',
+      displayName: 'menu.evaluation',
       meta: {
-        icon: 'group',
-      },
-    },
-    {
-      name: 'projects',
-      displayName: 'menu.projects',
-      meta: {
-        icon: 'folder_shared',
-      },
-    },
-    {
-      name: 'payments',
-      displayName: 'menu.payments',
-      meta: {
-        icon: 'credit_card',
+        icon: 'vuestic-iconset-files',
       },
       children: [
         {
-          name: 'payment-methods',
-          displayName: 'menu.payment-methods',
-        },
-        {
-          name: 'pricing-plans',
-          displayName: 'menu.pricing-plans',
-        },
-        {
-          name: 'billing',
-          displayName: 'menu.billing',
-        },
-      ],
-    },
-    {
-      name: 'auth',
-      displayName: 'menu.auth',
-      meta: {
-        icon: 'login',
-      },
-      children: [
-        {
-          name: 'login',
-          displayName: 'menu.login',
-        },
-        {
-          name: 'signup',
-          displayName: 'menu.signup',
-        },
-        {
-          name: 'recover-password',
-          displayName: 'menu.recover-password',
+          name: 'manage-document',
+          displayName: 'menu.manage-document',
         },
       ],
     },
@@ -80,13 +37,6 @@ export default {
       displayName: 'menu.faq',
       meta: {
         icon: 'quiz',
-      },
-    },
-    {
-      name: '404',
-      displayName: 'menu.404',
-      meta: {
-        icon: 'vuestic-iconset-files',
       },
     },
     {
