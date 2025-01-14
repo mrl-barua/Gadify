@@ -83,8 +83,13 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         name: 'signup',
-        path: 'signup',
-        component: () => import('../pages/auth/Signup.vue'),
+        path: 'main-information-signup',
+        component: () => import('../pages/auth/MainInformationSignup.vue'),
+      },
+      {
+        name: 'next-signup',
+        path: 'other-information-signup',
+        component: () => import('../pages/auth/OtherInformationSignup.vue'),
       },
       {
         name: 'recover-password',

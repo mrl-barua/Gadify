@@ -12,14 +12,8 @@
       label="Email"
       type="email"
     />
-    <VaInput v-model="formData.email" class="mb-4" label="Email" type="email" />
-    <VaInput
-      v-model="formData.email"
-      :rules="[(v) => !!v || 'Email field is required', (v) => /.+@.+\..+/.test(v) || 'Email should be valid']"
-      class="mb-4"
-      label="Email"
-      type="email"
-    />
+    <VaInput v-model="formData.contactNo" class="mb-4" label="Contact No" type="text" />
+    <VaInput v-model="formData.userName" class="mb-4" label="Username" type="text" />
     <VaValue v-slot="isPasswordVisible" :default-value="false">
       <VaInput
         ref="password1"
@@ -60,7 +54,6 @@
         </template>
       </VaInput>
     </VaValue>
-
     <div class="flex justify-center mt-4">
       <VaButton class="w-full" @click="submit"> Create account</VaButton>
     </div>
@@ -78,6 +71,8 @@ const { init } = useToast()
 
 const formData = reactive({
   email: '',
+  contactNo: '',
+  userName: '',
   password: '',
   repeatPassword: '',
 })
@@ -85,10 +80,10 @@ const formData = reactive({
 const submit = () => {
   if (validate()) {
     init({
-      message: "You've successfully signed up",
+      message: 'Success: You have signed up successfully',
       color: 'success',
     })
-    push({ name: 'dashboard' })
+    push({ name: 'login' })
   }
 }
 
