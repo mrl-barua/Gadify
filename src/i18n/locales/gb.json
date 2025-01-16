@@ -37,6 +37,12 @@
     "persian": "Persian"
   },
   "menu": {
+    "proponents": "Proponents",
+    "requests": "Manage Requests",
+    "certificates": "Certificate",
+    "department": "Department",
+    "userAccount": "User Account",
+
     "auth": "Auth",
     "buttons": "Buttons",
     "timelines": "Timelines",
