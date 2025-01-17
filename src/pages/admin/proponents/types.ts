@@ -1,17 +1,30 @@
-import { User } from '../users/types'
+import { User } from '../../users/types'
 
-export type UUID = `${string}-${string}-${string}-${string}-${string}`
-
-export type Project = {
-  id: UUID
-  project_name: string
-  project_owner: User['id']
-  team: User['id'][]
-  status: 'important' | 'completed' | 'archived' | 'in progress'
-  created_at: string
+export enum ProponentType {
+  Inside = 'Inside',
+  Outside = 'Outside',
 }
 
-export type EmptyProject = Omit<Project, 'id' | 'project_owner' | 'created_at' | 'status'> & {
-  project_owner: Project['project_owner'] | undefined
-  status: Project['status'] | undefined
+export enum ProponentStatus {
+  Pending = 'Pending',
+  Approved = 'Approved',
+  Rejected = 'Rejected',
+}
+
+export interface Proponent {
+  id: number
+  proponentId: string
+  departmentId: number
+  proponentType: ProponentType
+  proponentStatus: ProponentStatus
+  fullName: string
+  userName: string
+  password: string
+  createdAt: Date
+}
+
+export interface Department {
+  id: number
+  name: string
+  proponents: Proponent[]
 }

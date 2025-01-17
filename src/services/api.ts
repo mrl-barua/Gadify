@@ -10,4 +10,8 @@ export default {
   projects: ({ page, pageSize }: { page: number; pageSize: number }) =>
     `${apiBaseUrl}/projects/?page=${page}&pageSize=${pageSize}`,
   avatars: () => `${apiBaseUrl}/avatars`,
+
+  // my implementation
+  allProponents: () => `${apiBaseUrl}/proponents`,
+  proponent: (id: number) => `${apiBaseUrl}/proponents/${id}`,
 }

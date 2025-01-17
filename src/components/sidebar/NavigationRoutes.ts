@@ -22,35 +22,35 @@ export default {
       name: 'proponents',
       displayName: 'menu.proponents',
       meta: {
-        icon: 'vuestic-iconset-dashboard',
+        icon: 'vuestic-iconset-user',
       },
     },
     {
       name: 'manage-requests',
       displayName: 'menu.requests',
       meta: {
-        icon: 'vuestic-iconset-dashboard',
+        icon: 'vuestic-iconset-files',
       },
     },
     {
       name: 'certificates',
       displayName: 'menu.certificates',
       meta: {
-        icon: 'vuestic-iconset-dashboard',
+        icon: 'vuestic-iconset-files',
       },
     },
     {
       name: 'department',
       displayName: 'menu.department',
       meta: {
-        icon: 'vuestic-iconset-dashboard',
+        icon: 'vuestic-iconset-user',
       },
     },
     {
       name: 'user-account',
       displayName: 'menu.userAccount',
       meta: {
-        icon: 'vuestic-iconset-dashboard',
+        icon: 'vuestic-iconset-settings',
       },
     },
 
