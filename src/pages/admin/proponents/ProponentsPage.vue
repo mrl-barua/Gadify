@@ -1,28 +1,61 @@
 <template>
   <h1 class="page-title">Proponents</h1>
-  <VaDataTable class="table-crud" :items="proponents" :columns="columns" striped>
-    <template #cell(actions)="{ rowIndex }">
-      <VaButton preset="plain" icon="edit" @click="openModalToEditItemById(rowIndex)" />
-      <VaButton preset="plain" icon="delete" class="ml-3" @click="deleteItemById(rowIndex)" />
-    </template>
-  </VaDataTable>
 
-  <VaModal
-    class="modal-crud"
-    :model-value="!!editedProponent"
-    title="Edit proponent"
-    size="small"
-    @ok="editItem"
-    @cancel="reseteditedProponent"
-  >
-    <VaInput
-      v-for="key in Object.keys(editedProponent)"
-      :key="key"
-      v-model="editedProponent[key]"
-      class="my-6"
-      :label="key"
-    />
-  </VaModal>
+  <VaCard>
+    <VaCardContent>
+      <div class="flex flex-col md:flex-row gap-2 mb-2 justify-between">
+        <div class="flex flex-col md:flex-row gap-2 justify-start">
+          <VaButtonToggle
+            v-model="currentTable"
+            color="background-element"
+            border-color="background-element"
+            :options="[
+              { label: 'Pending', value: 'pending' },
+              { label: 'Approved', value: 'approved' },
+              { label: 'Disapproved', value: 'disapproved' },
+            ]"
+          />
+        </div>
+      </div>
+
+      <VaDataTable
+        v-if="currentTable === 'pending'"
+        class="table-crud"
+        :items="pendingProponents"
+        :columns="columns"
+        striped
+      >
+        <template #cell(actions)="{ rowIndex }">
+          <VaButton preset="plain" icon="check" @click="approveProponent(rowIndex)" />
+          <VaButton preset="plain" icon="close" color="danger" class="ml-3" @click="rejectProponent(rowIndex)" />
+        </template>
+      </VaDataTable>
+
+      <VaDataTable
+        v-if="currentTable === 'approved'"
+        class="table-crud"
+        :items="approvedProponents"
+        :columns="columns"
+        striped
+      >
+        <template #cell(actions)="{ rowIndex }">
+          <VaButton preset="plain" icon="close" color="danger" class="ml-3" @click="rejectProponent(rowIndex)" />
+        </template>
+      </VaDataTable>
+
+      <VaDataTable
+        v-if="currentTable === 'disapproved'"
+        class="table-crud"
+        :items="disapprovedProponents"
+        :columns="columns"
+        striped
+      >
+        <template #cell(actions)="{ rowIndex }">
+          <VaButton preset="plain" icon="check" @click="approveProponent(rowIndex)" />
+        </template>
+      </VaDataTable>
+    </VaCardContent>
+  </VaCard>
 </template>
 
 <script>
@@ -63,6 +96,10 @@ export default defineComponent({
       editedProponentId: null,
       editedProponent: null,
       createdProponent: { ...defaultProponent },
+      currentTable: 'pending',
+      pendingProponents: [],
+      approvedProponents: [],
+      disapprovedProponents: [],
     }
   },
 
@@ -80,11 +117,25 @@ export default defineComponent({
     async loadProponents() {
       try {
         const data = await proponentsRepository.getProponents()
-        this.proponents = data // Assign fetched data to the component state
+        this.proponents = data
+
+        // Categorize proponents based on status using string comparison
+        this.pendingProponents = data.filter((proponent) => proponent.proponentStatus === 'Pending')
+        this.approvedProponents = data.filter((proponent) => proponent.proponentStatus === 'Approved')
+        this.disapprovedProponents = data.filter((proponent) => proponent.proponentStatus === 'Rejected')
       } catch (error) {
         console.error('Failed to load proponents:', error)
       }
     },
+
+    approveProponent(id) {
+      alert('Approve proponent with ID: ' + id)
+    },
+
+    rejectProponent(id) {
+      alert('Reject proponent with ID: ' + id)
+    },
+
     reseteditedProponent() {
       this.editedProponent = null
       this.editedProponentId = null
