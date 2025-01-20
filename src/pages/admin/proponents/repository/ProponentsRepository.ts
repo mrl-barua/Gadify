@@ -80,4 +80,41 @@ export const proponentsRepository = {
       throw error
     }
   },
+
+  approveProponent: async (proponentId: number) => {
+    try {
+      const response = await apiClient.post(
+        `/api/admin/approve-proponent`,
+        { proponentId },
+        {
+          headers: {
+            Authorization: `Bearer ${jwtStore.getToken}`,
+          },
+        },
+      )
+      console.log('Reject response:', response)
+      return response.data
+    } catch (error) {
+      console.error('Error:', error)
+      throw error
+    }
+  },
+  rejectProponent: async (proponentId: number) => {
+    try {
+      const response = await apiClient.post(
+        `/api/admin/reject-proponent`,
+        { proponentId },
+        {
+          headers: {
+            Authorization: `Bearer ${jwtStore.getToken}`,
+          },
+        },
+      )
+      console.log('Reject response:', response)
+      return response.data
+    } catch (error) {
+      console.error('Error:', error)
+      throw error
+    }
+  },
 }

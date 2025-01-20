@@ -26,8 +26,8 @@
         striped
       >
         <template #cell(actions)="{ rowIndex }">
-          <VaButton preset="plain" icon="check" @click="approveProponent(rowIndex)" />
-          <VaButton preset="plain" icon="close" color="danger" class="ml-3" @click="rejectProponent(rowIndex)" />
+          <VaButton preset="plain" icon="check" @click="showApproveModal(rowIndex)" />
+          <VaButton preset="plain" icon="close" color="danger" class="ml-3" @click="showRejectModal(rowIndex)" />
         </template>
       </VaDataTable>
 
@@ -39,7 +39,7 @@
         striped
       >
         <template #cell(actions)="{ rowIndex }">
-          <VaButton preset="plain" icon="close" color="danger" class="ml-3" @click="rejectProponent(rowIndex)" />
+          <VaButton preset="plain" icon="close" color="danger" class="ml-3" @click="showRejectModal(rowIndex)" />
         </template>
       </VaDataTable>
 
@@ -51,10 +51,19 @@
         striped
       >
         <template #cell(actions)="{ rowIndex }">
-          <VaButton preset="plain" icon="check" @click="approveProponent(rowIndex)" />
+          <VaButton preset="plain" icon="check" @click="showApproveModal(rowIndex)" />
         </template>
       </VaDataTable>
     </VaCardContent>
+
+    <VaModal v-model="approveModal" ok-text="Approve" @ok="approveProponent(selectedRowIndex)">
+      <h3 class="va-h3">Approve Proponent</h3>
+      <p>Are you sure you want to approve this proponent?</p>
+    </VaModal>
+    <VaModal v-model="rejectModal" ok-text="Reject" @ok="rejectProponent(selectedRowIndex)">
+      <h3 class="va-h3">Reject Proponent</h3>
+      <p>Are you sure you want to reject this proponent?</p>
+    </VaModal>
   </VaCard>
 </template>
 
@@ -93,6 +102,8 @@ export default defineComponent({
     return {
       proponents,
       columns,
+      approveModal: false,
+      rejectModal: false,
       editedProponentId: null,
       editedProponent: null,
       createdProponent: { ...defaultProponent },
@@ -128,12 +139,34 @@ export default defineComponent({
       }
     },
 
-    approveProponent(id) {
-      alert('Approve proponent with ID: ' + id)
+    showApproveModal(index) {
+      this.selectedRowIndex = index
+      this.approveModal = true
     },
+    showRejectModal(index) {
+      this.selectedRowIndex = index
+      this.rejectModal = true
+    },
+    async approveProponent() {
+      if (this.selectedRowIndex !== null) {
+        const item = this.proponents[this.selectedRowIndex]
+        // Perform approve action
+        // alert('Approve item: ' + JSON.stringify(item))
+        await proponentsRepository.approveProponent(item.id)
 
-    rejectProponent(id) {
-      alert('Reject proponent with ID: ' + id)
+        this.approveModal = false
+        this.loadProponents()
+      }
+    },
+    async rejectProponent() {
+      if (this.selectedRowIndex !== null) {
+        const item = this.proponents[this.selectedRowIndex]
+        // Perform reject action
+        // alert('Rejected item: ' + JSON.stringify(item.id))
+        await proponentsRepository.rejectProponent(item.id)
+        this.rejectModal = false
+        this.loadProponents()
+      }
     },
 
     reseteditedProponent() {
