@@ -78,6 +78,7 @@ const defaultProponent = {
   proponentStatus: '',
   fullName: '',
   userName: '',
+  email: '',
   createdAt: '',
 }
 
@@ -92,6 +93,7 @@ export default defineComponent({
       { key: 'proponentStatus', label: 'Proponent Status', sortable: true },
       { key: 'fullName', label: 'Full Name', sortable: true },
       { key: 'userName', label: 'User Name', sortable: true },
+      { key: 'email', label: 'Email', sortable: true },
       { key: 'createdAt', label: 'Created At', sortable: true },
       { key: 'department.departmentName', label: 'Department Name', sortable: true },
       { key: 'department.campus.campusName', label: 'Campus Name', sortable: true },
@@ -104,6 +106,7 @@ export default defineComponent({
       columns,
       approveModal: false,
       rejectModal: false,
+      selectedRowIndex: null,
       editedProponentId: null,
       editedProponent: null,
       createdProponent: { ...defaultProponent },
@@ -143,17 +146,16 @@ export default defineComponent({
       this.selectedRowIndex = index
       this.approveModal = true
     },
+
     showRejectModal(index) {
       this.selectedRowIndex = index
       this.rejectModal = true
     },
+
     async approveProponent() {
       if (this.selectedRowIndex !== null) {
         const item = this.proponents[this.selectedRowIndex]
-        // Perform approve action
-        // alert('Approve item: ' + JSON.stringify(item))
-        await proponentsRepository.approveProponent(item.id)
-
+        await proponentsRepository.approveProponent(item.proponentId)
         this.approveModal = false
         this.loadProponents()
       }
@@ -161,9 +163,7 @@ export default defineComponent({
     async rejectProponent() {
       if (this.selectedRowIndex !== null) {
         const item = this.proponents[this.selectedRowIndex]
-        // Perform reject action
-        // alert('Rejected item: ' + JSON.stringify(item.id))
-        await proponentsRepository.rejectProponent(item.id)
+        await proponentsRepository.rejectProponent(item.proponentId)
         this.rejectModal = false
         this.loadProponents()
       }
