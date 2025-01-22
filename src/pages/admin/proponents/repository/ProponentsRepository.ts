@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { useJwtStore } from '../../../../stores/jwtHandler'
+import { mailRepository } from '../../../../repository/mailRepository'
 
 const BASE_URL = 'http://localhost:3000'
 
@@ -93,6 +94,11 @@ export const proponentsRepository = {
         },
       )
       console.log('Reject response:', response)
+      try {
+        await mailRepository.sendApproveAccountMail(response.data.email, response.data.username)
+      } catch (err) {
+        console.log(err)
+      }
       return response.data
     } catch (error) {
       console.error('Error:', error)
@@ -111,6 +117,11 @@ export const proponentsRepository = {
         },
       )
       console.log('Reject response:', response)
+      try {
+        await mailRepository.sendRejectAccountMail(response.data.email, response.data.username)
+      } catch (err) {
+        console.log(err)
+      }
       return response.data
     } catch (error) {
       console.error('Error:', error)

@@ -17,7 +17,7 @@ export const mailRepository = {
   sendPendingAccountMail: async (to: string, username: string) => {
     try {
       const response = await apiClient.post(
-        '/api/mail/pending-account',
+        '/mail/pending-account',
         { to, username },
         {
           headers: {
@@ -34,7 +34,7 @@ export const mailRepository = {
   sendApproveAccountMail: async (to: string, username: string) => {
     try {
       const response = await apiClient.post(
-        '/api/mail/approve-account',
+        '/mail/approve-account',
         { to, username },
         {
           headers: {
@@ -51,7 +51,7 @@ export const mailRepository = {
   sendRejectAccountMail: async (to: string, username: string) => {
     try {
       const response = await apiClient.post(
-        '/api/mail/reject-account',
+        '/mail/reject-account',
         { to, username },
         {
           headers: {
@@ -68,7 +68,7 @@ export const mailRepository = {
   sendProposalSubmissionMail: async (to: string, username: string, proposalTitle: string) => {
     try {
       const response = await apiClient.post(
-        '/api/mail/proposal-submission',
+        '/mail/proposal-submission',
         { to, username, proposalTitle },
         {
           headers: {
@@ -85,7 +85,7 @@ export const mailRepository = {
   sendProposalEvaluatedMail: async (to: string, username: string, proposalTitle: string) => {
     try {
       const response = await apiClient.post(
-        '/api/mail/proposal-evaluated',
+        '/mail/proposal-evaluated',
         { to, username, proposalTitle },
         {
           headers: {
@@ -102,7 +102,7 @@ export const mailRepository = {
   sendProposalAssignedMail: async (to: string, evaluatorName: string, proposalTitle: string) => {
     try {
       const response = await apiClient.post(
-        '/api/mail/proposal-assigned',
+        '/mail/proposal-assigned',
         { to, evaluatorName, proposalTitle },
         {
           headers: {
@@ -119,7 +119,7 @@ export const mailRepository = {
   sendUserSignupPendingMail: async (to: string) => {
     try {
       const response = await apiClient.post(
-        '/api/mail/user-signup-pending',
+        '/mail/user-signup-pending',
         { to },
         {
           headers: {
@@ -136,7 +136,7 @@ export const mailRepository = {
   sendProposalAwaitingAssignmentMail: async (to: string, proposalTitle: string) => {
     try {
       const response = await apiClient.post(
-        '/api/mail/proposal-awaiting-assignment',
+        '/mail/proposal-awaiting-assignment',
         { to, proposalTitle },
         {
           headers: {
@@ -153,7 +153,7 @@ export const mailRepository = {
   sendProposalEvaluationCompletedMail: async (to: string, proposalTitle: string) => {
     try {
       const response = await apiClient.post(
-        '/api/mail/proposal-evaluation-completed',
+        '/mail/proposal-evaluation-completed',
         { to, proposalTitle },
         {
           headers: {
