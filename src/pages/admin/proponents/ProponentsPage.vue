@@ -26,8 +26,22 @@
         striped
       >
         <template #cell(actions)="{ rowIndex }">
-          <VaButton preset="plain" icon="check" @click="showApproveModal(rowIndex)" />
-          <VaButton preset="plain" icon="close" color="danger" class="ml-3" @click="showRejectModal(rowIndex)" />
+          <VaButton preset="plain" icon="check" @click="showApproveModal(pendingProponents[rowIndex])" />
+          <VaButton
+            preset="plain"
+            icon="close"
+            color="danger"
+            class="ml-3"
+            @click="showRejectModal(pendingProponents[rowIndex])"
+          />
+          <VaModal v-model="approveModal" ok-text="Approve" @ok="approveProponent(selectedRowIndex)">
+            <h3 class="va-h3">Approve Proponent</h3>
+            <p>Are you sure you want to approve this proponent?</p>
+          </VaModal>
+          <VaModal v-model="rejectModal" ok-text="Reject" @ok="rejectProponent(selectedRowIndex)">
+            <h3 class="va-h3">Reject Proponent</h3>
+            <p>Are you sure you want to reject this proponent?</p>
+          </VaModal>
         </template>
       </VaDataTable>
 
@@ -39,7 +53,17 @@
         striped
       >
         <template #cell(actions)="{ rowIndex }">
-          <VaButton preset="plain" icon="close" color="danger" class="ml-3" @click="showRejectModal(rowIndex)" />
+          <VaButton
+            preset="plain"
+            icon="close"
+            color="danger"
+            class="ml-3"
+            @click="showRejectModal(approvedProponents[rowIndex])"
+          />
+          <VaModal v-model="rejectModal" ok-text="Reject" @ok="rejectProponent(selectedRowIndex)">
+            <h3 class="va-h3">Reject Proponent</h3>
+            <p>Are you sure you want to reject this proponent?</p>
+          </VaModal>
         </template>
       </VaDataTable>
 
@@ -51,19 +75,14 @@
         striped
       >
         <template #cell(actions)="{ rowIndex }">
-          <VaButton preset="plain" icon="check" @click="showApproveModal(rowIndex)" />
+          <VaButton preset="plain" icon="check" @click="showApproveModal(disapprovedProponents[rowIndex])" />
+          <VaModal v-model="approveModal" ok-text="Approve" @ok="approveProponent(selectedRowIndex)">
+            <h3 class="va-h3">Approve Proponent</h3>
+            <p>Are you sure you want to approve this proponent?</p>
+          </VaModal>
         </template>
       </VaDataTable>
     </VaCardContent>
-
-    <VaModal v-model="approveModal" ok-text="Approve" @ok="approveProponent(selectedRowIndex)">
-      <h3 class="va-h3">Approve Proponent</h3>
-      <p>Are you sure you want to approve this proponent?</p>
-    </VaModal>
-    <VaModal v-model="rejectModal" ok-text="Reject" @ok="rejectProponent(selectedRowIndex)">
-      <h3 class="va-h3">Reject Proponent</h3>
-      <p>Are you sure you want to reject this proponent?</p>
-    </VaModal>
   </VaCard>
 </template>
 
@@ -142,20 +161,20 @@ export default defineComponent({
       }
     },
 
-    showApproveModal(index) {
-      this.selectedRowIndex = index
+    showApproveModal(item) {
+      this.selectedRowIndex = this.proponents.findIndex((proponent) => proponent.proponentId === item.proponentId)
       this.approveModal = true
     },
 
-    showRejectModal(index) {
-      this.selectedRowIndex = index
+    showRejectModal(item) {
+      this.selectedRowIndex = this.proponents.findIndex((proponent) => proponent.proponentId === item.proponentId)
       this.rejectModal = true
     },
 
     async approveProponent() {
       if (this.selectedRowIndex !== null) {
         const item = this.proponents[this.selectedRowIndex]
-        await proponentsRepository.approveProponent(item.proponentId)
+        await proponentsRepository.approveProponent(item.id)
         this.approveModal = false
         this.loadProponents()
       }
@@ -163,7 +182,7 @@ export default defineComponent({
     async rejectProponent() {
       if (this.selectedRowIndex !== null) {
         const item = this.proponents[this.selectedRowIndex]
-        await proponentsRepository.rejectProponent(item.proponentId)
+        await proponentsRepository.rejectProponent(item.id)
         this.rejectModal = false
         this.loadProponents()
       }
