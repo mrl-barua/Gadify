@@ -29,6 +29,7 @@ export const proponentsRepository = {
       throw error
     }
   },
+
   getProponentById: async (id: string) => {
     try {
       const response = await apiClient.get(`/api/proponents/${id}`, {

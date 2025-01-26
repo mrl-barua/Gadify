@@ -22,7 +22,7 @@
       <VaDataTable
         v-if="currentTable === 'onHold'"
         class="table-crud"
-        :items="pendingSubmissions"
+        :items="onHoldSubmissions"
         :columns="columns"
         striped
       >
@@ -35,7 +35,7 @@
       <VaDataTable
         v-if="currentTable === 'evaluation'"
         class="table-crud"
-        :items="pendingSubmissions"
+        :items="evaluationSubmissions"
         :columns="columns"
         striped
       >
@@ -48,7 +48,7 @@
       <VaDataTable
         v-if="currentTable === 'completed'"
         class="table-crud"
-        :items="pendingSubmissions"
+        :items="completedSubmissions"
         :columns="columns"
         striped
       >
@@ -61,7 +61,7 @@
       <VaDataTable
         v-if="currentTable === 'forCorrection'"
         class="table-crud"
-        :items="pendingSubmissions"
+        :items="forCorrectionSubmissions"
         :columns="columns"
         striped
       >
@@ -76,7 +76,7 @@
 
 <script>
 import { defineComponent } from 'vue'
-import {} from './repository/ManageRequestRepository'
+import { submissionRepository } from './repository/ManageRequestRepository'
 
 const defaultSubmission = {
   fileType: '',
@@ -94,14 +94,14 @@ export default defineComponent({
     const submissions = []
 
     const columns = [
-      { key: 'submissionId', label: 'File Type', sortable: true },
-      { key: 'department.departmentId', label: 'Date Filed', sortable: true },
-      { key: 'submissionType', label: 'Document No.', sortable: true },
-      { key: 'submissionStatus', label: 'Submission Name', sortable: true },
-      { key: 'fullName', label: 'Department', sortable: true },
-      { key: 'userName', label: 'Proposal Title', sortable: true },
-      { key: 'email', label: 'File Link', sortable: true },
-      { key: 'email', label: 'Status', sortable: true },
+      { key: 'fileType', label: 'File Type', sortable: true },
+      { key: 'createdAt', label: 'Date Filed', sortable: true },
+      { key: 'submissionId', label: 'Document No.', sortable: true },
+      { key: 'submissionStatus', label: 'Proponent', sortable: true },
+      { key: 'proponent.fullName', label: 'Department', sortable: true },
+      { key: 'proposalTitle', label: 'Proposal Title', sortable: true },
+      { key: 'resourcesLink', label: 'File Link', sortable: true },
+      { key: 'submissionStatus', label: 'Status', sortable: true },
 
       { key: 'actions', label: 'Actions', width: 80 },
     ]
@@ -135,12 +135,13 @@ export default defineComponent({
   methods: {
     async loadSubmissions() {
       try {
-        // const data = await submissionsRepository.getSubmissions()
-        // this.submissions = data
-        // // Categorize submissions based on status using string comparison
-        // this.pendingSubmissions = data.filter((submission) => submission.submissionStatus === 'Pending')
-        // this.approvedSubmissions = data.filter((submission) => submission.submissionStatus === 'Approved')
-        // this.disapprovedSubmissions = data.filter((submission) => submission.submissionStatus === 'Rejected')
+        const data = await submissionRepository.getSubmissions()
+        this.submissions = data
+        // Categorize submissions based on status using string comparison
+        this.onHoldSubmissions = data.filter((submission) => submission.submissionStatus === 'OnHold')
+        this.evaluationSubmissions = data.filter((submission) => submission.submissionStatus === 'Evaluation')
+        this.completedSubmissions = data.filter((submission) => submission.submissionStatus === 'Completed')
+        this.forCorrectionSubmissions = data.filter((submission) => submission.submissionStatus === 'ForApproval')
       } catch (error) {
         // console.error('Failed to load submissions:', error)
       }
