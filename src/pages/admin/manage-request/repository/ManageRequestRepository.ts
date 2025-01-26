@@ -218,15 +218,13 @@ const jwtStore = useJwtStore()
 export const submissionRepository = {
   getSubmissions: async () => {
     try {
-      // const response = await apiClient.get('/api/submissions, {
-      //   headers: {
-      //     Authorization: `Bearer ${jwtStore.getToken}`,
-      //   },
-      // })
-      // console.log('Data:', response.data)
-      // return response.data
-
-      return mockSubmissions
+      const response = await apiClient.get('/api/submission', {
+        headers: {
+          Authorization: `Bearer ${jwtStore.getToken}`,
+        },
+      })
+      console.log('Data:', response.data)
+      return response.data
     } catch (error) {
       console.error('Error:', error)
       throw error

@@ -141,7 +141,7 @@ export default defineComponent({
         this.onHoldSubmissions = data.filter((submission) => submission.submissionStatus === 'OnHold')
         this.evaluationSubmissions = data.filter((submission) => submission.submissionStatus === 'Evaluation')
         this.completedSubmissions = data.filter((submission) => submission.submissionStatus === 'Completed')
-        this.forCorrectionSubmissions = data.filter((submission) => submission.submissionStatus === 'ForApproval')
+        this.forCorrectionSubmissions = data.filter((submission) => submission.submissionStatus === 'ForCorrection')
       } catch (error) {
         // console.error('Failed to load submissions:', error)
       }
