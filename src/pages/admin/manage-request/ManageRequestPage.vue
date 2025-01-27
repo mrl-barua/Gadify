@@ -27,8 +27,8 @@
         striped
       >
         <template #cell(actions)>
-          <VaButton preset="plain" icon="check" />
-          <VaButton preset="plain" icon="close" color="danger" class="ml-3" />
+          <VaButton preset="plain" icon="view_timeline" />
+          <VaButton preset="plain" icon="clear_all" color="danger" class="ml-3" />
         </template>
       </VaDataTable>
 
@@ -40,8 +40,8 @@
         striped
       >
         <template #cell(actions)="{ rowIndex }">
-          <VaButton preset="plain" icon="check" />
-          <VaButton preset="plain" icon="close" color="danger" class="ml-3" />
+          <VaButton preset="plain" icon="view_timeline" />
+          <VaButton preset="plain" icon="clear_all" color="danger" class="ml-3" />
         </template>
       </VaDataTable>
 
@@ -53,8 +53,8 @@
         striped
       >
         <template #cell(actions)="{ rowIndex }">
-          <VaButton preset="plain" icon="check" />
-          <VaButton preset="plain" icon="close" color="danger" class="ml-3" />
+          <VaButton preset="plain" icon="view_timeline" />
+          <VaButton preset="plain" icon="clear_all" color="danger" class="ml-3" />
         </template>
       </VaDataTable>
 
@@ -66,8 +66,8 @@
         striped
       >
         <template #cell(actions)="{ rowIndex }">
-          <VaButton preset="plain" icon="check" />
-          <VaButton preset="plain" icon="close" color="danger" class="ml-3" />
+          <VaButton preset="plain" icon="view_timeline" />
+          <VaButton preset="plain" icon="clear_all" color="danger" class="ml-3" />
         </template>
       </VaDataTable>
     </VaCardContent>
@@ -116,9 +116,10 @@ export default defineComponent({
       editedSubmission: null,
       createdSubmission: { ...defaultSubmission },
       currentTable: 'onHold',
-      pendingSubmissions: [],
-      approvedSubmissions: [],
-      disapprovedSubmissions: [],
+      onHoldSubmissions: [],
+      evaluationSubmissions: [],
+      completedSubmissions: [],
+      forCorrectionSubmissions: [],
     }
   },
 
