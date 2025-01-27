@@ -27,8 +27,18 @@
         striped
       >
         <template #cell(actions)>
-          <VaButton preset="plain" icon="view_timeline" />
-          <VaButton preset="plain" icon="clear_all" color="danger" class="ml-3" />
+          <VaButton
+            preset="plain"
+            icon="view_timeline"
+            @click="sentDocumentForEvaluationModal = !sentDocumentForEvaluationModal"
+          />
+          <VaButton
+            preset="plain"
+            icon="clear_all"
+            color="danger"
+            @click="documentRoutingLogModal = !documentRoutingLogModal"
+            class="ml-3"
+          />
         </template>
       </VaDataTable>
 
@@ -40,8 +50,18 @@
         striped
       >
         <template #cell(actions)="{ rowIndex }">
-          <VaButton preset="plain" icon="view_timeline" />
-          <VaButton preset="plain" icon="clear_all" color="danger" class="ml-3" />
+          <VaButton
+            preset="plain"
+            icon="view_timeline"
+            @click="sentDocumentForEvaluationModal = !sentDocumentForEvaluationModal"
+          />
+          <VaButton
+            preset="plain"
+            icon="clear_all"
+            color="danger"
+            @click="documentRoutingLogModal = !documentRoutingLogModal"
+            class="ml-3"
+          />
         </template>
       </VaDataTable>
 
@@ -53,8 +73,18 @@
         striped
       >
         <template #cell(actions)="{ rowIndex }">
-          <VaButton preset="plain" icon="view_timeline" />
-          <VaButton preset="plain" icon="clear_all" color="danger" class="ml-3" />
+          <VaButton
+            preset="plain"
+            icon="view_timeline"
+            @click="sentDocumentForEvaluationModal = !sentDocumentForEvaluationModal"
+          />
+          <VaButton
+            preset="plain"
+            icon="clear_all"
+            color="danger"
+            @click="documentRoutingLogModal = !documentRoutingLogModal"
+            class="ml-3"
+          />
         </template>
       </VaDataTable>
 
@@ -66,10 +96,180 @@
         striped
       >
         <template #cell(actions)="{ rowIndex }">
-          <VaButton preset="plain" icon="view_timeline" />
-          <VaButton preset="plain" icon="clear_all" color="danger" class="ml-3" />
+          <VaButton
+            preset="plain"
+            icon="view_timeline"
+            @click="sentDocumentForEvaluationModal = !sentDocumentForEvaluationModal"
+          />
+          <VaButton
+            preset="plain"
+            icon="clear_all"
+            color="danger"
+            @click="documentRoutingLogModal = !documentRoutingLogModal"
+            class="ml-3"
+          />
         </template>
       </VaDataTable>
+
+      <VaModal v-model="sentDocumentForEvaluationModal" size="large">
+        <h3 class="va-h3">Sent Document for Evaluation</h3>
+        <div class="flex flex-wrap -mx-2">
+          <div class="w-full md:w-1/2 px-2 mb-4">
+            <h3 class="text-lg font-semibold mb-2">Main Information</h3>
+            <p class="mb-1"><span class="font-medium">Document No:</span> {{ editedSubmission.submissionId }}</p>
+            <p class="mb-1"><span class="font-medium">Date Needed:</span> {{ editedSubmission.date }}</p>
+          </div>
+          <div class="w-full md:w-1/2 px-2 mb-4">
+            <h3 class="text-lg font-semibold mb-2">Other Information</h3>
+            <p class="mb-1"><span class="font-medium">Project Proposal:</span> {{ editedSubmission.proposal }}</p>
+            <p class="mb-1"><span class="font-medium">Date Needed:</span> {{ editedSubmission.date }}</p>
+            <p class="mb-1"><span class="font-medium">Project Description:</span> {{ editedSubmission.description }}</p>
+            <p class="mb-1"><span class="font-medium">File Type:</span> {{ editedSubmission.fileType }}</p>
+          </div>
+        </div>
+
+        <VaCardContent>
+          <div class="flex flex-col md:flex-row gap-2 mb-2 justify-between">
+            <div class="flex flex-col md:flex-row gap-2 justify-start">
+              <VaButtonToggle
+                v-model="currentTable"
+                color="background-element"
+                border-color="background-element"
+                :options="[
+                  { label: 'On Hold', value: 'onHold' },
+                  { label: 'Evaluation', value: 'evaluation' },
+                  { label: 'Completed', value: 'completed' },
+                  { label: 'For Correction', value: 'forCorrection' },
+                ]"
+              />
+            </div>
+          </div>
+
+          <VaDataTable
+            v-if="currentTable === 'onHold'"
+            class="table-crud"
+            :items="onHoldSubmissions"
+            :columns="columns"
+            striped
+          >
+            <template #cell(actions)>
+              <VaButton
+                preset="plain"
+                icon="view_timeline"
+                @click="sentDocumentForEvaluationModal = !sentDocumentForEvaluationModal"
+              />
+              <VaButton
+                preset="plain"
+                icon="clear_all"
+                color="danger"
+                @click="documentRoutingLogModal = !documentRoutingLogModal"
+                class="ml-3"
+              />
+            </template>
+          </VaDataTable>
+
+          <VaDataTable
+            v-if="currentTable === 'evaluation'"
+            class="table-crud"
+            :items="evaluationSubmissions"
+            :columns="columns"
+            striped
+          >
+            <template #cell(actions)="{ rowIndex }">
+              <VaButton
+                preset="plain"
+                icon="view_timeline"
+                @click="sentDocumentForEvaluationModal = !sentDocumentForEvaluationModal"
+              />
+              <VaButton
+                preset="plain"
+                icon="clear_all"
+                color="danger"
+                @click="documentRoutingLogModal = !documentRoutingLogModal"
+                class="ml-3"
+              />
+            </template>
+          </VaDataTable>
+
+          <VaDataTable
+            v-if="currentTable === 'completed'"
+            class="table-crud"
+            :items="completedSubmissions"
+            :columns="columns"
+            striped
+          >
+            <template #cell(actions)="{ rowIndex }">
+              <VaButton
+                preset="plain"
+                icon="view_timeline"
+                @click="sentDocumentForEvaluationModal = !sentDocumentForEvaluationModal"
+              />
+              <VaButton
+                preset="plain"
+                icon="clear_all"
+                color="danger"
+                @click="documentRoutingLogModal = !documentRoutingLogModal"
+                class="ml-3"
+              />
+            </template>
+          </VaDataTable>
+
+          <VaDataTable
+            v-if="currentTable === 'forCorrection'"
+            class="table-crud"
+            :items="forCorrectionSubmissions"
+            :columns="columns"
+            striped
+          >
+            <template #cell(actions)="{ rowIndex }">
+              <VaButton
+                preset="plain"
+                icon="view_timeline"
+                @click="sentDocumentForEvaluationModal = !sentDocumentForEvaluationModal"
+              />
+              <VaButton
+                preset="plain"
+                icon="clear_all"
+                color="danger"
+                @click="documentRoutingLogModal = !documentRoutingLogModal"
+                class="ml-3"
+              />
+            </template>
+          </VaDataTable>
+        </VaCardContent>
+      </VaModal>
+
+      <VaModal v-model="documentRoutingLogModal" size="large">
+        <h3 class="va-h3">Document Routing Log</h3>
+
+        <p class="va-text">Select users to go to a party.</p>
+
+        <VaDataTable
+          :items="[
+            { name: 'Marcus Claus', email: 'marcus@epicmax.co', status: 'verified', balance: '$34.15' },
+            { name: 'Moo Farah', email: 'moo@epicmax.co', status: 'pending', balance: '$199.0' },
+            { name: 'Stan Brass', email: 'stan@epicmax.co', status: 'blocked', balance: '$0.00' },
+            { name: 'Usan Jahallah', email: 'usan@epicmax.co', status: 'verified', balance: '$23 000.00' },
+          ]"
+        >
+          <template #cell(status)="{ rowData }">
+            <VaChip
+              :color="
+                {
+                  verified: 'primary',
+                  pending: 'secondary',
+                  blocked: 'danger',
+                }[rowData.status]
+              "
+              class="va-text-uppercase"
+              size="small"
+              square
+            >
+              {{ rowData.status }}
+            </VaChip>
+          </template>
+        </VaDataTable>
+      </VaModal>
     </VaCardContent>
   </VaCard>
 </template>
@@ -109,8 +309,8 @@ export default defineComponent({
     return {
       submissions,
       columns,
-      approveModal: false,
-      rejectModal: false,
+      sentDocumentForEvaluationModal: false,
+      documentRoutingLogModal: false,
       selectedRowIndex: null,
       editedSubmissionId: null,
       editedSubmission: null,
@@ -120,6 +320,13 @@ export default defineComponent({
       evaluationSubmissions: [],
       completedSubmissions: [],
       forCorrectionSubmissions: [],
+      editedSubmission: {
+        submissionId: 'DOC-2025-001',
+        date: '2025-02-01',
+        proposal: 'Project Apollo',
+        description: 'A project aimed at automating data management for the Apollo program.',
+        fileType: 'PDF',
+      },
     }
   },
 
@@ -144,34 +351,7 @@ export default defineComponent({
         this.completedSubmissions = data.filter((submission) => submission.submissionStatus === 'Completed')
         this.forCorrectionSubmissions = data.filter((submission) => submission.submissionStatus === 'ForCorrection')
       } catch (error) {
-        // console.error('Failed to load submissions:', error)
-      }
-    },
-
-    showApproveModal(item) {
-      this.selectedRowIndex = this.submissions.findIndex((submission) => submission.submissionId === item.submissionId)
-      this.approveModal = true
-    },
-
-    showRejectModal(item) {
-      this.selectedRowIndex = this.submissions.findIndex((submission) => submission.submissionId === item.submissionId)
-      this.rejectModal = true
-    },
-
-    async approveSubmission() {
-      if (this.selectedRowIndex !== null) {
-        // const item = this.submissions[this.selectedRowIndex]
-        // await submissionsRepository.approveSubmission(item.id)
-        this.approveModal = false
-        this.loadSubmissions()
-      }
-    },
-    async rejectSubmission() {
-      if (this.selectedRowIndex !== null) {
-        const item = this.submissions[this.selectedRowIndex]
-        // await submissionsRepository.rejectSubmission(item.id)
-        this.rejectModal = false
-        this.loadSubmissions()
+        console.error('Failed to load submissions:', error)
       }
     },
 
