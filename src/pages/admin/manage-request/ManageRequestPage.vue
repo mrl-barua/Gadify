@@ -26,11 +26,11 @@
         :columns="columns"
         striped
       >
-        <template #cell(actions)>
+        <template #cell(actions)="{ rowIndex }">
           <VaButton
             preset="plain"
             icon="view_timeline"
-            @click="sentDocumentForEvaluationModal = !sentDocumentForEvaluationModal"
+            @click="showSentDocumentForEvaluationModal(onHoldSubmissions[rowIndex])"
           />
           <VaButton
             preset="plain"
@@ -53,7 +53,7 @@
           <VaButton
             preset="plain"
             icon="view_timeline"
-            @click="sentDocumentForEvaluationModal = !sentDocumentForEvaluationModal"
+            @click="showSentDocumentForEvaluationModal(onHoldSubmissions[rowIndex])"
           />
           <VaButton
             preset="plain"
@@ -76,7 +76,7 @@
           <VaButton
             preset="plain"
             icon="view_timeline"
-            @click="sentDocumentForEvaluationModal = !sentDocumentForEvaluationModal"
+            @click="showSentDocumentForEvaluationModal(onHoldSubmissions[rowIndex])"
           />
           <VaButton
             preset="plain"
@@ -99,7 +99,7 @@
           <VaButton
             preset="plain"
             icon="view_timeline"
-            @click="sentDocumentForEvaluationModal = !sentDocumentForEvaluationModal"
+            @click="showSentDocumentForEvaluationModal(onHoldSubmissions[rowIndex])"
           />
           <VaButton
             preset="plain"
@@ -136,10 +136,8 @@
                 color="background-element"
                 border-color="background-element"
                 :options="[
-                  { label: 'On Hold', value: 'onHold' },
-                  { label: 'Evaluation', value: 'evaluation' },
-                  { label: 'Completed', value: 'completed' },
-                  { label: 'For Correction', value: 'forCorrection' },
+                  { label: 'Attachments', value: 'onHold' },
+                  { label: 'Receving Division', value: 'evaluation' },
                 ]"
               />
             </div>
@@ -156,7 +154,7 @@
               <VaButton
                 preset="plain"
                 icon="view_timeline"
-                @click="sentDocumentForEvaluationModal = !sentDocumentForEvaluationModal"
+                @click="showSentDocumentForEvaluationModal(onHoldSubmissions[rowIndex])"
               />
               <VaButton
                 preset="plain"
@@ -179,7 +177,7 @@
               <VaButton
                 preset="plain"
                 icon="view_timeline"
-                @click="sentDocumentForEvaluationModal = !sentDocumentForEvaluationModal"
+                @click="showSentDocumentForEvaluationModal(onHoldSubmissions[rowIndex])"
               />
               <VaButton
                 preset="plain"
@@ -191,51 +189,20 @@
             </template>
           </VaDataTable>
 
-          <VaDataTable
-            v-if="currentTable === 'completed'"
-            class="table-crud"
-            :items="completedSubmissions"
-            :columns="columns"
-            striped
-          >
-            <template #cell(actions)="{ rowIndex }">
-              <VaButton
-                preset="plain"
-                icon="view_timeline"
-                @click="sentDocumentForEvaluationModal = !sentDocumentForEvaluationModal"
-              />
-              <VaButton
-                preset="plain"
-                icon="clear_all"
-                color="danger"
-                @click="documentRoutingLogModal = !documentRoutingLogModal"
-                class="ml-3"
-              />
-            </template>
-          </VaDataTable>
-
-          <VaDataTable
-            v-if="currentTable === 'forCorrection'"
-            class="table-crud"
-            :items="forCorrectionSubmissions"
-            :columns="columns"
-            striped
-          >
-            <template #cell(actions)="{ rowIndex }">
-              <VaButton
-                preset="plain"
-                icon="view_timeline"
-                @click="sentDocumentForEvaluationModal = !sentDocumentForEvaluationModal"
-              />
-              <VaButton
-                preset="plain"
-                icon="clear_all"
-                color="danger"
-                @click="documentRoutingLogModal = !documentRoutingLogModal"
-                class="ml-3"
-              />
-            </template>
-          </VaDataTable>
+          <template #cell(actions)="{ rowIndex }">
+            <VaButton
+              preset="plain"
+              icon="view_timeline"
+              @click="showSentDocumentForEvaluationModal(onHoldSubmissions[rowIndex])"
+            />
+            <VaButton
+              preset="plain"
+              icon="clear_all"
+              color="danger"
+              @click="documentRoutingLogModal = !documentRoutingLogModal"
+              class="ml-3"
+            />
+          </template>
         </VaCardContent>
       </VaModal>
 
@@ -341,6 +308,30 @@ export default defineComponent({
   },
 
   methods: {
+    showSentDocumentForEvaluationModal(item) {
+      if (item) {
+        this.selectedRowIndex = this.submissions.findIndex(
+          (submission) => submission.submissionId === item.submissionId,
+        )
+        this.editedSubmission = item
+        this.sentDocumentForEvaluationModal = true
+        alert(`Submission ID: ${item.submissionId}`)
+      } else {
+        console.error('Item is undefined or null')
+      }
+    },
+
+    async loadSubmissionById(Id) {
+      try {
+        const data = await submissionRepository.getSubmissionById(submissionId)
+        this.editedSubmission = data
+        this.sentDocumentForEvaluationModal = true
+        this.loadSubmissions()
+      } catch (error) {
+        console.error('Failed to load submission:', error)
+      }
+    },
+
     async loadSubmissions() {
       try {
         const data = await submissionRepository.getSubmissions()

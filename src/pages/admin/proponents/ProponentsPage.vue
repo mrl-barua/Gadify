@@ -179,6 +179,7 @@ export default defineComponent({
         this.loadProponents()
       }
     },
+
     async rejectProponent() {
       if (this.selectedRowIndex !== null) {
         const item = this.proponents[this.selectedRowIndex]
