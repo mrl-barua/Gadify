@@ -53,7 +53,7 @@
           <VaButton
             preset="plain"
             icon="view_timeline"
-            @click="showSentDocumentForEvaluationModal(onHoldSubmissions[rowIndex])"
+            @click="showSentDocumentForEvaluationModal(evaluationSubmissions[rowIndex])"
           />
           <VaButton
             preset="plain"
@@ -76,7 +76,7 @@
           <VaButton
             preset="plain"
             icon="view_timeline"
-            @click="showSentDocumentForEvaluationModal(onHoldSubmissions[rowIndex])"
+            @click="showSentDocumentForEvaluationModal(completedSubmissions[rowIndex])"
           />
           <VaButton
             preset="plain"
@@ -99,7 +99,7 @@
           <VaButton
             preset="plain"
             icon="view_timeline"
-            @click="showSentDocumentForEvaluationModal(onHoldSubmissions[rowIndex])"
+            @click="showSentDocumentForEvaluationModal(forCorrection[rowIndex])"
           />
           <VaButton
             preset="plain"
@@ -288,10 +288,10 @@ export default defineComponent({
       completedSubmissions: [],
       forCorrectionSubmissions: [],
       editedSubmission: {
-        submissionId: 'DOC-2025-001',
-        date: '2025-02-01',
-        proposal: 'Project Apollo',
-        description: 'A project aimed at automating data management for the Apollo program.',
+        submissionId: '',
+        date: '',
+        proposal: '',
+        description: '',
         fileType: 'PDF',
       },
     }
@@ -310,12 +310,13 @@ export default defineComponent({
   methods: {
     showSentDocumentForEvaluationModal(item) {
       if (item) {
-        this.selectedRowIndex = this.submissions.findIndex(
-          (submission) => submission.submissionId === item.submissionId,
-        )
+        this.selectedRowIndex = this.submissions.findIndex((submission) => submission.id === item.id)
         this.editedSubmission = item
         this.sentDocumentForEvaluationModal = true
-        alert(`Submission ID: ${item.submissionId}`)
+        alert(`Submission ID: ${item.id}`)
+
+        // Ensure data is declared properly
+        this.loadSubmissionById(item.id)
       } else {
         console.error('Item is undefined or null')
       }
@@ -323,10 +324,15 @@ export default defineComponent({
 
     async loadSubmissionById(Id) {
       try {
-        const data = await submissionRepository.getSubmissionById(submissionId)
-        this.editedSubmission = data
+        const data = await submissionRepository.getSubmissionById(Id)
+        this.editedSubmission = {
+          submissionId: data.submissionId,
+          date: data.createdAt,
+          proposal: data.proposalTitle,
+          description: data.proposalDescription,
+          fileType: data.fileType,
+        }
         this.sentDocumentForEvaluationModal = true
-        this.loadSubmissions()
       } catch (error) {
         console.error('Failed to load submission:', error)
       }

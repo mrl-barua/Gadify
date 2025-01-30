@@ -33,7 +33,7 @@ export const submissionRepository = {
   getSubmissionById: async (id: number) => {
     try {
       const response = await apiClient.post(
-        '/api/submission',
+        '/api/submissionById',
         { Id: id }, // JSON body
         {
           headers: {
