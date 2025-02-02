@@ -24,6 +24,7 @@
         :items="pendingProponents"
         :columns="columns"
         striped
+        :loading="isLoading"
       >
         <template #cell(actions)="{ rowIndex }">
           <VaButton preset="plain" icon="check" @click="showApproveModal(pendingProponents[rowIndex])" />
@@ -51,6 +52,7 @@
         :items="approvedProponents"
         :columns="columns"
         striped
+        :loading="isLoading"
       >
         <template #cell(actions)="{ rowIndex }">
           <VaButton
@@ -73,6 +75,7 @@
         :items="disapprovedProponents"
         :columns="columns"
         striped
+        :loading="isLoading"
       >
         <template #cell(actions)="{ rowIndex }">
           <VaButton preset="plain" icon="check" @click="showApproveModal(disapprovedProponents[rowIndex])" />
@@ -89,6 +92,7 @@
 <script>
 import { defineComponent } from 'vue'
 import { proponentsRepository } from './repository/ProponentsRepository'
+import { sleep } from '../../../services/utils'
 
 const defaultProponent = {
   proponentId: '',
@@ -133,6 +137,7 @@ export default defineComponent({
       pendingProponents: [],
       approvedProponents: [],
       disapprovedProponents: [],
+      isLoading: true,
     }
   },
 
@@ -148,6 +153,8 @@ export default defineComponent({
 
   methods: {
     async loadProponents() {
+      this.isLoading = true
+      await sleep(1000)
       try {
         const data = await proponentsRepository.getProponents()
         this.proponents = data
@@ -158,6 +165,8 @@ export default defineComponent({
         this.disapprovedProponents = data.filter((proponent) => proponent.proponentStatus === 'Rejected')
       } catch (error) {
         console.error('Failed to load proponents:', error)
+      } finally {
+        this.isLoading = false
       }
     },
 
