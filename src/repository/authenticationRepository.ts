@@ -10,10 +10,10 @@ const apiClient = axios.create({
   },
 })
 
-export const loginApiService = {
-  async login(userName: string, password: string) {
+export const adminLoginApiService = {
+  async login(email: string, password: string) {
     try {
-      const response = await apiClient.post('/api/login', { userName, password })
+      const response = await apiClient.post('/api/login/admin', { email, password })
       if (response.data?.token) {
         const jwtStore = useJwtStore() // Access the store
         jwtStore.setToken(response.data.token) // Store the token
