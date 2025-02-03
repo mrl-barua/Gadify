@@ -91,7 +91,7 @@
 
 <script>
 import { defineComponent } from 'vue'
-import { proponentsRepository } from './repository/ProponentsRepository'
+import { proponentsRepository } from '../../../repository/proponentsRepository'
 import { sleep } from '../../../services/utils'
 
 const defaultProponent = {
@@ -141,14 +141,14 @@ export default defineComponent({
     }
   },
 
-  mounted() {
-    this.loadProponents()
-  },
-
   computed: {
     isNewData() {
       return Object.keys(this.createdProponent).every((key) => !!this.createdProponent[key])
     },
+  },
+
+  mounted() {
+    this.loadProponents()
   },
 
   methods: {
