@@ -36,8 +36,8 @@
             preset="plain"
             icon="clear_all"
             color="danger"
-            @click="documentRoutingLogModal = !documentRoutingLogModal"
             class="ml-3"
+            @click="documentRoutingLogModal = !documentRoutingLogModal"
           />
         </template>
       </VaDataTable>
@@ -59,8 +59,8 @@
             preset="plain"
             icon="clear_all"
             color="danger"
-            @click="documentRoutingLogModal = !documentRoutingLogModal"
             class="ml-3"
+            @click="documentRoutingLogModal = !documentRoutingLogModal"
           />
         </template>
       </VaDataTable>
@@ -82,8 +82,8 @@
             preset="plain"
             icon="clear_all"
             color="danger"
-            @click="documentRoutingLogModal = !documentRoutingLogModal"
             class="ml-3"
+            @click="documentRoutingLogModal = !documentRoutingLogModal"
           />
         </template>
       </VaDataTable>
@@ -105,8 +105,8 @@
             preset="plain"
             icon="clear_all"
             color="danger"
-            @click="documentRoutingLogModal = !documentRoutingLogModal"
             class="ml-3"
+            @click="documentRoutingLogModal = !documentRoutingLogModal"
           />
         </template>
       </VaDataTable>
@@ -160,8 +160,8 @@
                 preset="plain"
                 icon="clear_all"
                 color="danger"
-                @click="documentRoutingLogModal = !documentRoutingLogModal"
                 class="ml-3"
+                @click="documentRoutingLogModal = !documentRoutingLogModal"
               />
             </template>
           </VaDataTable>
@@ -183,8 +183,8 @@
                 preset="plain"
                 icon="clear_all"
                 color="danger"
-                @click="documentRoutingLogModal = !documentRoutingLogModal"
                 class="ml-3"
+                @click="documentRoutingLogModal = !documentRoutingLogModal"
               />
             </template>
           </VaDataTable>
@@ -199,8 +199,8 @@
               preset="plain"
               icon="clear_all"
               color="danger"
-              @click="documentRoutingLogModal = !documentRoutingLogModal"
               class="ml-3"
+              @click="documentRoutingLogModal = !documentRoutingLogModal"
             />
           </template>
         </VaCardContent>
@@ -243,7 +243,7 @@
 
 <script>
 import { defineComponent } from 'vue'
-import { submissionRepository } from './repository/ManageRequestRepository'
+import { submissionRepository } from '../../../repository/submissionRepository'
 
 const defaultSubmission = {
   fileType: '',
@@ -287,24 +287,17 @@ export default defineComponent({
       evaluationSubmissions: [],
       completedSubmissions: [],
       forCorrectionSubmissions: [],
-      editedSubmission: {
-        submissionId: '',
-        date: '',
-        proposal: '',
-        description: '',
-        fileType: 'PDF',
-      },
     }
-  },
-
-  mounted() {
-    this.loadSubmissions()
   },
 
   computed: {
     isNewData() {
       return Object.keys(this.createdSubmission).every((key) => !!this.createdSubmission[key])
     },
+  },
+
+  mounted() {
+    this.loadSubmissions()
   },
 
   methods: {
