@@ -1,5 +1,3 @@
-import { User } from '../../users/types'
-
 export enum ProponentType {
   Inside = 'Inside',
   Outside = 'Outside',

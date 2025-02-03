@@ -1,5 +1,5 @@
 import api from '../../services/api'
-import { Proponent } from '../../pages/admin/proponents/types';
+import { Proponent } from '../../pages/admin/proponents/types'
 
 export type Pagination = {
   page: number
@@ -35,7 +35,9 @@ export const addProponent = async (proponent: Omit<Proponent, 'id' | 'createdAt'
 export const updateProponent = async (proponent: Omit<Proponent, 'createdAt'>) => {
   const headers = new Headers()
   headers.append('Content-Type', 'application/json')
-  return fetch(api.proponent(proponent.id), { method: 'PUT', body: JSON.stringify(proponent), headers }).then((r) => r.json())
+  return fetch(api.proponent(proponent.id), { method: 'PUT', body: JSON.stringify(proponent), headers }).then((r) =>
+    r.json(),
+  )
 }
 
 export const removeProponent = async (proponent: Proponent) => {
