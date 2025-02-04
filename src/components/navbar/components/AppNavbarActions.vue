@@ -1,7 +1,6 @@
 <template>
   <div class="app-navbar-actions">
-
-<!--
+    <!--
     <VaButton
       v-if="!isMobile"
       preset="secondary"

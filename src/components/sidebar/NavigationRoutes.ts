@@ -9,7 +9,7 @@ export default {
     name: '/',
     displayName: 'navigationRoutes.home',
   },
-  routes: [
+  adminRoutes: [
     {
       name: 'dashboard',
       displayName: 'menu.dashboard',
@@ -50,6 +50,16 @@ export default {
       displayName: 'menu.userAccount',
       meta: {
         icon: 'vuestic-iconset-settings',
+      },
+    },
+  ] as INavigationRoute[],
+
+  evaluatorRoutes: [
+    {
+      name: 'evaluation',
+      displayName: 'menu.evaluation',
+      meta: {
+        icon: 'vuestic-iconset-user',
       },
     },
   ] as INavigationRoute[],

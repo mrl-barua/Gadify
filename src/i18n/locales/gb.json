@@ -43,6 +43,8 @@
     "department": "Department",
     "userAccount": "User Account",
 
+    "evaluation": "Evaluation",
+
     "auth": "Auth",
     "buttons": "Buttons",
     "timelines": "Timelines",

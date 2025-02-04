@@ -77,7 +77,8 @@ const submit = async () => {
       }
     } else if (loginValue.value === 'Evaluator') {
       try {
-        alert('Evaluator Page not yet implemented')
+        init({ message: 'Login successful', color: 'success' })
+        push({ name: 'evaluation' })
       } finally {
         isLoading.value = false
       }

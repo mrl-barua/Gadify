@@ -59,7 +59,7 @@ const findRouteName = (name: string) => {
     return ''
   }
 
-  return traverse(NavigationRoutes.routes)
+  return traverse(NavigationRoutes.evaluatorRoutes)
 }
 
 const items = computed(() => {
