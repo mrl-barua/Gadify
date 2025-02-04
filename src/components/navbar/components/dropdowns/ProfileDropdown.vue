@@ -130,15 +130,15 @@ const resolveLinkAttribute = (item: ProfileListItem) => {
 
 const handleLogout = () => {
   logoutApiService
-  // .logout(useJwtStore().getToken as string)
-  // .then(() => {
-  //   useJwtStore().clearToken()
-  //   console.log('Logged out successfully')
-  //   init({ message: 'Logout successful', color: 'danger' })
-  // })
-  // .catch((error: any) => {
-  //   console.error('Error logging out:', error)
-  // })
+    .logout()
+    .then(() => {
+      useJwtStore().$patch({ token: null })
+      console.log('Logged out successfully')
+      init({ message: 'Logout successful', color: 'danger' })
+    })
+    .catch((error: any) => {
+      console.error('Error logging out:', error)
+    })
 }
 </script>
 
