@@ -71,7 +71,9 @@ const submit = async () => {
 
     if (loginValue.value === 'Proponent') {
       try {
-        alert('Proponent Page not yet implemented')
+        localStorage.setItem('userRole', 'proponent')
+        init({ message: 'Login successful', color: 'success' })
+        push({ name: 'proponent-request' })
       } finally {
         isLoading.value = false
       }

@@ -38,7 +38,7 @@ import { useGlobalStore } from '../stores/global-store'
 
 import AppLayoutNavigation from '../components/app-layout-navigation/AdminLayoutNavigation.vue'
 import AppNavbar from '../components/navbar/AppNavbar.vue'
-import AppSidebar from '../components/sidebar/AdminSidebar.vue'
+import AppSidebar from '../components/sidebar/ProponentSidebar.vue'
 
 const GlobalStore = useGlobalStore()
 

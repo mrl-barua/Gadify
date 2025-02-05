@@ -63,4 +63,28 @@ export default {
       },
     },
   ] as INavigationRoute[],
+
+  proponentRoutes: [
+    {
+      name: 'proponent-request',
+      displayName: 'menu.requests',
+      meta: {
+        icon: 'vuestic-iconset-user',
+      },
+    },
+    {
+      name: 'proponent-issued-certificates',
+      displayName: 'menu.certificates',
+      meta: {
+        icon: 'vuestic-iconset-files',
+      },
+    },
+    {
+      name: 'proponent-user-account',
+      displayName: 'menu.certificate',
+      meta: {
+        icon: 'vuestic-iconset-files',
+      },
+    },
+  ] as INavigationRoute[],
 }

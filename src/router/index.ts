@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import AuthLayout from '../layouts/AuthLayout.vue'
 import AdminLayout from '../layouts/AdminLayout.vue'
 import EvaluatorsLayout from '../layouts/EvaluatorsLayout.vue'
+import ProponentLayout from '../layouts/ProponentsLayout.vue'
 
 // Function to get the user role (Assuming it's stored in localStorage)
 function getUserRole() {
@@ -65,12 +66,38 @@ const routes = [
       {
         name: 'evaluation',
         path: 'evaluation',
-        component: () => import('../pages/evaluator/evaluation/EvaluationPage.vue'),
+        component: () => import('../pages/evaluator/evaluation/EvaluatorEvaluationPage.vue'),
       },
       {
         name: 'evaluator-user-account',
         path: 'evaluator-user-account',
         component: () => import('../pages/evaluator/user-account/EvaluatorUserAccountPage.vue'),
+      },
+    ],
+  },
+
+  // Proponent Routes
+  {
+    name: 'proponent',
+    path: '/',
+    component: ProponentLayout,
+    redirect: { name: 'login' },
+    meta: { requiresAuth: true, role: 'proponent' }, // Role-based access
+    children: [
+      {
+        name: 'proponent-request',
+        path: 'proponent-request',
+        component: () => import('../pages/proponents/manage-proponent-request/ProponentManageRequestPage.vue'),
+      },
+      {
+        name: 'proponent-issued-certificates',
+        path: 'proponent-issued-certificates',
+        component: () => import('../pages/proponents/issued-certificate/ProponentIssuedCertificatePage.vue'),
+      },
+      {
+        name: 'proponent-user-account',
+        path: 'proponent-user-account',
+        component: () => import('../pages/proponents/user-account/ProponentUserAccountPage.vue'),
       },
     ],
   },
