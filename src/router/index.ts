@@ -1,12 +1,14 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-
+import { createRouter, createWebHistory } from 'vue-router'
 import AuthLayout from '../layouts/AuthLayout.vue'
 import AdminLayout from '../layouts/AdminLayout.vue'
 import EvaluatorsLayout from '../layouts/EvaluatorsLayout.vue'
 
-import RouteViewComponent from '../layouts/RouterBypass.vue'
+// Function to get the user role (Assuming it's stored in localStorage)
+function getUserRole() {
+  return localStorage.getItem('userRole') // Should be 'admin' or 'evaluator'
+}
 
-const routes: Array<RouteRecordRaw> = [
+const routes = [
   {
     path: '/:pathMatch(.*)*',
     redirect: { name: '404' },
@@ -17,6 +19,7 @@ const routes: Array<RouteRecordRaw> = [
     path: '/',
     component: AdminLayout,
     redirect: { name: 'login' },
+    meta: { requiresAuth: true, role: 'admin' }, // Role-based access
     children: [
       {
         name: 'dashboard',
@@ -46,23 +49,7 @@ const routes: Array<RouteRecordRaw> = [
       {
         name: 'user-account',
         path: 'user-account',
-        component: () => import('../pages/admin/user-account/UserAccountPage.vue'),
-      },
-
-      {
-        name: 'settings',
-        path: 'settings',
-        component: () => import('../pages/settings/Settings.vue'),
-      },
-      {
-        name: 'preferences',
-        path: 'preferences',
-        component: () => import('../pages/preferences/Preferences.vue'),
-      },
-      {
-        name: 'users',
-        path: 'users',
-        component: () => import('../pages/users/UsersPage.vue'),
+        component: () => import('../pages/admin/user-account/AdminUserAccountPage.vue'),
       },
     ],
   },
@@ -73,11 +60,17 @@ const routes: Array<RouteRecordRaw> = [
     path: '/',
     component: EvaluatorsLayout,
     redirect: { name: 'login' },
+    meta: { requiresAuth: true, role: 'evaluator' }, // Role-based access
     children: [
       {
         name: 'evaluation',
         path: 'evaluation',
         component: () => import('../pages/evaluator/evaluation/EvaluationPage.vue'),
+      },
+      {
+        name: 'evaluator-user-account',
+        path: 'evaluator-user-account',
+        component: () => import('../pages/evaluator/user-account/EvaluatorUserAccountPage.vue'),
       },
     ],
   },
@@ -140,6 +133,25 @@ const router = createRouter({
     }
   },
   routes,
+})
+
+// Global Navigation Guard
+router.beforeEach((to, from, next) => {
+  const userRole = getUserRole()
+
+  // Check if the route requires authentication
+  if (to.meta.requiresAuth) {
+    if (!userRole) {
+      return next({ name: 'login' }) // Redirect to login if not logged in
+    }
+
+    // Check if the user has the correct role
+    if (to.meta.role && to.meta.role !== userRole) {
+      return next({ name: '404' }) // Redirect to 404 if unauthorized
+    }
+  }
+
+  next()
 })
 
 export default router

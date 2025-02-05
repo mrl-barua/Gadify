@@ -77,6 +77,7 @@ const submit = async () => {
       }
     } else if (loginValue.value === 'Evaluator') {
       try {
+        localStorage.setItem('userRole', 'evaluator')
         init({ message: 'Login successful', color: 'success' })
         push({ name: 'evaluation' })
       } finally {
@@ -90,6 +91,7 @@ const submit = async () => {
 
         init({ message: response.data.message || 'Login successful', color: 'success' })
 
+        localStorage.setItem('userRole', 'admin')
         const token = response.data.token
         jwtStore.setToken(token)
         if (formData.keepLoggedIn) {
@@ -98,7 +100,7 @@ const submit = async () => {
           sessionStorage.setItem('token', token)
         }
 
-        push({ name: 'dashboard' })
+        push({ name: 'proponents' })
       } catch (error: any) {
         init({
           message: error.response?.data?.message || 'Login failed. Please try again.',

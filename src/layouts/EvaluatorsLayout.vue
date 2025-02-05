@@ -1,4 +1,4 @@
-<template>
+n<template>
   <VaLayout
     :top="{ fixed: true, order: 2 }"
     :left="{ fixed: true, absolute: breakpoints.mdDown, order: 1, overlay: breakpoints.mdDown && !isSidebarMinimized }"
