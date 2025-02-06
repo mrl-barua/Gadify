@@ -4,9 +4,9 @@ import AdminLayout from '../layouts/AdminLayout.vue'
 import EvaluatorsLayout from '../layouts/EvaluatorsLayout.vue'
 import ProponentLayout from '../layouts/ProponentsLayout.vue'
 
-// Function to get the user role (Assuming it's stored in localStorage)
+/* Currrently mock but final implementation should be decoded by a jwt service and get the role from it */
 function getUserRole() {
-  return localStorage.getItem('userRole') // Should be 'admin' or 'evaluator'
+  return localStorage.getItem('userRole')
 }
 
 const routes = [
@@ -14,13 +14,14 @@ const routes = [
     path: '/:pathMatch(.*)*',
     redirect: { name: '404' },
   },
-  // Admin Routes
+
+  /* Admin Route */
   {
     name: 'admin',
     path: '/',
     component: AdminLayout,
     redirect: { name: 'login' },
-    meta: { requiresAuth: true, role: 'admin' }, // Role-based access
+    meta: { requiresAuth: true, role: 'admin' },
     children: [
       {
         name: 'dashboard',
@@ -55,13 +56,13 @@ const routes = [
     ],
   },
 
-  // Evaluator Routes
+  /* Evaluator Route */
   {
     name: 'evaluator',
     path: '/',
     component: EvaluatorsLayout,
     redirect: { name: 'login' },
-    meta: { requiresAuth: true, role: 'evaluator' }, // Role-based access
+    meta: { requiresAuth: true, role: 'evaluator' },
     children: [
       {
         name: 'evaluation',
@@ -76,13 +77,13 @@ const routes = [
     ],
   },
 
-  // Proponent Routes
+  /* Evaluator Route */
   {
     name: 'proponent',
     path: '/',
     component: ProponentLayout,
     redirect: { name: 'login' },
-    meta: { requiresAuth: true, role: 'proponent' }, // Role-based access
+    meta: { requiresAuth: true, role: 'proponent' },
     children: [
       {
         name: 'proponent-request',
@@ -110,7 +111,7 @@ const routes = [
     ],
   },
 
-  // Auth Routes
+  /* Authentication Route */
   {
     path: '/auth',
     component: AuthLayout,
@@ -170,19 +171,17 @@ const router = createRouter({
   routes,
 })
 
-// Global Navigation Guard
+/* Authentication Guard */
 router.beforeEach((to, from, next) => {
   const userRole = getUserRole()
 
-  // Check if the route requires authentication
   if (to.meta.requiresAuth) {
     if (!userRole) {
-      return next({ name: 'login' }) // Redirect to login if not logged in
+      return next({ name: 'login' })
     }
 
-    // Check if the user has the correct role
     if (to.meta.role && to.meta.role !== userRole) {
-      return next({ name: '404' }) // Redirect to 404 if unauthorized
+      return next({ name: '404' })
     }
   }
 
