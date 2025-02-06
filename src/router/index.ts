@@ -99,6 +99,14 @@ const routes = [
         path: 'proponent-user-account',
         component: () => import('../pages/proponents/user-account/ProponentUserAccountPage.vue'),
       },
+      {
+        name: 'proponent-create-document-for-evaluation',
+        path: 'proponent-create-document-for-evaluation',
+        component: () =>
+          import(
+            '../pages/proponents/manage-proponent-request/create-document-for-evaluation/ProponentCreateDocumentForEvaluation.vue'
+          ),
+      },
     ],
   },
 

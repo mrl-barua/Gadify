@@ -81,7 +81,7 @@ export default {
     },
     {
       name: 'proponent-user-account',
-      displayName: 'menu.certificate',
+      displayName: 'menu.userAccount',
       meta: {
         icon: 'vuestic-iconset-files',
       },

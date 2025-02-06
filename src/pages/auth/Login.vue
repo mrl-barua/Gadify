@@ -66,53 +66,61 @@ const formData = reactive({
 
 const submit = async () => {
   if (validate()) {
-    isLoading.value = true // Start loading
-    await sleep(3000) // Simulate loading
+    isLoading.value = true
 
-    if (loginValue.value === 'Proponent') {
-      try {
-        localStorage.setItem('userRole', 'proponent')
-        init({ message: 'Login successful', color: 'success' })
-        push({ name: 'proponent-request' })
-      } finally {
-        isLoading.value = false
-      }
-    } else if (loginValue.value === 'Evaluator') {
-      try {
-        localStorage.setItem('userRole', 'evaluator')
-        init({ message: 'Login successful', color: 'success' })
-        push({ name: 'evaluation' })
-      } finally {
-        isLoading.value = false
-      }
-    } else if (loginValue.value === 'Admin') {
-      try {
-        const response = await adminLoginApiService.login(formData.email, formData.password)
-        const data = response.data
-        console.log(data.token)
-
-        init({ message: response.data.message || 'Login successful', color: 'success' })
-
-        localStorage.setItem('userRole', 'admin')
-        const token = response.data.token
-        jwtStore.setToken(token)
-        if (formData.keepLoggedIn) {
-          localStorage.setItem('token', token)
-        } else {
-          sessionStorage.setItem('token', token)
+    try {
+      if (loginValue.value === 'Proponent') {
+        try {
+          localStorage.setItem('userRole', 'proponent')
+          init({ message: 'Login successful', color: 'success' })
+          push({ name: 'proponent-request' })
+        } finally {
+          isLoading.value = false
         }
+      } else if (loginValue.value === 'Evaluator') {
+        try {
+          localStorage.setItem('userRole', 'evaluator')
+          init({ message: 'Login successful', color: 'success' })
+          push({ name: 'evaluation' })
+        } finally {
+          isLoading.value = false
+        }
+      } else if (loginValue.value === 'Admin') {
+        try {
+          const response = await adminLoginApiService.login(formData.email, formData.password)
+          const data = response.data
+          console.log(data.token)
 
-        push({ name: 'proponents' })
-      } catch (error: any) {
-        init({
-          message: error.response?.data?.message || 'Login failed. Please try again.',
-          color: 'danger',
-        })
-      } finally {
-        isLoading.value = false // Stop loading after request completes
+          init({ message: response.data.message || 'Login successful', color: 'success' })
+
+          localStorage.setItem('userRole', 'admin')
+          const token = response.data.token
+          jwtStore.setToken(token)
+          if (formData.keepLoggedIn) {
+            localStorage.setItem('token', token)
+          } else {
+            sessionStorage.setItem('token', token)
+          }
+
+          push({ name: 'proponents' })
+        } catch (error: any) {
+          init({
+            message: error.response?.data?.message || 'Login failed. Please try again.',
+            color: 'danger',
+          })
+        } finally {
+          isLoading.value = false
+        }
+      } else {
+        alert('')
       }
-    } else {
-      alert('')
+    } catch (error: any) {
+      init({
+        message: error.response?.data?.message || 'Login failed. Please try again.',
+        color: 'danger',
+      })
+    } finally {
+      isLoading.value = false
     }
   }
 }
