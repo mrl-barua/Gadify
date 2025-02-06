@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { useJwtStore } from '../stores/jwtHandler'
 import { mailRepository } from './mailRepository'
+import { get } from 'http'
 
 const BASE_URL = 'http://localhost:3000'
 
@@ -35,6 +36,25 @@ export const submissionRepository = {
       const response = await apiClient.post(
         '/api/submissionById',
         { Id: id }, // JSON body
+        {
+          headers: {
+            Authorization: `Bearer ${jwtStore.getToken}`,
+          },
+        },
+      )
+      console.log('Data:', response.data)
+      return response.data
+    } catch (error) {
+      console.error('Error:', error)
+      throw error
+    }
+  },
+
+  getSubmissionByUserId: async (userId: number) => {
+    try {
+      const response = await apiClient.post(
+        '/api/submissionByProponentId',
+        { proponentId: userId },
         {
           headers: {
             Authorization: `Bearer ${jwtStore.getToken}`,

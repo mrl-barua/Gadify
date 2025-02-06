@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { jwtDecode } from 'jwt-decode'
+import { get } from 'http'
 
 interface DecodedToken {
   [key: string]: any // Replace with the exact structure of your token if known
@@ -23,6 +24,10 @@ export const useJwtStore = defineStore('jwt', {
       this.token = token
       this.decodedToken = jwtDecode<DecodedToken>(token)
       localStorage.setItem('token', token) // Save token to localStorage
+    },
+    getLoggedInUserId() {
+      const mockUserId = 1
+      return mockUserId
     },
     logout() {
       console.log('Logging out')

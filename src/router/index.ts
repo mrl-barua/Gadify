@@ -31,22 +31,22 @@ const routes = [
       {
         name: 'proponents',
         path: 'proponents',
-        component: () => import('../pages/admin/proponents/ProponentsPage.vue'),
+        component: () => import('../pages/admin/proponents/AdminProponentsPage.vue'),
       },
       {
         name: 'manage-requests',
         path: 'manage-requests',
-        component: () => import('../pages/admin/manage-request/ManageRequestPage.vue'),
+        component: () => import('../pages/admin/manage-request/AdminManageRequestPage.vue'),
       },
       {
         name: 'certificates',
         path: 'certificates',
-        component: () => import('../pages/admin/certificate/CertificatePage.vue'),
+        component: () => import('../pages/admin/certificate/AdminCertificatePage.vue'),
       },
       {
         name: 'department',
         path: 'department',
-        component: () => import('../pages/admin/department/DepartmentPage.vue'),
+        component: () => import('../pages/admin/department/AdminDepartmentPage.vue'),
       },
       {
         name: 'user-account',
