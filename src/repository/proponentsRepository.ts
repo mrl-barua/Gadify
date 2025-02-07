@@ -30,19 +30,24 @@ export const proponentsRepository = {
     }
   },
 
-  getProponentById: async (id: string) => {
+  getProponentById: async (id: number) => {
     try {
-      const response = await apiClient.get(`/api/proponents/${id}`, {
-        headers: {
-          Authorization: `Bearer ${jwtStore.getToken}`,
+      const response = await apiClient.post(
+        `/api/getProponentById`,
+        { id } ,
+        {
+          headers: {
+            Authorization: `Bearer ${jwtStore.getToken}`,
+          },
         },
-      })
+      )
       return response.data
     } catch (error) {
       console.error('Error:', error)
       throw error
     }
   },
+
   createProponent: async (proponentData: any) => {
     try {
       const response = await apiClient.post('/api/proponents', proponentData, {
