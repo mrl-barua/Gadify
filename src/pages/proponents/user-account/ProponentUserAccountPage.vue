@@ -6,12 +6,13 @@
         <!-- Left Column -->
         <div class="w-full md:w-1/2 px-2 mb-4">
           <template v-if="isLoading">
-            <VaSkeleton height="40px" class="mb-4" v-for="n in 3" :key="n" />
+            <VaSkeleton height="40px" class="mb-4" v-for="n in 4" :key="n" />
           </template>
           <template v-else>
-            <VaInput v-model="form.proponentId" label="Proponent Id" class="mb-4" />
+            <VaInput v-model="form.proponentId" label="Proponent Id" disabled class="mb-4" />
             <VaInput v-model="form.proponentType" label="Proponent Type" disabled class="mb-4" />
             <VaInput v-model="form.proponentStatus" label="Proponent Status" disabled class="mb-4" />
+            <VaInput v-model="form.department" label="Department" disabled class="mb-4" />
           </template>
         </div>
 
@@ -50,21 +51,24 @@
 <script setup lang="ts">
 import { reactive, onMounted, ref, watch } from 'vue'
 import { proponentsRepository } from '../../../repository/proponentsRepository'
+import { useToast } from 'vuestic-ui'
+
+const { init } = useToast() // Correct use of useToast
 
 const form = reactive({
   proponentId: '',
   proponentType: '',
   proponentStatus: '',
+  department: '',
   fullName: '',
   userName: '',
   email: '',
 })
 
-const isDisabled = ref(true) // Disable the button initially
-const isLoading = ref(true)
-const updateConfirmation = ref(false) // Controls modal visibility
+const isDisabled = ref(false)
+const isLoading = ref(false)
+const updateConfirmation = ref(false)
 
-// Watch for changes in form to enable the update button
 watch(
   () => ({ ...form }),
   () => {
@@ -73,36 +77,59 @@ watch(
   { deep: true },
 )
 
-// Show confirmation modal before submitting
 const showUpdateConfirmation = () => {
   updateConfirmation.value = true
 }
 
-// Handle form submission
-const handleSubmit = () => {
-  alert('Form updated successfully!')
-  updateConfirmation.value = false // Close modal after submission
-  isDisabled.value = true // Disable button after update
+const handleSubmit = async () => {
+  try {
+    await updateCurrentlyLoggedInUserData() // Await the API update
+    init({ message: 'Account Updated Successfully', color: 'success' })
+  } catch (error) {
+    console.error('Failed to update user data:', error)
+    init({ message: 'Failed to update account', color: 'danger' })
+  } finally {
+    updateConfirmation.value = false
+    isDisabled.value = true
+  }
 }
 
 const loadCurrentlyLoggedinUser = async () => {
   try {
     const data = await proponentsRepository.getProponentById(1)
 
-    // Correctly update the reactive object
     Object.assign(form, {
       proponentId: data.proponentId,
       proponentType: data.proponentType,
       proponentStatus: data.proponentStatus,
+      department: data.department?.departmentName || '',
       fullName: data.fullName,
       userName: data.userName,
       email: data.email,
     })
 
-    isLoading.value = false // Hide skeleton once data is loaded
+    isLoading.value = false
   } catch (error) {
     console.error('Failed to load user data:', error)
-    isLoading.value = false // Hide skeleton even if there’s an error
+    isLoading.value = false
+  }
+}
+
+const updateCurrentlyLoggedInUserData = async () => {
+  try {
+    const data = await proponentsRepository.getProponentById(1)
+    await proponentsRepository.updateProponent(
+      data.id,
+      data.departmentId,
+      form.proponentType,
+      form.proponentStatus,
+      form.fullName,
+      form.userName,
+      form.email,
+    )
+  } catch (error) {
+    console.error('Failed to update user data:', error)
+    throw error
   }
 }
 

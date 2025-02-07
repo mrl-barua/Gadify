@@ -34,7 +34,7 @@ export const proponentsRepository = {
     try {
       const response = await apiClient.post(
         `/api/getProponentById`,
-        { id } ,
+        { id },
         {
           headers: {
             Authorization: `Bearer ${jwtStore.getToken}`,
@@ -61,13 +61,34 @@ export const proponentsRepository = {
       throw error
     }
   },
-  updateProponent: async (id: string, proponentData: any) => {
+
+  updateProponent: async (
+    id: number,
+    departmentId: number,
+    proponentType: string,
+    proponentStatus: string,
+    fullName: string,
+    userName: string,
+    email: string,
+  ) => {
     try {
-      const response = await apiClient.put(`/api/proponents/${id}`, proponentData, {
-        headers: {
-          Authorization: `Bearer ${jwtStore.getToken}`,
+      const response = await apiClient.put(
+        `/api/updateProponents`,
+        {
+          id: id,
+          departmentId: departmentId,
+          proponentType: proponentType,
+          proponentStatus: proponentStatus,
+          fullName: fullName,
+          userName: userName,
+          email: email,
         },
-      })
+        {
+          headers: {
+            Authorization: `Bearer ${jwtStore.getToken}`,
+          },
+        },
+      )
       return response.data
     } catch (error) {
       console.error('Error:', error)
