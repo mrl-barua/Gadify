@@ -1,5 +1,8 @@
 <template>
   <h1 class="page-title">User Account</h1>
+  <div class="flex justify-center mb-8">
+    <VaAvatar class="mr-6" size="10rem"> M </VaAvatar>
+  </div>
   <div class="flex justify-center -mb-4">
     <VaForm ref="formRef" class="flex flex-col items-baseline gap-6" @submit.prevent="showUpdateConfirmation">
       <div class="flex flex-wrap justify-center -mx-2">
@@ -9,7 +12,7 @@
             <VaSkeleton height="40px" class="mb-4" v-for="n in 4" :key="n" />
           </template>
           <template v-else>
-            <VaInput v-model="form.proponentId" label="Proponent Id" disabled class="mb-4" />
+          <VaInput v-model="form.proponentId" label="Proponent Id" disabled class="mb-4" />
             <VaInput v-model="form.proponentType" label="Proponent Type" disabled class="mb-4" />
             <VaInput v-model="form.proponentStatus" label="Proponent Status" disabled class="mb-4" />
             <VaInput v-model="form.department" label="Department" disabled class="mb-4" />
