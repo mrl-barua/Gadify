@@ -41,7 +41,7 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useForm, useToast } from 'vuestic-ui'
 import { sleep, validators } from '../../services/utils'
@@ -53,6 +53,13 @@ const { push } = useRouter()
 const { init } = useToast()
 const isLoading = ref(false)
 const jwtStore = useJwtStore()
+
+const removeLocalAndSessionStorage = () => {
+  localStorage.removeItem('token')
+  localStorage.removeItem('userRole')
+  sessionStorage.removeItem('token')
+  sessionStorage.removeItem('userRole')
+}
 
 const loginOptions = ref(['Proponent', 'Evaluator', 'Admin'])
 
@@ -124,4 +131,8 @@ const submit = async () => {
     }
   }
 }
+
+onMounted(() => {
+  removeLocalAndSessionStorage()
+})
 </script>
