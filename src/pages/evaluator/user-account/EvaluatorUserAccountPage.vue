@@ -9,7 +9,7 @@
         <!-- Left Column -->
         <div class="w-full md:w-1/2 px-2 mb-4">
           <template v-if="isLoading">
-            <VaSkeleton height="40px" class="mb-4" v-for="n in 4" :key="n" />
+            <VaSkeleton v-for="n in 4" :key="n" height="40px" class="mb-4" />
           </template>
           <template v-else>
             <VaInput v-model="form.proponentId" label="Proponent Id" disabled class="mb-4" />
@@ -22,7 +22,7 @@
         <!-- Right Column -->
         <div class="w-full md:w-1/2 px-2 mb-4">
           <template v-if="isLoading">
-            <VaSkeleton height="40px" class="mb-4" v-for="n in 3" :key="n" />
+            <VaSkeleton v-for="n in 3" :key="n" height="40px" class="mb-4" />
           </template>
           <template v-else>
             <VaInput v-model="form.fullName" label="Full Name" class="mb-4" />

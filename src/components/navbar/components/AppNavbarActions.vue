@@ -1,13 +1,11 @@
 <template>
   <div class="app-navbar-actions">
-    <!-- <NotificationDropdown class="app-navbar-actions__item" /> -->
-    <ProfileDropdown class="app-navbar-actions__item app-navbar-actions__item--profile mr-1" />
+    <NotificationDropdown class="app-navbar-actions__item" />
   </div>
 </template>
 
 <script lang="ts" setup>
-import ProfileDropdown from './dropdowns/ProfileDropdown.vue'
-import NotificationDropdown from './dropdowns/NotificationDropdown.vue'
+import NotificationDropdown from './dropdowns/ProfileDropdown.vue'
 
 defineProps({
   isMobile: { type: Boolean, default: false },
