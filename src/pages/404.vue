@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import VuesticLogo from '../components/VuesticLogo.vue'
+import VuesticLogo from '../components/GadifyLogo.vue'
 import NotFoundImage from '../components/NotFoundImage.vue'
 </script>
 
