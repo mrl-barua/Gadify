@@ -3,11 +3,15 @@
     <template #left>
       <RouterLink
         class="bg-primary h-full flex items-center justify-center"
-        style="width: 35vw"
+        style="width: 45vw"
         to="/"
         aria-label="Visit homepage"
       >
-        <VuesticLogo :height="28" start="#FFF" />
+        <VaImage
+          fit="contain"
+          class="w-full max-w-[500px] md:max-w-[300px] lg:max-w-[400px]"
+          src="/public/login_image_3.png"
+        />
       </RouterLink>
     </template>
     <template #content>
