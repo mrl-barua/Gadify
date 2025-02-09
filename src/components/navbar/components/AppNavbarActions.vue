@@ -1,5 +1,6 @@
 <template>
   <div class="app-navbar-actions">
+    <span class="app-navbar-actions__item app-navbar-actions__greeting">Hello, {{ name }}</span>
     <ProfileDropdown class="app-navbar-actions__item" />
   </div>
 </template>
@@ -11,8 +12,11 @@ defineProps({
   isMobile: { type: Boolean, default: false },
 })
 
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
+
+const name = ref('Marlo') // Replace 'Name' with the dynamic value you want
 </script>
 
 <style lang="scss">
@@ -51,6 +55,13 @@ const { t } = useI18n()
         margin-left: 0;
       }
     }
+  }
+
+  &__greeting {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: var(--va-primary);
+    margin-right: 0.5rem;
   }
 
   .fa-github {

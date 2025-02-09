@@ -10,7 +10,11 @@
     <VaDropdownContent class="h-full sm:max-w-[420px] sm:h-auto">
       <section class="sm:max-h-[320px] p-4 overflow-auto">
         <VaButton preset="primary" class="w-full mb-2" @click="proceedToUserAccount">{{ t('User Account') }}</VaButton>
-        <VaButton preset="primary" class="w-full" @click="logout">{{ t('Logout') }}</VaButton>
+        <VaButton preset="primary" class="w-full mb-2" @click="logout">{{ t('Logout') }}</VaButton>
+        <div class="flex items-center justify-center gap-3 mt-2">
+          <span>Dark mode:</span>
+          <VaSwitch v-model="switchValue" true-value="dark" false-value="light" size="small" />
+        </div>
       </section>
     </VaDropdownContent>
   </VaDropdown>
@@ -22,6 +26,19 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 const { push } = useRouter()
 const { t } = useI18n()
+import { computed } from 'vue'
+import { useColors } from 'vuestic-ui'
+
+const { applyPreset, currentPresetName } = useColors()
+
+const switchValue = computed({
+  get() {
+    return currentPresetName.value
+  },
+  set(value) {
+    applyPreset(value)
+  },
+})
 
 const proceedToUserAccount = () => {
   if (localStorage.getItem('userRole') === 'proponent') push({ name: 'proponent-user-account' })
