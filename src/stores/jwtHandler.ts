@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
 import { jwtDecode } from 'jwt-decode'
-import { get } from 'http'
 
 interface DecodedToken {
   [key: string]: any // Replace with the exact structure of your token if known

@@ -13,8 +13,8 @@ defineProps({
 })
 
 import { ref } from 'vue'
-import { useI18n } from 'vue-i18n'
-const { t } = useI18n()
+// import { useI18n } from 'vue-i18n'
+// const { t } = useI18n()
 
 const name = ref('Marlo') // Replace 'Name' with the dynamic value you want
 </script>

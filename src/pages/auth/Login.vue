@@ -44,7 +44,7 @@
 import { reactive, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useForm, useToast } from 'vuestic-ui'
-import { sleep, validators } from '../../services/utils'
+import { validators } from '../../services/utils'
 import { adminLoginApiService } from '../../repository/authenticationRepository'
 import { useJwtStore } from '../../stores/jwtHandler'
 

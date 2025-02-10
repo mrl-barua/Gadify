@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { useJwtStore } from '../stores/jwtHandler'
-import { mailRepository } from './mailRepository'
-import { get } from 'http'
+// import { mailRepository } from './mailRepository'
+// import { get } from 'http'
 
 const BASE_URL = 'http://localhost:3000'
 
