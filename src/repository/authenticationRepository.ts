@@ -13,7 +13,6 @@ const apiClient = axios.create({
 export const adminLoginApiService = {
   async login(email: string, password: string) {
     try {
-      alert(BASE_URL)
       const response = await apiClient.post('/api/login/admin', { email, password })
       if (response.data?.token) {
         const jwtStore = useJwtStore() // Access the store
