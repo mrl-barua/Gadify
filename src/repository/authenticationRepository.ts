@@ -2,7 +2,6 @@ import axios from 'axios'
 import { useJwtStore } from '../../src/stores/jwtHandler'
 
 const BASE_URL = import.meta.env.VITE_API_URL
-alert(BASE_URL)
 
 const apiClient = axios.create({
   baseURL: BASE_URL,
@@ -14,6 +13,7 @@ const apiClient = axios.create({
 export const adminLoginApiService = {
   async login(email: string, password: string) {
     try {
+      alert(BASE_URL)
       const response = await apiClient.post('/api/login/admin', { email, password })
       if (response.data?.token) {
         const jwtStore = useJwtStore() // Access the store
