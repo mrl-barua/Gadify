@@ -117,12 +117,12 @@
           <div class="w-full md:w-1/2 px-2 mb-4">
             <h3 class="text-lg font-semibold mb-2">Main Information</h3>
             <p class="mb-1"><span class="font-medium">Document No:</span> {{ editedSubmission.submissionId }}</p>
-            <p class="mb-1"><span class="font-medium">Date Needed:</span> {{ editedSubmission.date }}</p>
+            <p class="mb-1"><span class="font-medium">Date Created:</span> {{ editedSubmission.date }}</p>
           </div>
           <div class="w-full md:w-1/2 px-2 mb-4">
             <h3 class="text-lg font-semibold mb-2">Other Information</h3>
             <p class="mb-1"><span class="font-medium">Project Proposal:</span> {{ editedSubmission.proposal }}</p>
-            <p class="mb-1"><span class="font-medium">Date Needed:</span> {{ editedSubmission.date }}</p>
+
             <p class="mb-1"><span class="font-medium">Project Description:</span> {{ editedSubmission.description }}</p>
             <p class="mb-1"><span class="font-medium">File Type:</span> {{ editedSubmission.fileType }}</p>
           </div>
@@ -132,78 +132,35 @@
           <div class="flex flex-col md:flex-row gap-2 mb-2 justify-between">
             <div class="flex flex-col md:flex-row gap-2 justify-start">
               <VaButtonToggle
-                v-model="currentTable"
+                v-model="modalTable"
                 color="background-element"
                 border-color="background-element"
                 :options="[
-                  { label: 'Attachments', value: 'onHold' },
-                  { label: 'Receving Division', value: 'evaluation' },
+                  { label: 'Attachments', value: 'attachments' },
+                  { label: 'Receiving Division', value: 'receivingDivision' },
                 ]"
               />
             </div>
           </div>
-
-          <VaDataTable
-            v-if="currentTable === 'onHold'"
-            class="table-crud"
-            :items="onHoldSubmissions"
-            :columns="columns"
-            striped
-          >
-            <template #cell(actions)>
-              <VaButton
-                preset="plain"
-                icon="view_timeline"
-                @click="showSentDocumentForEvaluationModal(onHoldSubmissions[rowIndex])"
-              />
-              <VaButton
-                preset="plain"
-                icon="clear_all"
-                color="danger"
-                class="ml-3"
-                @click="documentRoutingLogModal = !documentRoutingLogModal"
-              />
-            </template>
-          </VaDataTable>
-
-          <VaDataTable
-            v-if="currentTable === 'evaluation'"
-            class="table-crud"
-            :items="evaluationSubmissions"
-            :columns="columns"
-            striped
-          >
-            <template #cell(actions)="{ rowIndex }">
-              <VaButton
-                preset="plain"
-                icon="view_timeline"
-                @click="showSentDocumentForEvaluationModal(onHoldSubmissions[rowIndex])"
-              />
-              <VaButton
-                preset="plain"
-                icon="clear_all"
-                color="danger"
-                class="ml-3"
-                @click="documentRoutingLogModal = !documentRoutingLogModal"
-              />
-            </template>
-          </VaDataTable>
-
-          <template #cell(actions)="{ rowIndex }">
-            <VaButton
-              preset="plain"
-              icon="view_timeline"
-              @click="showSentDocumentForEvaluationModal(onHoldSubmissions[rowIndex])"
-            />
-            <VaButton
-              preset="plain"
-              icon="clear_all"
-              color="danger"
-              class="ml-3"
-              @click="documentRoutingLogModal = !documentRoutingLogModal"
-            />
-          </template>
         </VaCardContent>
+
+        <div v-if="modalTable === 'attachments'">
+          <VaCard>
+            <VaCardContent>
+              <!-- Content for Attachments -->
+              <p>No attachments available.</p>
+            </VaCardContent>
+          </VaCard>
+        </div>
+
+        <div v-if="modalTable === 'receivingDivision'">
+          <VaCard>
+            <VaCardContent>
+              <!-- Content for Receiving Division -->
+              <p>No receiving division information available.</p>
+            </VaCardContent>
+          </VaCard>
+        </div>
       </VaModal>
 
       <VaModal v-model="documentRoutingLogModal" size="large">
@@ -283,6 +240,7 @@ export default defineComponent({
       editedSubmission: null,
       createdSubmission: { ...defaultSubmission },
       currentTable: 'onHold',
+      modalTable: 'attachments',
       onHoldSubmissions: [],
       evaluationSubmissions: [],
       completedSubmissions: [],
