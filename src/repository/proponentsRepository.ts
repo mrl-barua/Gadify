@@ -2,8 +2,10 @@ import axios from 'axios'
 import { useJwtStore } from '../stores/jwtHandler'
 import { mailRepository } from './mailRepository'
 
-const BASE_URL = 'http://localhost:3000'
+const BASE_URL = import.meta.env.VITE_API_URL
+console.log('API URL:', BASE_URL)
 
+console.log('BASE_URL:', BASE_URL)
 // Create Axios instance
 const apiClient = axios.create({
   baseURL: BASE_URL,
