@@ -70,4 +70,23 @@ export const submissionRepository = {
       throw error
     }
   },
+  getSubmissionFiles: async (link: string, fileType: string) => {
+    try {
+      if (fileType === 'File') {
+        await apiClient.get('api/submissions', {
+          headers: {
+            Authorization: `Bearer ${jwtStore.getToken}`,
+          },
+        })
+      } else if (fileType === 'Link') {
+        window.open(link, '_blank')
+        return
+      }
+
+      alert(link + ' ' + fileType)
+    } catch (error) {
+      console.error('Error:', error)
+      throw error
+    }
+  },
 }

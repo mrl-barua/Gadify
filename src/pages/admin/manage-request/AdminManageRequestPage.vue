@@ -147,8 +147,20 @@
         <div v-if="modalTable === 'attachments'">
           <VaCard>
             <VaCardContent>
-              <!-- Content for Attachments -->
-              <p>No attachments available.</p>
+              <VaSidebarItem
+                :active="isActive"
+                active-color="#C0C0C0"
+                @click="downloadSubmission(editedSubmission.resourcesLink, editedSubmission.fileType)"
+              >
+                <VaSidebarItemContent class="hover-always">
+                  <VaSidebarItemTitle>
+                    {{ editedSubmission.proposal }}
+                  </VaSidebarItemTitle>
+                  <VaSidebarItemSubtitle>
+                    {{ editedSubmission.description }}
+                  </VaSidebarItemSubtitle>
+                </VaSidebarItemContent>
+              </VaSidebarItem>
             </VaCardContent>
           </VaCard>
         </div>
@@ -259,12 +271,20 @@ export default defineComponent({
   },
 
   methods: {
+    async downloadSubmission(link, fileType) {
+      try {
+        const data = await submissionRepository.getSubmissionFiles(link, fileType)
+        console.log('Downloaded submission:', data)
+      } catch (error) {
+        console.error('Failed to download submission:', error)
+      }
+    },
+
     showSentDocumentForEvaluationModal(item) {
       if (item) {
         this.selectedRowIndex = this.submissions.findIndex((submission) => submission.id === item.id)
         this.editedSubmission = item
         this.sentDocumentForEvaluationModal = true
-        alert(`Submission ID: ${item.id}`)
 
         // Ensure data is declared properly
         this.loadSubmissionById(item.id)
@@ -282,6 +302,7 @@ export default defineComponent({
           proposal: data.proposalTitle,
           description: data.proposalDescription,
           fileType: data.fileType,
+          resourcesLink: data.resourcesLink,
         }
         this.sentDocumentForEvaluationModal = true
       } catch (error) {

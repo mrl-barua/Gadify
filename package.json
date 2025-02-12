@@ -4,7 +4,7 @@
   "version": "3.1.0",
   "scripts": {
     "prepare": "husky install",
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "npm run lint && vue-tsc --noEmit && vite build",
     "build:ci": "vite build",
     "start:ci": "serve -s ./dist",
