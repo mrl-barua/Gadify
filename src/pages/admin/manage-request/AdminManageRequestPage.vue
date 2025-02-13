@@ -25,6 +25,7 @@
         :items="onHoldSubmissions"
         :columns="columns"
         striped
+        :loading="isLoading"
       >
         <template #cell(actions)="{ rowIndex }">
           <VaButton
@@ -48,6 +49,7 @@
         :items="evaluationSubmissions"
         :columns="columns"
         striped
+        :loading="isLoading"
       >
         <template #cell(actions)="{ rowIndex }">
           <VaButton
@@ -71,6 +73,7 @@
         :items="completedSubmissions"
         :columns="columns"
         striped
+        :loading="isLoading"
       >
         <template #cell(actions)="{ rowIndex }">
           <VaButton
@@ -94,6 +97,7 @@
         :items="forCorrectionSubmissions"
         :columns="columns"
         striped
+        :loading="isLoading"
       >
         <template #cell(actions)="{ rowIndex }">
           <VaButton
@@ -175,11 +179,26 @@
             <VaCardContent>
               <VaSelect
                 v-model="EvaluatorsValue"
-                placeholder="Colored"
-                label="Login As"
-                :options="EvaluatorList"
+                placeholder=""
+                label="Select Evaluator"
+                :options="EvaluatorOptions"
                 outer-label
-              />
+                selected-top-shown
+                multiple
+              >
+                <template #content="{ value }">
+                  <VaChip
+                    v-for="v in value"
+                    :key="v"
+                    class="mr-2"
+                    size="small"
+                    closeable
+                    @update:model-value="deleteChip(v)"
+                  >
+                    {{ v }}
+                  </VaChip>
+                </template>
+              </VaSelect>
             </VaCardContent>
           </VaCard>
         </div>
@@ -279,8 +298,9 @@ export default defineComponent({
       evaluationSubmissions: [],
       completedSubmissions: [],
       forCorrectionSubmissions: [],
-      EvaluatorsValue: '',
-      EvaluatorList: [],
+      EvaluatorsValue: [],
+      EvaluatorOptions: [],
+      isLoading: true,
     }
   },
 
@@ -295,10 +315,14 @@ export default defineComponent({
   },
 
   methods: {
+    deleteChip(chip) {
+      this.EvaluatorsValue = this.EvaluatorsValue.filter((v) => v !== chip)
+    },
+
     async getEvaluators() {
       try {
         const data = await evaluatorsRepository.getEvaluators()
-        this.EvaluatorList = data.map((evaluator) => evaluator.fullName) // Extracts all names
+        this.EvaluatorOptions = data.map((evaluator) => evaluator.fullName) // Extracts all names
       } catch (error) {
         console.error('Failed to load evaluators:', error)
       }
@@ -349,6 +373,7 @@ export default defineComponent({
     },
 
     async loadSubmissions() {
+      this.isLoading = true
       try {
         const data = await submissionRepository.getSubmissions()
         this.submissions = data
@@ -359,6 +384,8 @@ export default defineComponent({
         this.forCorrectionSubmissions = data.filter((submission) => submission.submissionStatus === 'ForCorrection')
       } catch (error) {
         console.error('Failed to load submissions:', error)
+      } finally {
+        this.isLoading = false
       }
     },
 
