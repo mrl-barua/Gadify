@@ -170,11 +170,16 @@
           </VaCard>
         </div>
 
-        <div v-if="modalTable === 'receivingDivision'">
+        <div v-if="modalTable === 'receivingDivision'" @click="getEvaluators()">
           <VaCard>
             <VaCardContent>
-              <!-- Content for Receiving Division -->
-              <p>No receiving division information available.</p>
+              <VaSelect
+                v-model="EvaluatorsValue"
+                placeholder="Colored"
+                label="Login As"
+                :options="EvaluatorList"
+                outer-label
+              />
             </VaCardContent>
           </VaCard>
         </div>
@@ -218,6 +223,7 @@
 <script>
 import { defineComponent } from 'vue'
 import { submissionRepository } from '../../../repository/submissionRepository'
+import { evaluatorsRepository } from '../../../repository/evaluatorRepository'
 
 const defaultSubmission = {
   fileType: '',
@@ -273,6 +279,8 @@ export default defineComponent({
       evaluationSubmissions: [],
       completedSubmissions: [],
       forCorrectionSubmissions: [],
+      EvaluatorsValue: '',
+      EvaluatorList: [],
     }
   },
 
@@ -287,6 +295,15 @@ export default defineComponent({
   },
 
   methods: {
+    async getEvaluators() {
+      try {
+        const data = await evaluatorsRepository.getEvaluators()
+        this.EvaluatorList = data.map((evaluator) => evaluator.fullName) // Extracts all names
+      } catch (error) {
+        console.error('Failed to load evaluators:', error)
+      }
+    },
+
     async downloadSubmission(link, fileType) {
       try {
         const data = await submissionRepository.getSubmissionFiles(link, fileType)
@@ -315,7 +332,7 @@ export default defineComponent({
         this.editedSubmission = {
           id: data.id,
           submissionId: data.submissionId,
-          createdAt: data.createdAt,
+          createdAt: new Date(data.createdAt).toLocaleString(),
           proposalTitle: data.proposalTitle,
           proposalDescription: data.proposalDescription,
           fileType: data.fileType,
