@@ -74,7 +74,7 @@ export const submissionRepository = {
   getSubmissionFiles: async (link: string, fileType: string) => {
     try {
       if (fileType === 'File') {
-        const response = await apiClient.get('http://localhost:3000/api/file/Email-templates.pdf', {
+        const response = await apiClient.get(`http://localhost:3000/api/file/${link}`, {
           headers: {
             Authorization: `Bearer ${jwtStore.getToken}`,
           },
@@ -84,7 +84,7 @@ export const submissionRepository = {
         const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }))
         const a = document.createElement('a')
         a.href = url
-        a.download = 'Downloaded-File.pdf' // Set desired filename
+        a.download = 'Downloaded-File.pdf'
         document.body.appendChild(a)
         a.click()
         document.body.removeChild(a)
