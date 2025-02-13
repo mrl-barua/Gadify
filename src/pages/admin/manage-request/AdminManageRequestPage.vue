@@ -185,6 +185,7 @@
                 outer-label
                 selected-top-shown
                 multiple
+                :loading="isVaSelectLoading"
               >
                 <template #content="{ value }">
                   <VaChip
@@ -245,8 +246,12 @@ import { defineComponent } from 'vue'
 import { submissionRepository } from '../../../repository/submissionRepository'
 import { evaluatorsRepository } from '../../../repository/evaluatorRepository'
 import { useToast } from 'vuestic-ui'
+import { ref } from 'vue'
+import { sleep } from '../../../services/utils'
 
 const toast = useToast()
+
+const isVaSelectLoading = ref(false)
 
 const defaultSubmission = {
   fileType: '',
@@ -305,6 +310,7 @@ export default defineComponent({
       EvaluatorsValue: [],
       EvaluatorOptions: [],
       isLoading: true,
+      isVaSelectLoading,
     }
   },
 
@@ -349,11 +355,14 @@ export default defineComponent({
     },
 
     async getEvaluators() {
+      isVaSelectLoading.value = true
       try {
         const data = await evaluatorsRepository.getEvaluators()
         this.EvaluatorOptions = data.map((evaluator) => evaluator.fullName)
       } catch (error) {
         console.error('Failed to load evaluators:', error)
+      } finally {
+        isVaSelectLoading.value = false
       }
     },
 
