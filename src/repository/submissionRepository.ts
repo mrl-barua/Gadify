@@ -70,14 +70,25 @@ export const submissionRepository = {
       throw error
     }
   },
+
   getSubmissionFiles: async (link: string, fileType: string) => {
     try {
       if (fileType === 'File') {
-        await apiClient.get('api/submissions', {
+        const response = await apiClient.get('http://localhost:3000/api/file/Email-templates.pdf', {
           headers: {
             Authorization: `Bearer ${jwtStore.getToken}`,
           },
+          responseType: 'blob',
         })
+
+        const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }))
+        const a = document.createElement('a')
+        a.href = url
+        a.download = 'Downloaded-File.pdf' // Set desired filename
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        window.URL.revokeObjectURL(url)
       } else if (fileType === 'Link') {
         window.open(link, '_blank')
         return

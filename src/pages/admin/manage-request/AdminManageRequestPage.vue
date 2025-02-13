@@ -116,12 +116,12 @@
         <div class="flex flex-wrap -mx-2">
           <div class="w-full md:w-1/2 px-2 mb-4">
             <h3 class="text-lg font-semibold mb-2">Main Information</h3>
-            <p class="mb-1"><span class="font-medium">Document No:</span> {{ editedSubmission.submissionId }}</p>
-            <p class="mb-1"><span class="font-medium">Date Created:</span> {{ editedSubmission.date }}</p>
+            <p class="mb-1"><span class="font-medium">Document No:</span> {{ editedSubmission.id }}</p>
+            <p class="mb-1"><span class="font-medium">Date Created:</span> {{ editedSubmission.createdAt }}</p>
           </div>
           <div class="w-full md:w-1/2 px-2 mb-4">
             <h3 class="text-lg font-semibold mb-2">Other Information</h3>
-            <p class="mb-1"><span class="font-medium">Project Proposal:</span> {{ editedSubmission.proposal }}</p>
+            <p class="mb-1"><span class="font-medium">Project Proposal:</span> {{ editedSubmission.proposalTitle }}</p>
 
             <p class="mb-1"><span class="font-medium">Project Description:</span> {{ editedSubmission.description }}</p>
             <p class="mb-1"><span class="font-medium">File Type:</span> {{ editedSubmission.fileType }}</p>
@@ -153,12 +153,17 @@
                 @click="downloadSubmission(editedSubmission.resourcesLink, editedSubmission.fileType)"
               >
                 <VaSidebarItemContent class="hover-always">
-                  <VaSidebarItemTitle>
-                    {{ editedSubmission.proposal }}
-                  </VaSidebarItemTitle>
-                  <VaSidebarItemSubtitle>
-                    {{ editedSubmission.description }}
-                  </VaSidebarItemSubtitle>
+                  <VaIcon name="download" />
+                  <VaFlex vertical class="ml-2">
+                    <VaSidebarItemTitle>
+                      {{ editedSubmission.proposalTitle }}
+                    </VaSidebarItemTitle>
+
+                    <VaSidebarItemSubtitle>
+                      uploaded by: {{ editedSubmission.proponent.fullName }} uploaded on:
+                      {{ editedSubmission.createdAt }}
+                    </VaSidebarItemSubtitle>
+                  </VaFlex>
                 </VaSidebarItemContent>
               </VaSidebarItem>
             </VaCardContent>
@@ -248,8 +253,19 @@ export default defineComponent({
       sentDocumentForEvaluationModal: false,
       documentRoutingLogModal: false,
       selectedRowIndex: null,
-      editedSubmissionId: null,
-      editedSubmission: null,
+      editedSubmission: {
+        id: '',
+        submissionId: '',
+        createdAt: '',
+        proposalTitle: '',
+        proposalDescription: '',
+        fileType: '',
+        resourcesLink: '',
+        submissionStatus: '',
+        proponent: '',
+        evaluator: '',
+        remarks: '',
+      },
       createdSubmission: { ...defaultSubmission },
       currentTable: 'onHold',
       modalTable: 'attachments',
@@ -297,12 +313,17 @@ export default defineComponent({
       try {
         const data = await submissionRepository.getSubmissionById(Id)
         this.editedSubmission = {
+          id: data.id,
           submissionId: data.submissionId,
-          date: data.createdAt,
-          proposal: data.proposalTitle,
-          description: data.proposalDescription,
+          createdAt: data.createdAt,
+          proposalTitle: data.proposalTitle,
+          proposalDescription: data.proposalDescription,
           fileType: data.fileType,
           resourcesLink: data.resourcesLink,
+          submissionStatus: data.submissionStatus,
+          proponent: data.proponent,
+          evaluator: data.evaluator,
+          remarks: data.remarks,
         }
         this.sentDocumentForEvaluationModal = true
       } catch (error) {
