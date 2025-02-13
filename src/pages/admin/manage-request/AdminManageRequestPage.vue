@@ -199,6 +199,7 @@
                   </VaChip>
                 </template>
               </VaSelect>
+              <VaButton class="mt-4" @click="assignEvaluatorToSubmission()">Assign Evaluator</VaButton>
             </VaCardContent>
           </VaCard>
         </div>
@@ -243,6 +244,9 @@
 import { defineComponent } from 'vue'
 import { submissionRepository } from '../../../repository/submissionRepository'
 import { evaluatorsRepository } from '../../../repository/evaluatorRepository'
+import { useToast } from 'vuestic-ui'
+
+const toast = useToast()
 
 const defaultSubmission = {
   fileType: '',
@@ -319,10 +323,35 @@ export default defineComponent({
       this.EvaluatorsValue = this.EvaluatorsValue.filter((v) => v !== chip)
     },
 
+    async assignEvaluatorToSubmission() {
+      try {
+        alert(this.editedSubmission.id + ' ' + this.EvaluatorsValue)
+        const data = await submissionRepository.assignEvaluatorToSubmission(
+          this.editedSubmission.id,
+          this.EvaluatorsValue,
+        )
+
+        console.log('Assigned evaluator to submission:', data)
+        toast.init({
+          message: 'Evaluator assigned successfully',
+          color: 'success',
+        })
+      } catch (error) {
+        console.error('Failed to assign evaluator to submission:', error)
+        alert(error)
+        toast.init({
+          message: error.response?.data?.message || 'Failed to assign evaluator',
+          color: 'danger',
+        })
+      } finally {
+        this.EvaluatorsValue = []
+      }
+    },
+
     async getEvaluators() {
       try {
         const data = await evaluatorsRepository.getEvaluators()
-        this.EvaluatorOptions = data.map((evaluator) => evaluator.fullName) // Extracts all names
+        this.EvaluatorOptions = data.map((evaluator) => evaluator.fullName)
       } catch (error) {
         console.error('Failed to load evaluators:', error)
       }
