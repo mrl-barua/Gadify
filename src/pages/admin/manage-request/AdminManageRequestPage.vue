@@ -362,8 +362,8 @@ export default defineComponent({
       try {
         const data = await evaluatorsRepository.getEvaluators()
         this.EvaluatorOptions = data.map((evaluator) => ({
-          text: evaluator.fullName, // Full name for display
-          value: evaluator.id, // ID for storage
+          text: evaluator.fullName,
+          value: evaluator.id,
         }))
       } catch (error) {
         console.error('Failed to load evaluators:', error)
@@ -387,7 +387,6 @@ export default defineComponent({
         this.editedSubmission = item
         this.sentDocumentForEvaluationModal = true
 
-        // Ensure data is declared properly
         this.loadSubmissionById(item.id)
       } else {
         console.error('Item is undefined or null')
@@ -421,7 +420,6 @@ export default defineComponent({
       try {
         const data = await submissionRepository.getSubmissions()
         this.submissions = data
-        // Categorize submissions based on status using string comparison
         this.onHoldSubmissions = data.filter((submission) => submission.submissionStatus === 'OnHold')
         this.evaluationSubmissions = data.filter((submission) => submission.submissionStatus === 'Evaluation')
         this.completedSubmissions = data.filter((submission) => submission.submissionStatus === 'Completed')
