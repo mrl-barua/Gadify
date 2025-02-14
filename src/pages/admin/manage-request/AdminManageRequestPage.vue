@@ -197,7 +197,7 @@
                     class="mr-2"
                     size="small"
                     closeable
-                    @update:model-value="deleteChip(v)"
+                    @update:model-value="deleteChip(v.value)"
                   >
                     {{ v.text }}
                   </VaChip>
@@ -332,8 +332,8 @@ export default defineComponent({
   },
 
   methods: {
-    deleteChip(chip) {
-      this.EvaluatorsValue = this.EvaluatorsValue.filter((v) => v !== chip)
+    deleteChip(chipId) {
+      this.EvaluatorsValue = this.EvaluatorsValue.filter((v) => v !== chipId)
     },
 
     async assignEvaluatorToSubmission() {
