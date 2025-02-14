@@ -281,9 +281,7 @@ export default defineComponent({
       { key: 'submissionStatus', label: 'Proponent', sortable: true },
       { key: 'proponent.fullName', label: 'Department', sortable: true },
       { key: 'proposalTitle', label: 'Proposal Title', sortable: true },
-      // { key: 'resourcesLink', label: 'File Link', sortable: true },
       { key: 'submissionStatus', label: 'Status', sortable: true },
-
       { key: 'actions', label: 'Actions', width: 80 },
     ]
 
@@ -338,7 +336,6 @@ export default defineComponent({
 
     async assignEvaluatorToSubmission() {
       try {
-        alert(this.editedSubmission.id + ' ' + this.EvaluatorsValue)
         const data = await submissionRepository.assignEvaluatorToSubmission(
           this.editedSubmission.id,
           this.EvaluatorsValue,
@@ -351,7 +348,7 @@ export default defineComponent({
         })
       } catch (error) {
         console.error('Failed to assign evaluator to submission:', error)
-        alert(error)
+
         toast.init({
           message: error.response?.data?.message || 'Failed to assign evaluator',
           color: 'danger',
