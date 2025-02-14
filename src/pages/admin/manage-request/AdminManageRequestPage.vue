@@ -186,6 +186,9 @@
                 selected-top-shown
                 multiple
                 :loading="isVaSelectLoading"
+                track-by="value"
+                text-by="text"
+                value-by="value"
               >
                 <template #content="{ value }">
                   <VaChip
@@ -196,10 +199,11 @@
                     closeable
                     @update:model-value="deleteChip(v)"
                   >
-                    {{ v }}
+                    {{ v.text }}
                   </VaChip>
                 </template>
               </VaSelect>
+
               <VaButton class="mt-4" @click="assignEvaluatorToSubmission()">Assign Evaluator</VaButton>
             </VaCardContent>
           </VaCard>
@@ -247,7 +251,6 @@ import { submissionRepository } from '../../../repository/submissionRepository'
 import { evaluatorsRepository } from '../../../repository/evaluatorRepository'
 import { useToast } from 'vuestic-ui'
 import { ref } from 'vue'
-import { sleep } from '../../../services/utils'
 
 const toast = useToast()
 
@@ -358,7 +361,10 @@ export default defineComponent({
       isVaSelectLoading.value = true
       try {
         const data = await evaluatorsRepository.getEvaluators()
-        this.EvaluatorOptions = data.map((evaluator) => evaluator.fullName)
+        this.EvaluatorOptions = data.map((evaluator) => ({
+          text: evaluator.fullName, // Full name for display
+          value: evaluator.id, // ID for storage
+        }))
       } catch (error) {
         console.error('Failed to load evaluators:', error)
       } finally {
