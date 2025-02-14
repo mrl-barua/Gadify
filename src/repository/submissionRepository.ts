@@ -119,4 +119,23 @@ export const submissionRepository = {
       throw error
     }
   },
+
+  getSubmissionEvaluatorsById: async (submissionId: number) => {
+    try {
+      const response = await apiClient.post(
+        '/api/getEvaluators',
+        { submissionId: submissionId },
+        {
+          headers: {
+            Authorization: `Bearer ${jwtStore.getToken}`,
+          },
+        },
+      )
+      console.log('Data:', response.data)
+      return response.data
+    } catch (error) {
+      console.error('Error:', error)
+      throw error
+    }
+  },
 }

@@ -204,7 +204,10 @@
                 </template>
               </VaSelect>
 
-              <VaButton class="mt-4" @click="assignEvaluatorToSubmission()">Assign Evaluator</VaButton>
+              <VaButton class="mt-4 mb-2" @click="assignEvaluatorToSubmission()">Assign Evaluator</VaButton>
+
+              <h4 class="va-h6 mt-4">Assigned Evaluator</h4>
+              <VaDataTable :items="AssignedEvaluator"></VaDataTable>
             </VaCardContent>
           </VaCard>
         </div>
@@ -278,7 +281,7 @@ export default defineComponent({
       { key: 'submissionStatus', label: 'Proponent', sortable: true },
       { key: 'proponent.fullName', label: 'Department', sortable: true },
       { key: 'proposalTitle', label: 'Proposal Title', sortable: true },
-      { key: 'resourcesLink', label: 'File Link', sortable: true },
+      // { key: 'resourcesLink', label: 'File Link', sortable: true },
       { key: 'submissionStatus', label: 'Status', sortable: true },
 
       { key: 'actions', label: 'Actions', width: 80 },
@@ -312,6 +315,7 @@ export default defineComponent({
       forCorrectionSubmissions: [],
       EvaluatorsValue: [],
       EvaluatorOptions: [],
+      AssignedEvaluator: [],
       isLoading: true,
       isVaSelectLoading,
     }
@@ -357,9 +361,19 @@ export default defineComponent({
       }
     },
 
+    async getAssignedEvaluator() {
+      try {
+        const data = await submissionRepository.getSubmissionEvaluatorsById(this.editedSubmission.id)
+        this.AssignedEvaluator = data.evaluators.map((evaluator) => ({ fullName: evaluator.fullName }))
+      } catch (error) {
+        console.error('Failed to load assigned evaluator:', error)
+      }
+    },
+
     async getEvaluators() {
       isVaSelectLoading.value = true
       try {
+        this.getAssignedEvaluator()
         const data = await evaluatorsRepository.getEvaluators()
         this.EvaluatorOptions = data.map((evaluator) => ({
           text: evaluator.fullName,
