@@ -115,7 +115,7 @@
         </template>
       </VaDataTable>
 
-      <VaModal v-model="sentDocumentForEvaluationModal" size="large">
+      <VaModal hide-default-actions="true" v-model="sentDocumentForEvaluationModal" size="large">
         <h3 class="va-h3">Sent Document for Evaluation</h3>
         <div class="flex flex-wrap -mx-2">
           <div class="w-full md:w-1/2 px-2 mb-4">
@@ -180,45 +180,49 @@
         <div v-if="modalTable === 'receivingDivision'" @click="getEvaluators()">
           <VaCard>
             <VaCardContent>
-              <VaSelect
-                v-model="EvaluatorsValue"
-                placeholder=""
-                label="Select Evaluator"
-                :options="EvaluatorOptions"
-                outer-label
-                selected-top-shown
-                multiple
-                :loading="isVaSelectLoading"
-                track-by="value"
-                text-by="text"
-                value-by="value"
-              >
-                <template #content="{ value }">
-                  <VaChip
-                    v-for="v in value"
-                    :key="v"
-                    class="mr-2"
-                    size="small"
-                    closeable
-                    @update:model-value="deleteChip(v.value)"
+              <section>
+                <h4 class="va-h6">Currently Assigned Evaluator</h4>
+                <VaDataTable class="mb-3" :items="AssignedEvaluator"></VaDataTable>
+
+                <VaSelect
+                  v-model="EvaluatorsValue"
+                  placeholder=""
+                  label="Select Evaluator"
+                  :options="EvaluatorOptions"
+                  outer-label
+                  selected-top-shown
+                  multiple
+                  :loading="isVaSelectLoading"
+                  track-by="value"
+                  text-by="text"
+                  value-by="value"
+                >
+                  <template #content="{ value }">
+                    <VaChip
+                      v-for="v in value"
+                      :key="v"
+                      class="mr-2"
+                      size="small"
+                      closeable
+                      @update:model-value="deleteChip(v.value)"
+                    >
+                      {{ v.text }}
+                    </VaChip>
+                  </template>
+                </VaSelect>
+
+                <div class="flex justify-between">
+                  <VaButton
+                    :disabled="EvaluatorsValue.length === 0"
+                    class="mt-4 mb-2"
+                    @click="assignEvaluatorToSubmission()"
                   >
-                    {{ v.text }}
-                  </VaChip>
-                </template>
-              </VaSelect>
+                    Assign Evaluator
+                  </VaButton>
+                  <VaButton class="mt-4 mb-2" @click="processSubmission()">Process Submission</VaButton>
+                </div>
+              </section>
 
-              <VaButton
-                :disabled="EvaluatorsValue.length === 0"
-                class="mt-4 mb-2"
-                @click="assignEvaluatorToSubmission()"
-              >
-                Assign Evaluator
-              </VaButton>
-
-              <h4 class="va-h6 mt-4">Assigned Evaluator</h4>
-              <VaDataTable :items="AssignedEvaluator"></VaDataTable>
-
-              <VaButton class="mt-4 mb-2" @click="processSubmission()">Process</VaButton>
               <VaModal v-model="processSubmissionModal" size="small" hide-default-actions>
                 <h3 class="va-h3">Sent Document for Evaluation</h3>
                 <template>
