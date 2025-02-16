@@ -10,7 +10,7 @@
         <VaImage
           fit="contain"
           class="w-full max-w-[500px] md:max-w-[300px] lg:max-w-[400px]"
-          src="/public/login_image_3.png"
+          src="/login_image_3.png"
         />
       </RouterLink>
     </template>

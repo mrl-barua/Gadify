@@ -1,6 +1,9 @@
-<script setup lang="ts"></script>
-
 <template>
   <h1 class="page-title">Department</h1>
+  <VaCardContent>
+
+
+  </VaCardContent>
 </template>
-P
+
+<script setup lang="ts"></script>

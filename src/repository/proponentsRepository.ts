@@ -6,7 +6,7 @@ const BASE_URL = import.meta.env.VITE_API_URL
 console.log('API URL:', BASE_URL)
 
 console.log('BASE_URL:', BASE_URL)
-// Create Axios instance
+
 const apiClient = axios.create({
   baseURL: BASE_URL,
   headers: {
@@ -97,6 +97,7 @@ export const proponentsRepository = {
       throw error
     }
   },
+
   deleteProponent: async (id: string) => {
     try {
       const response = await apiClient.delete(`/api/proponents/${id}`, {

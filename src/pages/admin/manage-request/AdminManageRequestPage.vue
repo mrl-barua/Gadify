@@ -208,6 +208,16 @@
 
               <h4 class="va-h6 mt-4">Assigned Evaluator</h4>
               <VaDataTable :items="AssignedEvaluator"></VaDataTable>
+
+              <VaButton class="mt-4 mb-2" @click="processSubmission()">Process</VaButton>
+              <VaModal v-model="processSubmissionModal" size="small" hide-default-actions>
+                <va-input v-model="editedSubmission.remarks" label="Remarks" placeholder="Enter remarks here" />
+                <div class="mt-4">
+                  <VaButton class="mr-2" color="success" @click="approveSubmission()">Approved</VaButton>
+                  <VaButton class="mr-2" color="danger" @click="forCorrectionSubmission()">For Correction</VaButton>
+                  <VaButton class="mr-2" color="active" @click="closeProcessSubmissionmodal()">Close Modal</VaButton>
+                </div>
+              </VaModal>
             </VaCardContent>
           </VaCard>
         </div>
@@ -290,6 +300,7 @@ export default defineComponent({
       columns,
       sentDocumentForEvaluationModal: false,
       documentRoutingLogModal: false,
+      processSubmissionModal: false,
       selectedRowIndex: null,
       editedSubmission: {
         id: '',
@@ -332,6 +343,22 @@ export default defineComponent({
   methods: {
     deleteChip(chipId) {
       this.EvaluatorsValue = this.EvaluatorsValue.filter((v) => v !== chipId)
+    },
+
+    async processSubmission() {
+      this.processSubmissionModal = true
+    },
+
+    approveSubmission() {
+      this.processSubmissionModal = false
+    },
+
+    forCorrectionSubmission() {
+      this.processSubmissionModal = false
+    },
+
+    closeProcessSubmissionmodal() {
+      this.processSubmissionModal = false
     },
 
     async assignEvaluatorToSubmission() {
@@ -440,33 +467,6 @@ export default defineComponent({
       } finally {
         this.isLoading = false
       }
-    },
-
-    reseteditedSubmission() {
-      this.editedSubmission = null
-      this.editedSubmissionId = null
-    },
-    resetcreatedSubmission() {
-      this.createdSubmission = { ...defaultSubmission }
-    },
-    deleteItemById(id) {
-      this.submissions = [...this.submissions.slice(0, id), ...this.submissions.slice(id + 1)]
-    },
-    addNewItem() {
-      this.submissions = [...this.submissions, { ...this.createdSubmission }]
-      this.resetcreatedSubmission()
-    },
-    editItem() {
-      this.submissions = [
-        ...this.submissions.slice(0, this.editedSubmissionId),
-        { ...this.editedSubmission },
-        ...this.submissions.slice(this.editedSubmissionId + 1),
-      ]
-      this.reseteditedSubmission()
-    },
-    openModalToEditItemById(id) {
-      this.editedSubmissionId = id
-      this.editedSubmission = { ...this.submissions[id] }
     },
   },
 })
