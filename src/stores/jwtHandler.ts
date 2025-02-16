@@ -2,7 +2,11 @@ import { defineStore } from 'pinia'
 import { jwtDecode } from 'jwt-decode'
 
 interface DecodedToken {
-  [key: string]: any // Replace with the exact structure of your token if known
+  id: number
+  username: string
+  role: string
+  iat: number
+  exp: number
 }
 
 interface JwtState {
@@ -11,33 +15,37 @@ interface JwtState {
 }
 
 export const useJwtStore = defineStore('jwt', {
-  state: (): JwtState => ({
-    token: localStorage.getItem('token'), // Load token from localStorage
-    decodedToken: localStorage.getItem('token')
-      ? jwtDecode<DecodedToken>(localStorage.getItem('token') as string)
-      : null, // Decode token if it exists
-  }),
+  state: (): JwtState => {
+    const token = localStorage.getItem('token')
+    return {
+      token,
+      decodedToken: token ? jwtDecode<DecodedToken>(token) : null,
+    }
+  },
   actions: {
     setToken(token: string) {
       console.log('Setting token:', token)
       this.token = token
       this.decodedToken = jwtDecode<DecodedToken>(token)
-      localStorage.setItem('token', token) // Save token to localStorage
+      localStorage.setItem('token', token)
     },
     getLoggedInUserId() {
-      const mockUserId = 1
-      return mockUserId
+      return this.decodedToken?.id ?? null
     },
     logout() {
       console.log('Logging out')
       this.token = null
       this.decodedToken = null
-      localStorage.removeItem('token') // Remove token from localStorage
+      localStorage.removeItem('token')
     },
   },
   getters: {
-    isAuthenticated: (state) => !!state.token, // Returns true if a token exists
-    getDecodedToken: (state) => state.decodedToken, // Returns the decoded token payload
-    getToken: (state) => state.token, // Returns the raw token
+    isAuthenticated: (state) => {
+      if (!state.token || !state.decodedToken) return false
+      const currentTime = Math.floor(Date.now() / 1000)
+      return state.decodedToken.exp > currentTime
+    },
+    getDecodedToken: (state) => state.decodedToken,
+    getToken: (state) => state.token,
   },
 })
