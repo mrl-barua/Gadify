@@ -122,6 +122,9 @@
             <h3 class="text-lg font-semibold mb-2">Main Information</h3>
             <p class="mb-1"><span class="font-medium">Document No:</span> {{ editedSubmission.id }}</p>
             <p class="mb-1"><span class="font-medium">Date Created:</span> {{ editedSubmission.createdAt }}</p>
+            <p class="mb-1">
+              <span class="font-medium">Submission Status:</span> {{ editedSubmission.submissionStatus }}
+            </p>
           </div>
           <div class="w-full md:w-1/2 px-2 mb-4">
             <h3 class="text-lg font-semibold mb-2">Other Information</h3>
@@ -204,13 +207,25 @@
                 </template>
               </VaSelect>
 
-              <VaButton class="mt-4 mb-2" @click="assignEvaluatorToSubmission()">Assign Evaluator</VaButton>
+              <VaButton
+                :disabled="EvaluatorsValue.length === 0"
+                class="mt-4 mb-2"
+                @click="assignEvaluatorToSubmission()"
+              >
+                Assign Evaluator
+              </VaButton>
 
               <h4 class="va-h6 mt-4">Assigned Evaluator</h4>
               <VaDataTable :items="AssignedEvaluator"></VaDataTable>
 
               <VaButton class="mt-4 mb-2" @click="processSubmission()">Process</VaButton>
               <VaModal v-model="processSubmissionModal" size="small" hide-default-actions>
+                <h3 class="va-h3">Sent Document for Evaluation</h3>
+                <template>
+                  <div class="my-8">
+                    <VaDivider />
+                  </div>
+                </template>
                 <va-input v-model="editedSubmission.remarks" label="Remarks" placeholder="Enter remarks here" />
                 <div class="mt-4">
                   <VaButton class="mr-2" color="success" @click="approveSubmission()">Approved</VaButton>
@@ -385,11 +400,12 @@ export default defineComponent({
       }
     },
 
-    async getAssignedEvaluator() {
+    async getAssignedEvaluator(id) {
       try {
-        const data = await submissionRepository.getSubmissionEvaluatorsById(this.editedSubmission.id)
+        const data = await submissionRepository.getSubmissionEvaluatorsById(id)
         this.AssignedEvaluator = data.evaluators.map((evaluator) => ({ fullName: evaluator.fullName }))
       } catch (error) {
+        this.AssignedEvaluator = []
         console.error('Failed to load assigned evaluator:', error)
       }
     },
@@ -397,7 +413,6 @@ export default defineComponent({
     async getEvaluators() {
       isVaSelectLoading.value = true
       try {
-        this.getAssignedEvaluator()
         const data = await evaluatorsRepository.getEvaluators()
         this.EvaluatorOptions = data.map((evaluator) => ({
           text: evaluator.fullName,
@@ -421,6 +436,7 @@ export default defineComponent({
 
     showSentDocumentForEvaluationModal(item) {
       if (item) {
+        this.getAssignedEvaluator(item.id)
         this.selectedRowIndex = this.submissions.findIndex((submission) => submission.id === item.id)
         this.editedSubmission = item
         this.sentDocumentForEvaluationModal = true
