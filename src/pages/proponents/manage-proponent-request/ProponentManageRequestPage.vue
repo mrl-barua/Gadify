@@ -17,7 +17,22 @@
             ]"
           />
         </div>
+        <VaButton class="justify-end" @click="addSubmissionModal = !addSubmissionModal">Add Submission</VaButton>
       </div>
+
+      <VaModal v-model="addSubmissionModal" ok-text="Save" @click:ok="createSubmission()" size="large">
+        <h3 class="va-h3">Add New Submission</h3>
+        <VaForm>
+          <VaInput v-model="createdSubmission.fileType" label="File Type" />
+          <VaInput v-model="createdSubmission.date" label="Date" />
+          <VaInput v-model="createdSubmission.docNo" label="Document No." />
+          <VaInput v-model="createdSubmission.submission" label="Submission" />
+          <VaInput v-model="createdSubmission.office" label="Office" />
+          <VaInput v-model="createdSubmission.proposal" label="Proposal" />
+          <VaInput v-model="createdSubmission.fileLink" label="File Link" />
+          <VaInput v-model="createdSubmission.status" label="Status" />
+        </VaForm>
+      </VaModal>
 
       <VaDataTable
         v-if="currentTable === 'onHold'"
@@ -25,6 +40,7 @@
         :items="onHoldSubmissions"
         :columns="columns"
         striped
+        :loading="isLoading"
       >
         <template #cell(actions)="{ rowIndex }">
           <VaButton
@@ -48,6 +64,7 @@
         :items="evaluationSubmissions"
         :columns="columns"
         striped
+        :loading="isLoading"
       >
         <template #cell(actions)="{ rowIndex }">
           <VaButton
@@ -71,6 +88,7 @@
         :items="completedSubmissions"
         :columns="columns"
         striped
+        :loading="isLoading"
       >
         <template #cell(actions)="{ rowIndex }">
           <VaButton
@@ -94,6 +112,7 @@
         :items="forCorrectionSubmissions"
         :columns="columns"
         striped
+        :loading="isLoading"
       >
         <template #cell(actions)="{ rowIndex }">
           <VaButton
@@ -111,18 +130,21 @@
         </template>
       </VaDataTable>
 
-      <VaModal v-model="sentDocumentForEvaluationModal" size="large">
+      <VaModal hide-default-actions="true" v-model="sentDocumentForEvaluationModal" size="large">
         <h3 class="va-h3">Sent Document for Evaluation</h3>
         <div class="flex flex-wrap -mx-2">
           <div class="w-full md:w-1/2 px-2 mb-4">
             <h3 class="text-lg font-semibold mb-2">Main Information</h3>
-            <p class="mb-1"><span class="font-medium">Document No:</span> {{ editedSubmission.submissionId }}</p>
-            <p class="mb-1"><span class="font-medium">Date Needed:</span> {{ editedSubmission.date }}</p>
+            <p class="mb-1"><span class="font-medium">Document No:</span> {{ editedSubmission.id }}</p>
+            <p class="mb-1"><span class="font-medium">Date Created:</span> {{ editedSubmission.createdAt }}</p>
+            <p class="mb-1">
+              <span class="font-medium">Submission Status:</span> {{ editedSubmission.submissionStatus }}
+            </p>
           </div>
           <div class="w-full md:w-1/2 px-2 mb-4">
             <h3 class="text-lg font-semibold mb-2">Other Information</h3>
-            <p class="mb-1"><span class="font-medium">Project Proposal:</span> {{ editedSubmission.proposal }}</p>
-            <p class="mb-1"><span class="font-medium">Date Needed:</span> {{ editedSubmission.date }}</p>
+            <p class="mb-1"><span class="font-medium">Project Proposal:</span> {{ editedSubmission.proposalTitle }}</p>
+
             <p class="mb-1"><span class="font-medium">Project Description:</span> {{ editedSubmission.description }}</p>
             <p class="mb-1"><span class="font-medium">File Type:</span> {{ editedSubmission.fileType }}</p>
           </div>
@@ -132,78 +154,107 @@
           <div class="flex flex-col md:flex-row gap-2 mb-2 justify-between">
             <div class="flex flex-col md:flex-row gap-2 justify-start">
               <VaButtonToggle
-                v-model="currentTable"
+                v-model="modalTable"
                 color="background-element"
                 border-color="background-element"
                 :options="[
-                  { label: 'Attachments', value: 'onHold' },
-                  { label: 'Receving Division', value: 'evaluation' },
+                  { label: 'Attachments', value: 'attachments' },
+                  { label: 'Receiving Division', value: 'receivingDivision' },
                 ]"
               />
             </div>
           </div>
-
-          <VaDataTable
-            v-if="currentTable === 'onHold'"
-            class="table-crud"
-            :items="onHoldSubmissions"
-            :columns="columns"
-            striped
-          >
-            <template #cell(actions)>
-              <VaButton
-                preset="plain"
-                icon="view_timeline"
-                @click="showSentDocumentForEvaluationModal(onHoldSubmissions[rowIndex])"
-              />
-              <VaButton
-                preset="plain"
-                icon="clear_all"
-                color="danger"
-                class="ml-3"
-                @click="documentRoutingLogModal = !documentRoutingLogModal"
-              />
-            </template>
-          </VaDataTable>
-
-          <VaDataTable
-            v-if="currentTable === 'evaluation'"
-            class="table-crud"
-            :items="evaluationSubmissions"
-            :columns="columns"
-            striped
-          >
-            <template #cell(actions)="{ rowIndex }">
-              <VaButton
-                preset="plain"
-                icon="view_timeline"
-                @click="showSentDocumentForEvaluationModal(onHoldSubmissions[rowIndex])"
-              />
-              <VaButton
-                preset="plain"
-                icon="clear_all"
-                color="danger"
-                class="ml-3"
-                @click="documentRoutingLogModal = !documentRoutingLogModal"
-              />
-            </template>
-          </VaDataTable>
-
-          <template #cell(actions)="{ rowIndex }">
-            <VaButton
-              preset="plain"
-              icon="view_timeline"
-              @click="showSentDocumentForEvaluationModal(onHoldSubmissions[rowIndex])"
-            />
-            <VaButton
-              preset="plain"
-              icon="clear_all"
-              color="danger"
-              class="ml-3"
-              @click="documentRoutingLogModal = !documentRoutingLogModal"
-            />
-          </template>
         </VaCardContent>
+
+        <div v-if="modalTable === 'attachments'">
+          <VaCard>
+            <VaCardContent>
+              <VaSidebarItem
+                :active="isActive"
+                active-color="#C0C0C0"
+                @click="downloadSubmission(editedSubmission.resourcesLink, editedSubmission.fileType)"
+              >
+                <VaSidebarItemContent class="hover-always">
+                  <VaIcon name="download" />
+                  <VaFlex vertical class="ml-2">
+                    <VaSidebarItemTitle>
+                      {{ editedSubmission.proposalTitle }}
+                    </VaSidebarItemTitle>
+
+                    <VaSidebarItemSubtitle>
+                      uploaded by: {{ editedSubmission.proponent.fullName }} uploaded on:
+                      {{ editedSubmission.createdAt }}
+                    </VaSidebarItemSubtitle>
+                  </VaFlex>
+                </VaSidebarItemContent>
+              </VaSidebarItem>
+            </VaCardContent>
+          </VaCard>
+        </div>
+
+        <div v-if="modalTable === 'receivingDivision'" @click="getEvaluators()">
+          <VaCard>
+            <VaCardContent>
+              <section>
+                <h4 class="va-h6">Currently Assigned Evaluator</h4>
+                <VaDataTable class="mb-3" :items="AssignedEvaluator"></VaDataTable>
+
+                <VaSelect
+                  v-model="EvaluatorsValue"
+                  placeholder=""
+                  label="Select Evaluator"
+                  :options="EvaluatorOptions"
+                  outer-label
+                  selected-top-shown
+                  multiple
+                  :loading="isVaSelectLoading"
+                  track-by="value"
+                  text-by="text"
+                  value-by="value"
+                >
+                  <template #content="{ value }">
+                    <VaChip
+                      v-for="v in value"
+                      :key="v"
+                      class="mr-2"
+                      size="small"
+                      closeable
+                      @update:model-value="deleteChip(v.value)"
+                    >
+                      {{ v.text }}
+                    </VaChip>
+                  </template>
+                </VaSelect>
+
+                <div class="flex justify-between">
+                  <VaButton
+                    :disabled="EvaluatorsValue.length === 0"
+                    class="mt-4 mb-2"
+                    @click="assignEvaluatorToSubmission()"
+                  >
+                    Assign Evaluator
+                  </VaButton>
+                  <VaButton class="mt-4 mb-2" @click="processSubmission()">Process Submission</VaButton>
+                </div>
+              </section>
+
+              <VaModal v-model="processSubmissionModal" size="small" hide-default-actions>
+                <h3 class="va-h3">Sent Document for Evaluation</h3>
+                <template>
+                  <div class="my-8">
+                    <VaDivider />
+                  </div>
+                </template>
+                <va-input v-model="editedSubmission.remarks" label="Remarks" placeholder="Enter remarks here" />
+                <div class="mt-4">
+                  <VaButton class="mr-2" color="success" @click="approveSubmission()">Approved</VaButton>
+                  <VaButton class="mr-2" color="danger" @click="forCorrectionSubmission()">For Correction</VaButton>
+                  <VaButton class="mr-2" color="active" @click="closeProcessSubmissionmodal()">Close Modal</VaButton>
+                </div>
+              </VaModal>
+            </VaCardContent>
+          </VaCard>
+        </div>
       </VaModal>
 
       <VaModal v-model="documentRoutingLogModal" size="large">
@@ -244,9 +295,13 @@
 <script>
 import { defineComponent } from 'vue'
 import { submissionRepository } from '../../../repository/submissionRepository'
-import { useJwtStore } from '../../../stores/jwtHandler'
+import { evaluatorsRepository } from '../../../repository/evaluatorRepository'
+import { useToast } from 'vuestic-ui'
+import { ref } from 'vue'
 
-const jwtStore = useJwtStore()
+const toast = useToast()
+
+const isVaSelectLoading = ref(false)
 
 const defaultSubmission = {
   fileType: '',
@@ -270,9 +325,7 @@ export default defineComponent({
       { key: 'submissionStatus', label: 'Proponent', sortable: true },
       { key: 'proponent.fullName', label: 'Department', sortable: true },
       { key: 'proposalTitle', label: 'Proposal Title', sortable: true },
-      { key: 'resourcesLink', label: 'File Link', sortable: true },
       { key: 'submissionStatus', label: 'Status', sortable: true },
-
       { key: 'actions', label: 'Actions', width: 80 },
     ]
 
@@ -281,15 +334,34 @@ export default defineComponent({
       columns,
       sentDocumentForEvaluationModal: false,
       documentRoutingLogModal: false,
+      processSubmissionModal: false,
+      addSubmissionModal: false,
       selectedRowIndex: null,
-      editedSubmissionId: null,
-      editedSubmission: null,
+      editedSubmission: {
+        id: '',
+        submissionId: '',
+        createdAt: '',
+        proposalTitle: '',
+        proposalDescription: '',
+        fileType: '',
+        resourcesLink: '',
+        submissionStatus: '',
+        proponent: '',
+        evaluator: '',
+        remarks: '',
+      },
       createdSubmission: { ...defaultSubmission },
       currentTable: 'onHold',
+      modalTable: 'attachments',
       onHoldSubmissions: [],
       evaluationSubmissions: [],
       completedSubmissions: [],
       forCorrectionSubmissions: [],
+      EvaluatorsValue: [],
+      EvaluatorOptions: [],
+      AssignedEvaluator: [],
+      isLoading: true,
+      isVaSelectLoading,
     }
   },
 
@@ -300,19 +372,116 @@ export default defineComponent({
   },
 
   mounted() {
-    const proponentId = jwtStore.getLoggedInUserId()
-    this.loadSubmissionsByProponentId(proponentId)
+    this.loadSubmissions()
   },
 
   methods: {
+    deleteChip(chipId) {
+      this.EvaluatorsValue = this.EvaluatorsValue.filter((v) => v !== chipId)
+    },
+
+    async processSubmission() {
+      this.processSubmissionModal = true
+    },
+
+    approveSubmission() {
+      this.processSubmissionModal = false
+    },
+
+    forCorrectionSubmission() {
+      this.processSubmissionModal = false
+    },
+
+    closeProcessSubmissionmodal() {
+      this.processSubmissionModal = false
+    },
+
+    /* not yet tested */
+    async createSubmission() {
+      try {
+        const data = await submissionRepository.createSubmission(this.createdSubmission)
+        console.log('Created submission:', data)
+        toast.init({
+          message: 'Submission created successfully',
+          color: 'success',
+        })
+      } catch (error) {
+        console.error('Failed to create submission:', error)
+        toast.init({
+          message: error.response?.data?.message || 'Failed to create submission',
+          color: 'danger',
+        })
+      } finally {
+        this.addSubmissionModal = false
+        this.createdSubmission = { ...defaultSubmission }
+      }
+    },
+
+    async assignEvaluatorToSubmission() {
+      try {
+        const data = await submissionRepository.assignEvaluatorToSubmission(
+          this.editedSubmission.id,
+          this.EvaluatorsValue,
+        )
+
+        console.log('Assigned evaluator to submission:', data)
+        toast.init({
+          message: 'Evaluator assigned successfully',
+          color: 'success',
+        })
+      } catch (error) {
+        console.error('Failed to assign evaluator to submission:', error)
+
+        toast.init({
+          message: error.response?.data?.message || 'Failed to assign evaluator',
+          color: 'danger',
+        })
+      } finally {
+        this.EvaluatorsValue = []
+      }
+    },
+
+    async getAssignedEvaluator(id) {
+      try {
+        const data = await submissionRepository.getSubmissionEvaluatorsById(id)
+        this.AssignedEvaluator = data.evaluators.map((evaluator) => ({ fullName: evaluator.fullName }))
+      } catch (error) {
+        this.AssignedEvaluator = []
+        console.error('Failed to load assigned evaluator:', error)
+      }
+    },
+
+    async getEvaluators() {
+      isVaSelectLoading.value = true
+      try {
+        const data = await evaluatorsRepository.getEvaluators()
+        this.EvaluatorOptions = data.map((evaluator) => ({
+          text: evaluator.fullName,
+          value: evaluator.id,
+        }))
+      } catch (error) {
+        console.error('Failed to load evaluators:', error)
+      } finally {
+        isVaSelectLoading.value = false
+      }
+    },
+
+    async downloadSubmission(link, fileType) {
+      try {
+        const data = await submissionRepository.getSubmissionFiles(link, fileType)
+        console.log('Downloaded submission:', data)
+      } catch (error) {
+        console.error('Failed to download submission:', error)
+      }
+    },
+
     showSentDocumentForEvaluationModal(item) {
       if (item) {
+        this.getAssignedEvaluator(item.id)
         this.selectedRowIndex = this.submissions.findIndex((submission) => submission.id === item.id)
         this.editedSubmission = item
         this.sentDocumentForEvaluationModal = true
-        alert(`Submission ID: ${item.id}`)
 
-        // Ensure data is declared properly
         this.loadSubmissionById(item.id)
       } else {
         console.error('Item is undefined or null')
@@ -323,11 +492,17 @@ export default defineComponent({
       try {
         const data = await submissionRepository.getSubmissionById(Id)
         this.editedSubmission = {
+          id: data.id,
           submissionId: data.submissionId,
-          date: data.createdAt,
-          proposal: data.proposalTitle,
-          description: data.proposalDescription,
+          createdAt: new Date(data.createdAt).toLocaleString(),
+          proposalTitle: data.proposalTitle,
+          proposalDescription: data.proposalDescription,
           fileType: data.fileType,
+          resourcesLink: data.resourcesLink,
+          submissionStatus: data.submissionStatus,
+          proponent: data.proponent,
+          evaluator: data.evaluator,
+          remarks: data.remarks,
         }
         this.sentDocumentForEvaluationModal = true
       } catch (error) {
@@ -335,45 +510,20 @@ export default defineComponent({
       }
     },
 
-    async loadSubmissionsByProponentId(id) {
+    async loadSubmissions() {
+      this.isLoading = true
       try {
-        const data = await submissionRepository.getSubmissionByUserId(id)
+        const data = await submissionRepository.getSubmissionByUserId(1)
         this.submissions = data
-        // Categorize submissions based on status using string comparison
         this.onHoldSubmissions = data.filter((submission) => submission.submissionStatus === 'OnHold')
         this.evaluationSubmissions = data.filter((submission) => submission.submissionStatus === 'Evaluation')
         this.completedSubmissions = data.filter((submission) => submission.submissionStatus === 'Completed')
         this.forCorrectionSubmissions = data.filter((submission) => submission.submissionStatus === 'ForCorrection')
       } catch (error) {
         console.error('Failed to load submissions:', error)
+      } finally {
+        this.isLoading = false
       }
-    },
-
-    reseteditedSubmission() {
-      this.editedSubmission = null
-      this.editedSubmissionId = null
-    },
-    resetcreatedSubmission() {
-      this.createdSubmission = { ...defaultSubmission }
-    },
-    deleteItemById(id) {
-      this.submissions = [...this.submissions.slice(0, id), ...this.submissions.slice(id + 1)]
-    },
-    addNewItem() {
-      this.submissions = [...this.submissions, { ...this.createdSubmission }]
-      this.resetcreatedSubmission()
-    },
-    editItem() {
-      this.submissions = [
-        ...this.submissions.slice(0, this.editedSubmissionId),
-        { ...this.editedSubmission },
-        ...this.submissions.slice(this.editedSubmissionId + 1),
-      ]
-      this.reseteditedSubmission()
-    },
-    openModalToEditItemById(id) {
-      this.editedSubmissionId = id
-      this.editedSubmission = { ...this.submissions[id] }
     },
   },
 })
