@@ -45,7 +45,7 @@ import { reactive, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useForm, useToast } from 'vuestic-ui'
 import { validators } from '../../services/utils'
-import { adminLoginApiService } from '../../repository/authenticationRepository'
+import { adminLoginApiService, evaluatorLoginApiService } from '../../repository/authenticationRepository'
 import { useJwtStore } from '../../stores/jwtHandler'
 
 const { validate } = useForm('form')
@@ -86,9 +86,22 @@ const submit = async () => {
         }
       } else if (loginValue.value === 'Evaluator') {
         try {
-          localStorage.setItem('userRole', 'evaluator')
-          init({ message: 'Login successful', color: 'success' })
+          const response = await evaluatorLoginApiService.login(formData.email, formData.password)
+
+          init({ message: response.data.message || 'Login successful', color: 'success' })
+          const token = response.data.token
+
+          if (formData.keepLoggedIn) {
+            jwtStore.setLocalStorageToken(token)
+          } else {
+            jwtStore.setSessionStorageToken(token)
+          }
           push({ name: 'evaluation' })
+        } catch (error: any) {
+          init({
+            message: error.response?.data?.message || 'Login failed. Please try again.',
+            color: 'danger',
+          })
         } finally {
           isLoading.value = false
         }
