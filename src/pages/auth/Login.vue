@@ -60,13 +60,25 @@ const jwtStore = useJwtStore()
 
 const removeLocalAndSessionStorage = () => {
   if (jwtStore.isAuthenticated) {
-    /* need to fix the redirection */
-    const userRole = jwtStore.getDecodedToken ? jwtStore.getDecodedToken.role : null
-    // if (userRole === 'proponent') push({ name: 'proponent-request' })
-    // if (userRole === 'evaluator') push({ name: 'evaluation' })
-    // if (userRole === 'admin') push({ name: 'proponents' })
+    alert(jwtStore.isAuthenticated)
+
+    // const userRole = jwtStore.getDecodedToken ? jwtStore.getDecodedToken.role : null
+
+    // if (userRole) {
+    //   switch (userRole) {
+    //     case 'proponent':
+    //       push({ name: 'proponent-request' })
+    //       break
+    //     case 'evaluator':
+    //       push({ name: 'evaluation' })
+    //       break
+    //     case 'admin':
+    //       push({ name: 'proponents' })
+    //       break
+    //   }
+    // }
   } else {
-    jwtStore.logout
+    jwtStore.logout()
   }
 }
 
