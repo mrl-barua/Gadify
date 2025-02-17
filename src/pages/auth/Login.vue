@@ -45,7 +45,11 @@ import { reactive, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useForm, useToast } from 'vuestic-ui'
 import { validators } from '../../services/utils'
-import { adminLoginApiService, evaluatorLoginApiService } from '../../repository/authenticationRepository'
+import {
+  adminLoginApiService,
+  evaluatorLoginApiService,
+  proponentLoginApiService,
+} from '../../repository/authenticationRepository'
 import { useJwtStore } from '../../stores/jwtHandler'
 
 const { validate } = useForm('form')
@@ -55,10 +59,15 @@ const isLoading = ref(false)
 const jwtStore = useJwtStore()
 
 const removeLocalAndSessionStorage = () => {
-  localStorage.removeItem('token')
-  localStorage.removeItem('userRole')
-  sessionStorage.removeItem('token')
-  sessionStorage.removeItem('userRole')
+  if (jwtStore.isAuthenticated) {
+    /* need to fix the redirection */
+    const userRole = jwtStore.getDecodedToken ? jwtStore.getDecodedToken.role : null
+    // if (userRole === 'proponent') push({ name: 'proponent-request' })
+    // if (userRole === 'evaluator') push({ name: 'evaluation' })
+    // if (userRole === 'admin') push({ name: 'proponents' })
+  } else {
+    jwtStore.logout
+  }
 }
 
 const loginOptions = ref(['Proponent', 'Evaluator', 'Admin'])
@@ -78,9 +87,22 @@ const submit = async () => {
     try {
       if (loginValue.value === 'Proponent') {
         try {
-          localStorage.setItem('userRole', 'proponent')
-          init({ message: 'Login successful', color: 'success' })
+          const response = await proponentLoginApiService.login(formData.email, formData.password)
+
+          init({ message: response.data.message || 'Login successful', color: 'success' })
+          const token = response.data.token
+
+          if (formData.keepLoggedIn) {
+            jwtStore.setLocalStorageToken(token)
+          } else {
+            jwtStore.setSessionStorageToken(token)
+          }
           push({ name: 'proponent-request' })
+        } catch (error: any) {
+          init({
+            message: error.response?.data?.message || 'Login failed. Please try again.',
+            color: 'danger',
+          })
         } finally {
           isLoading.value = false
         }

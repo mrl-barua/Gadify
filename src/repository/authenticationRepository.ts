@@ -13,9 +13,7 @@ const apiClient = axios.create({
 export const adminLoginApiService = {
   async login(email: string, password: string) {
     try {
-      const response = await apiClient.post('/api/login/admin', { email, password })
-      
-      return response
+      return await apiClient.post('/api/login/admin', { email, password })
     } catch (error) {
       console.error('Login failed:', error)
       throw error
@@ -26,9 +24,7 @@ export const adminLoginApiService = {
 export const proponentLoginApiService = {
   async login(email: string, password: string) {
     try {
-      const response = await apiClient.post('/api/login/proponent', { email, password })
-
-      return response
+      return await apiClient.post('/api/login/proponent', { email, password })
     } catch (error) {
       console.error('Login failed:', error)
       throw error
@@ -39,9 +35,7 @@ export const proponentLoginApiService = {
 export const evaluatorLoginApiService = {
   async login(email: string, password: string) {
     try {
-      const response = await apiClient.post('/api/login/evaluator', { email, password })
-
-      return response
+      return await apiClient.post('/api/login/evaluator', { email, password })
     } catch (error) {
       console.error('Login failed:', error)
       throw error

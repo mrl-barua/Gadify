@@ -51,8 +51,7 @@ const proceedToUserAccount = () => {
 }
 
 const logout = () => {
-  localStorage.removeItem('userRole')
-  sessionStorage.removeItem('userRole')
+  jwtStore.logout
   push({ name: 'admin' })
 }
 </script>
