@@ -56,7 +56,7 @@ import { reactive, onMounted, ref, watch } from 'vue'
 import { proponentsRepository } from '../../../repository/proponentsRepository'
 import { useToast } from 'vuestic-ui'
 
-const { init } = useToast() 
+const { init } = useToast()
 
 const form = reactive({
   proponentId: '',

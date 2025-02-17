@@ -1,6 +1,5 @@
 import axios from 'axios'
 import { useJwtStore } from '../stores/jwtHandler'
-import { mailRepository } from './mailRepository'
 
 const BASE_URL = import.meta.env.VITE_API_URL
 console.log('API URL:', BASE_URL)

@@ -115,7 +115,7 @@
         </template>
       </VaDataTable>
 
-      <VaModal hide-default-actions="true" v-model="sentDocumentForEvaluationModal" size="large">
+      <VaModal v-model="sentDocumentForEvaluationModal" hide-default-actions="true" size="large">
         <h3 class="va-h3">Sent Document for Evaluation</h3>
         <div class="flex flex-wrap -mx-2">
           <div class="w-full md:w-1/2 px-2 mb-4">
@@ -204,7 +204,7 @@
                       class="mr-2"
                       size="small"
                       closeable
-                      @update:model-value="deleteChip(v.value)"
+                      @update:modelValue="deleteChip(v.value)"
                     >
                       {{ v.text }}
                     </VaChip>
@@ -230,7 +230,7 @@
                     <VaDivider />
                   </div>
                 </template>
-                <va-input v-model="editedSubmission.remarks" label="Remarks" placeholder="Enter remarks here" />
+                <VaInput v-model="editedSubmission.remarks" label="Remarks" placeholder="Enter remarks here" />
                 <div class="mt-4">
                   <VaButton class="mr-2" color="success" @click="approveSubmission()">Approved</VaButton>
                   <VaButton class="mr-2" color="danger" @click="forCorrectionSubmission()">For Correction</VaButton>
