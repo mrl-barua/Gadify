@@ -14,9 +14,32 @@ export const adminLoginApiService = {
   async login(email: string, password: string) {
     try {
       const response = await apiClient.post('/api/login/admin', { email, password })
-      if (response.data?.token) {
-        const jwtStore = useJwtStore()
-      }
+      
+      return response
+    } catch (error) {
+      console.error('Login failed:', error)
+      throw error
+    }
+  },
+}
+
+export const proponentLoginApiService = {
+  async login(email: string, password: string) {
+    try {
+      const response = await apiClient.post('/api/login/proponent', { email, password })
+
+      return response
+    } catch (error) {
+      console.error('Login failed:', error)
+      throw error
+    }
+  },
+}
+
+export const evaluatorLoginApiService = {
+  async login(email: string, password: string) {
+    try {
+      const response = await apiClient.post('/api/login/evaluator', { email, password })
 
       return response
     } catch (error) {

@@ -21,15 +21,17 @@
 </template>
 
 <script setup lang="ts">
-// import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 const { push } = useRouter()
 const { t } = useI18n()
 import { computed } from 'vue'
 import { useColors } from 'vuestic-ui'
+import { useJwtStore } from '../../../../stores/jwtHandler'
 
 const { applyPreset, currentPresetName } = useColors()
+
+const jwtStore = useJwtStore()
 
 const switchValue = computed({
   get() {
@@ -40,10 +42,12 @@ const switchValue = computed({
   },
 })
 
+const userRole = jwtStore.getDecodedToken ? jwtStore.getDecodedToken.role : null
+
 const proceedToUserAccount = () => {
-  if (localStorage.getItem('userRole') === 'proponent') push({ name: 'proponent-user-account' })
-  if (localStorage.getItem('userRole') === 'evaluator') push({ name: 'evaluator-user-account' })
-  if (localStorage.getItem('userRole') === 'admin') push({ name: 'user-account' })
+  if (userRole === 'proponent') push({ name: 'proponent-user-account' })
+  if (userRole === 'evaluator') push({ name: 'evaluator-user-account' })
+  if (userRole === 'admin') push({ name: 'user-account' })
 }
 
 const logout = () => {

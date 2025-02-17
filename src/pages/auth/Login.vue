@@ -104,11 +104,6 @@ const submit = async () => {
           } else {
             jwtStore.setSessionStorageToken(token)
           }
-
-          const userRole = jwtStore.getDecodedToken ? jwtStore.getDecodedToken.role : null
-
-          localStorage.setItem('userRole', userRole as string)
-
           push({ name: 'proponents' })
         } catch (error: any) {
           init({

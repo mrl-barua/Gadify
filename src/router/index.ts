@@ -3,10 +3,12 @@ import AuthLayout from '../layouts/AuthLayout.vue'
 import AdminLayout from '../layouts/AdminLayout.vue'
 import EvaluatorsLayout from '../layouts/EvaluatorsLayout.vue'
 import ProponentLayout from '../layouts/ProponentsLayout.vue'
+import { useJwtStore } from '../stores/jwtHandler'
 
-/* Currrently mock but final implementation should be decoded by a jwt service and get the role from it */
 function getUserRole() {
-  return localStorage.getItem('userRole')
+  const jwtStore = useJwtStore()
+  const userRole = jwtStore.getDecodedToken ? jwtStore.getDecodedToken.role : null
+  return userRole
 }
 
 const routes = [
