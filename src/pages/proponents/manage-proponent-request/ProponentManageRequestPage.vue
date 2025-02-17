@@ -23,13 +23,18 @@
       <VaModal v-model="addSubmissionModal" ok-text="Save" @click:ok="createSubmission()" size="large">
         <h3 class="va-h3">Add New Submission</h3>
         <VaForm>
-          <VaInput v-model="createdSubmission.fileType" label="File Type" />
+          <VaSelect v-model="createdSubmission.fileType" label="File Type" :options="['file', 'link']" />
           <VaInput v-model="createdSubmission.date" label="Date" />
           <VaInput v-model="createdSubmission.docNo" label="Document No." />
           <VaInput v-model="createdSubmission.submission" label="Submission" />
           <VaInput v-model="createdSubmission.office" label="Office" />
           <VaInput v-model="createdSubmission.proposal" label="Proposal" />
-          <VaInput v-model="createdSubmission.fileLink" label="File Link" />
+          <VaInput
+            v-if="createdSubmission.fileType === 'link'"
+            v-model="createdSubmission.fileLink"
+            label="File Link"
+          />
+          <VaFileUpload v-else="createdSubmission.fileType === 'file'" v-model="basic" dropzone />
           <VaInput v-model="createdSubmission.status" label="Status" />
         </VaForm>
       </VaModal>
