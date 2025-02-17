@@ -93,6 +93,9 @@
 import { defineComponent } from 'vue'
 import { proponentsRepository } from '../../../repository/proponentsRepository'
 import { sleep } from '../../../services/utils'
+import { useJwtStore } from '../../../stores/jwtHandler'
+
+const jwtStore = useJwtStore()
 
 const defaultProponent = {
   proponentId: '',

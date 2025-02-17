@@ -15,11 +15,10 @@ export const adminLoginApiService = {
     try {
       const response = await apiClient.post('/api/login/admin', { email, password })
       if (response.data?.token) {
-        const jwtStore = useJwtStore() // Access the store
-        jwtStore.setToken(response.data.token) // Store the token
+        const jwtStore = useJwtStore()
       }
 
-      return response // Return response to handle additional logic if needed
+      return response
     } catch (error) {
       console.error('Login failed:', error)
       throw error

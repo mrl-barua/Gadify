@@ -95,19 +95,19 @@ const submit = async () => {
       } else if (loginValue.value === 'Admin') {
         try {
           const response = await adminLoginApiService.login(formData.email, formData.password)
-          const data = response.data
-          console.log(data.token)
 
           init({ message: response.data.message || 'Login successful', color: 'success' })
-
-          localStorage.setItem('userRole', 'admin')
           const token = response.data.token
-          jwtStore.setToken(token)
+
           if (formData.keepLoggedIn) {
-            localStorage.setItem('token', token)
+            jwtStore.setLocalStorageToken(token)
           } else {
-            sessionStorage.setItem('token', token)
+            jwtStore.setSessionStorageToken(token)
           }
+
+          const userRole = jwtStore.getDecodedToken ? jwtStore.getDecodedToken.role : null
+
+          localStorage.setItem('userRole', userRole as string)
 
           push({ name: 'proponents' })
         } catch (error: any) {

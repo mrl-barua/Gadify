@@ -23,14 +23,23 @@ export const useJwtStore = defineStore('jwt', {
     }
   },
   actions: {
-    setToken(token: string) {
+    setLocalStorageToken(token: string) {
       console.log('Setting token:', token)
       this.token = token
       this.decodedToken = jwtDecode<DecodedToken>(token)
       localStorage.setItem('token', token)
     },
+    setSessionStorageToken(token: string) {
+      console.log('Setting token:', token)
+      this.token = token
+      this.decodedToken = jwtDecode<DecodedToken>(token)
+      sessionStorage.setItem('token', token)
+    },
     getLoggedInUserId() {
       return this.decodedToken?.id ?? null
+    },
+    getLoggedInUserRole() {
+      return this.decodedToken?.role ?? null
     },
     logout() {
       console.log('Logging out')
