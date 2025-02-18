@@ -34,7 +34,7 @@
             v-model="createdSubmission.fileLink"
             label="File Link"
           />
-          <VaFileUpload v-else v-model="basic" dropzone />
+          <VaFileUpload v-else v-model="submissionFile" dropzone />
           <VaInput v-model="createdSubmission.status" label="Status" />
         </VaForm>
       </VaModal>
@@ -367,6 +367,7 @@ export default defineComponent({
       AssignedEvaluator: [],
       isLoading: true,
       isVaSelectLoading,
+      submissionFile: [],
     }
   },
 
