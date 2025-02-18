@@ -228,7 +228,9 @@ import { submissionRepository } from '../../../repository/submissionRepository'
 import { evaluatorsRepository } from '../../../repository/evaluatorRepository'
 import { useToast } from 'vuestic-ui'
 import { ref } from 'vue'
+import { useJwtStore } from '../../../stores/jwtHandler'
 
+const jwtStore = useJwtStore()
 const toast = useToast()
 
 const isVaSelectLoading = ref(false)
@@ -281,6 +283,10 @@ export default defineComponent({
         remarks: '',
       },
       editedSubmission: {
+        id: 0,
+        submissionId: '',
+        proponentId: jwtStore.getLoggedInUserId,
+        evaluatorId: 1,
         fileType: '',
         proposalTitle: '',
         proposalDescription: '',
@@ -337,18 +343,18 @@ export default defineComponent({
     async createSubmission() {
       try {
         let data
-        if (this.createdSubmission.fileType === 'file') {
+        if (this.editedSubmission.fileType === 'file') {
           alert('File type is "file". Proceeding with file upload...')
           data = await this.uploadSubmissionFile()
           alert('File uploaded successfully. Data received: ' + JSON.stringify(data))
-          this.createdSubmission.resourcesLink = data
+          this.editedSubmission.resourcesLink = data
         } else {
           alert('File type is not "file". Using file link: ' + this.createdSubmission.fileLink)
-          this.createdSubmission.resourcesLink = this.createdSubmission.fileLink
+          this.editedSubmission.resourcesLink = this.editedSubmission.fileLink
         }
 
-        alert('Submitting data: ' + JSON.stringify(this.createdSubmission))
-        const response = await submissionRepository.createSubmission(this.createdSubmission)
+        alert('Submitting data: ' + JSON.stringify(this.editedSubmission))
+        const response = await submissionRepository.createSubmission(this.editedSubmission)
         console.log('Created submission:', response)
         toast.init({
           message: 'Submission created successfully',
@@ -362,22 +368,16 @@ export default defineComponent({
         })
         alert('Error creating submission: ' + (error.response?.data?.message || error.message))
       } finally {
-        this.addSubmissionModal = false
-        this.createdSubmission = { ...defaultSubmission }
-        this.loadedSubmission = {
-          id: '',
-          submissionId: '',
-          createdAt: '',
-          proposalTitle: '',
-          proposalDescription: '',
-          fileType: '',
-          resourcesLink: '',
-          submissionStatus: '',
-          proponent: '',
-          evaluator: '',
-          remarks: '',
-        }
-        alert('Reset the submission form and closed modal.')
+        ;(this.addSubmissionModal = false(
+          (this.editedSubmission = {
+            fileType: '',
+            proposalTitle: '',
+            proposalDescription: '',
+            resourcesLink: null,
+            submissionStatus: 'OnHold',
+          }),
+        )),
+          alert('Reset the submission form and closed modal.')
       }
     },
 
