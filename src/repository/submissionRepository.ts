@@ -1,19 +1,28 @@
 import axios from 'axios'
 import { useJwtStore } from '../stores/jwtHandler'
-// import { mailRepository } from './mailRepository'
-// import { get } from 'http'
 
 const BASE_URL = import.meta.env.VITE_API_URL
 console.log('API URL:', BASE_URL)
 
 console.log('BASE_URL:', BASE_URL)
-// Create Axios instance
+
 const apiClient = axios.create({
   baseURL: BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
 })
+
+interface Submission {
+  id: number
+  submissionId: string
+  proponentId: number
+  fileType: string
+  proposalTitle: string
+  proposalDescription: string
+  resourcesLink: string | null
+  submissionStatus: string
+}
 
 const jwtStore = useJwtStore()
 
@@ -94,7 +103,7 @@ export const submissionRepository = {
         return
       }
 
-      alert(link + ' ' + fileType)
+      console.log(link + ' ' + fileType)
     } catch (error) {
       console.error('Error:', error)
       throw error
@@ -141,15 +150,15 @@ export const submissionRepository = {
 
   uploadSubmissionFile: async (files: File[]) => {
     try {
-      alert('Starting file upload process...')
+      console.log('Starting file upload process...')
 
       const formData = new FormData()
       files.forEach((file) => {
-        alert(`Appending file: ${file.name}`)
+        console.log(`Appending file: ${file.name}`)
         formData.append('files', file)
       })
 
-      alert('Sending request to upload files...')
+      console.log('Sending request to upload files...')
       const response = await apiClient.post('/api/uploadFiles', formData, {
         headers: {
           Authorization: `Bearer ${jwtStore.getToken}`,
@@ -157,21 +166,23 @@ export const submissionRepository = {
         },
       })
 
-      alert('Files uploaded successfully. Response received: ' + JSON.stringify(response.data.files))
+      console.log('Files uploaded successfully. Response received: ' + JSON.stringify(response.data.files))
       console.log('Uploaded Files:', response.data.files)
 
       return response.data.files
     } catch (error) {
       console.error('Error:', error)
       const errorMessage = (error as any).response?.data?.message || (error as Error).message
-      alert('Error occurred during file upload: ' + errorMessage)
+      console.log('Error occurred during file upload: ' + errorMessage)
       throw error
     }
   },
 
-  createSubmission: async (submission: any) => {
+  createSubmission: async (submission: Submission) => {
     try {
-      const response = await apiClient.post('/api/submissions', submission, {
+      console.log('Creating submission...')
+      console.log(JSON.stringify(submission))
+      const response = await apiClient.post('/api/submission', submission, {
         headers: {
           Authorization: `Bearer ${jwtStore.getToken}`,
         },

@@ -23,10 +23,10 @@
       <VaModal v-model="addSubmissionModal" ok-text="Save" size="large" @ok="createSubmission()">
         <h3 class="va-h3">Add New Submission</h3>
         <VaForm>
-          <VaSelect v-model="editedSubmission.fileType" label="File Type" :options="['file', 'link']" />
+          <VaSelect v-model="editedSubmission.fileType" label="File Type" :options="['File', 'Link']" />
           <VaInput v-model="editedSubmission.proposalTitle" label="Proposal Title" />
           <VaInput v-model="editedSubmission.proposalDescription" label="Proposal Description" />
-          <VaInput v-if="editedSubmission.fileType === 'link'" v-model="editedSubmission.fileLink" label="File Link" />
+          <VaInput v-if="editedSubmission.fileType === 'Link'" v-model="editedSubmission.fileLink" label="File Link" />
           <VaFileUpload v-else v-model="submissionFile" dropzone />
         </VaForm>
       </VaModal>
@@ -285,8 +285,7 @@ export default defineComponent({
       editedSubmission: {
         id: 0,
         submissionId: '',
-        proponentId: jwtStore.getLoggedInUserId,
-        evaluatorId: 1,
+        proponentId: null,
         fileType: '',
         proposalTitle: '',
         proposalDescription: '',
@@ -344,16 +343,20 @@ export default defineComponent({
       try {
         let data
         if (this.editedSubmission.fileType === 'file') {
-          alert('File type is "file". Proceeding with file upload...')
+          console.log('File type is "file". Proceeding with file upload...')
           data = await this.uploadSubmissionFile()
-          alert('File uploaded successfully. Data received: ' + JSON.stringify(data))
+          console.log('File uploaded successfully. Data received: ' + JSON.stringify(data))
           this.editedSubmission.resourcesLink = data
         } else {
-          alert('File type is not "file". Using file link: ' + this.createdSubmission.fileLink)
+          console.log('File type is not "file". Using file link: ' + this.createdSubmission.fileLink)
           this.editedSubmission.resourcesLink = this.editedSubmission.fileLink
         }
 
-        alert('Submitting data: ' + JSON.stringify(this.editedSubmission))
+        console.log('Submitting data: ' + JSON.stringify(this.editedSubmission))
+
+        this.editedSubmission.proponentId = jwtStore.getDecodedToken ? jwtStore.getDecodedToken.id : null
+        console.log('Proponent ID: ' + this.editedSubmission.proponentId)
+
         const response = await submissionRepository.createSubmission(this.editedSubmission)
         console.log('Created submission:', response)
         toast.init({
@@ -366,7 +369,7 @@ export default defineComponent({
           message: error.response?.data?.message || 'Failed to create submission',
           color: 'danger',
         })
-        alert('Error creating submission: ' + (error.response?.data?.message || error.message))
+        console.log('Error creating submission: ' + (error.response?.data?.message || error.message))
       } finally {
         ;(this.addSubmissionModal = false(
           (this.editedSubmission = {
@@ -377,7 +380,7 @@ export default defineComponent({
             submissionStatus: 'OnHold',
           }),
         )),
-          alert('Reset the submission form and closed modal.')
+          console.log('Reset the submission form and closed modal.')
       }
     },
 

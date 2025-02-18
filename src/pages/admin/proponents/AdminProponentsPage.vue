@@ -159,7 +159,6 @@ export default defineComponent({
         const data = await proponentsRepository.getProponents()
         this.proponents = data
 
-        // Categorize proponents based on status using string comparison
         this.pendingProponents = data.filter((proponent) => proponent.proponentStatus === 'Pending')
         this.approvedProponents = data.filter((proponent) => proponent.proponentStatus === 'Approved')
         this.disapprovedProponents = data.filter((proponent) => proponent.proponentStatus === 'Rejected')
