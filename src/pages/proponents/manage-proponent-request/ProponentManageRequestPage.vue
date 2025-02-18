@@ -20,22 +20,14 @@
         <VaButton class="justify-end" @click="addSubmissionModal = !addSubmissionModal">Add Submission</VaButton>
       </div>
 
-      <VaModal v-model="addSubmissionModal" ok-text="Save" size="large" @click:ok="createSubmission()">
+      <VaModal v-model="addSubmissionModal" ok-text="Save" size="large" @ok="createSubmission()">
         <h3 class="va-h3">Add New Submission</h3>
         <VaForm>
-          <VaSelect v-model="createdSubmission.fileType" label="File Type" :options="['file', 'link']" />
-          <VaInput v-model="createdSubmission.date" label="Date" />
-          <VaInput v-model="createdSubmission.docNo" label="Document No." />
-          <VaInput v-model="createdSubmission.submission" label="Submission" />
-          <VaInput v-model="createdSubmission.office" label="Office" />
-          <VaInput v-model="createdSubmission.proposal" label="Proposal" />
-          <VaInput
-            v-if="createdSubmission.fileType === 'link'"
-            v-model="createdSubmission.fileLink"
-            label="File Link"
-          />
+          <VaSelect v-model="editedSubmission.fileType" label="File Type" :options="['file', 'link']" />
+          <VaInput v-model="editedSubmission.proposalTitle" label="Proposal Title" />
+          <VaInput v-model="editedSubmission.proposalDescription" label="Proposal Description" />
+          <VaInput v-if="editedSubmission.fileType === 'link'" v-model="editedSubmission.fileLink" label="File Link" />
           <VaFileUpload v-else v-model="submissionFile" dropzone />
-          <VaInput v-model="createdSubmission.status" label="Status" />
         </VaForm>
       </VaModal>
 
@@ -140,18 +132,18 @@
         <div class="flex flex-wrap -mx-2">
           <div class="w-full md:w-1/2 px-2 mb-4">
             <h3 class="text-lg font-semibold mb-2">Main Information</h3>
-            <p class="mb-1"><span class="font-medium">Document No:</span> {{ editedSubmission.id }}</p>
-            <p class="mb-1"><span class="font-medium">Date Created:</span> {{ editedSubmission.createdAt }}</p>
+            <p class="mb-1"><span class="font-medium">Document No:</span> {{ loadedSubmission.id }}</p>
+            <p class="mb-1"><span class="font-medium">Date Created:</span> {{ loadedSubmission.createdAt }}</p>
             <p class="mb-1">
-              <span class="font-medium">Submission Status:</span> {{ editedSubmission.submissionStatus }}
+              <span class="font-medium">Submission Status:</span> {{ loadedSubmission.submissionStatus }}
             </p>
           </div>
           <div class="w-full md:w-1/2 px-2 mb-4">
             <h3 class="text-lg font-semibold mb-2">Other Information</h3>
-            <p class="mb-1"><span class="font-medium">Project Proposal:</span> {{ editedSubmission.proposalTitle }}</p>
+            <p class="mb-1"><span class="font-medium">Project Proposal:</span> {{ loadedSubmission.proposalTitle }}</p>
 
-            <p class="mb-1"><span class="font-medium">Project Description:</span> {{ editedSubmission.description }}</p>
-            <p class="mb-1"><span class="font-medium">File Type:</span> {{ editedSubmission.fileType }}</p>
+            <p class="mb-1"><span class="font-medium">Project Description:</span> {{ loadedSubmission.description }}</p>
+            <p class="mb-1"><span class="font-medium">File Type:</span> {{ loadedSubmission.fileType }}</p>
           </div>
         </div>
 
@@ -162,10 +154,7 @@
                 v-model="modalTable"
                 color="background-element"
                 border-color="background-element"
-                :options="[
-                  { label: 'Attachments', value: 'attachments' },
-                  { label: 'Receiving Division', value: 'receivingDivision' },
-                ]"
+                :options="[{ label: 'Attachments', value: 'attachments' }]"
               />
             </div>
           </div>
@@ -177,86 +166,22 @@
               <VaSidebarItem
                 :active="isActive"
                 active-color="#C0C0C0"
-                @click="downloadSubmission(editedSubmission.resourcesLink, editedSubmission.fileType)"
+                @click="downloadSubmission(loadedSubmission.resourcesLink, loadedSubmission.fileType)"
               >
                 <VaSidebarItemContent class="hover-always">
                   <VaIcon name="download" />
                   <VaFlex vertical class="ml-2">
                     <VaSidebarItemTitle>
-                      {{ editedSubmission.proposalTitle }}
+                      {{ loadedSubmission.proposalTitle }}
                     </VaSidebarItemTitle>
 
                     <VaSidebarItemSubtitle>
-                      uploaded by: {{ editedSubmission.proponent.fullName }} uploaded on:
-                      {{ editedSubmission.createdAt }}
+                      uploaded by: {{ loadedSubmission.proponent.fullName }} uploaded on:
+                      {{ loadedSubmission.createdAt }}
                     </VaSidebarItemSubtitle>
                   </VaFlex>
                 </VaSidebarItemContent>
               </VaSidebarItem>
-            </VaCardContent>
-          </VaCard>
-        </div>
-
-        <div v-if="modalTable === 'receivingDivision'" @click="getEvaluators()">
-          <VaCard>
-            <VaCardContent>
-              <section>
-                <h4 class="va-h6">Currently Assigned Evaluator</h4>
-                <VaDataTable class="mb-3" :items="AssignedEvaluator"></VaDataTable>
-
-                <VaSelect
-                  v-model="EvaluatorsValue"
-                  placeholder=""
-                  label="Select Evaluator"
-                  :options="EvaluatorOptions"
-                  outer-label
-                  selected-top-shown
-                  multiple
-                  :loading="isVaSelectLoading"
-                  track-by="value"
-                  text-by="text"
-                  value-by="value"
-                >
-                  <template #content="{ value }">
-                    <VaChip
-                      v-for="v in value"
-                      :key="v"
-                      class="mr-2"
-                      size="small"
-                      closeable
-                      @update:modelValue="deleteChip(v.value)"
-                    >
-                      {{ v.text }}
-                    </VaChip>
-                  </template>
-                </VaSelect>
-
-                <div class="flex justify-between">
-                  <VaButton
-                    :disabled="EvaluatorsValue.length === 0"
-                    class="mt-4 mb-2"
-                    @click="assignEvaluatorToSubmission()"
-                  >
-                    Assign Evaluator
-                  </VaButton>
-                  <VaButton class="mt-4 mb-2" @click="processSubmission()">Process Submission</VaButton>
-                </div>
-              </section>
-
-              <VaModal v-model="processSubmissionModal" size="small" hide-default-actions>
-                <h3 class="va-h3">Sent Document for Evaluation</h3>
-                <template>
-                  <div class="my-8">
-                    <VaDivider />
-                  </div>
-                </template>
-                <VaInput v-model="editedSubmission.remarks" label="Remarks" placeholder="Enter remarks here" />
-                <div class="mt-4">
-                  <VaButton class="mr-2" color="success" @click="approveSubmission()">Approved</VaButton>
-                  <VaButton class="mr-2" color="danger" @click="forCorrectionSubmission()">For Correction</VaButton>
-                  <VaButton class="mr-2" color="active" @click="closeProcessSubmissionmodal()">Close Modal</VaButton>
-                </div>
-              </VaModal>
             </VaCardContent>
           </VaCard>
         </div>
@@ -342,7 +267,7 @@ export default defineComponent({
       processSubmissionModal: false,
       addSubmissionModal: false,
       selectedRowIndex: null,
-      editedSubmission: {
+      loadedSubmission: {
         id: '',
         submissionId: '',
         createdAt: '',
@@ -354,6 +279,13 @@ export default defineComponent({
         proponent: '',
         evaluator: '',
         remarks: '',
+      },
+      editedSubmission: {
+        fileType: '',
+        proposalTitle: '',
+        proposalDescription: '',
+        resourcesLink: null,
+        submissionStatus: 'OnHold',
       },
       createdSubmission: { ...defaultSubmission },
       currentTable: 'onHold',
@@ -402,11 +334,22 @@ export default defineComponent({
       this.processSubmissionModal = false
     },
 
-    /* not yet tested */
     async createSubmission() {
       try {
-        const data = await submissionRepository.createSubmission(this.createdSubmission)
-        console.log('Created submission:', data)
+        let data
+        if (this.createdSubmission.fileType === 'file') {
+          alert('File type is "file". Proceeding with file upload...')
+          data = await this.uploadSubmissionFile()
+          alert('File uploaded successfully. Data received: ' + JSON.stringify(data))
+          this.createdSubmission.resourcesLink = data
+        } else {
+          alert('File type is not "file". Using file link: ' + this.createdSubmission.fileLink)
+          this.createdSubmission.resourcesLink = this.createdSubmission.fileLink
+        }
+
+        alert('Submitting data: ' + JSON.stringify(this.createdSubmission))
+        const response = await submissionRepository.createSubmission(this.createdSubmission)
+        console.log('Created submission:', response)
         toast.init({
           message: 'Submission created successfully',
           color: 'success',
@@ -417,16 +360,40 @@ export default defineComponent({
           message: error.response?.data?.message || 'Failed to create submission',
           color: 'danger',
         })
+        alert('Error creating submission: ' + (error.response?.data?.message || error.message))
       } finally {
         this.addSubmissionModal = false
         this.createdSubmission = { ...defaultSubmission }
+        this.loadedSubmission = {
+          id: '',
+          submissionId: '',
+          createdAt: '',
+          proposalTitle: '',
+          proposalDescription: '',
+          fileType: '',
+          resourcesLink: '',
+          submissionStatus: '',
+          proponent: '',
+          evaluator: '',
+          remarks: '',
+        }
+        alert('Reset the submission form and closed modal.')
+      }
+    },
+
+    async uploadSubmissionFile() {
+      try {
+        const data = await submissionRepository.uploadSubmissionFile(this.submissionFile)
+        console.log('Uploaded submission file:', data)
+      } catch (error) {
+        console.error('Failed to upload submission file:', error)
       }
     },
 
     async assignEvaluatorToSubmission() {
       try {
         const data = await submissionRepository.assignEvaluatorToSubmission(
-          this.editedSubmission.id,
+          this.loadedSubmission.id,
           this.EvaluatorsValue,
         )
 
@@ -485,7 +452,7 @@ export default defineComponent({
       if (item) {
         this.getAssignedEvaluator(item.id)
         this.selectedRowIndex = this.submissions.findIndex((submission) => submission.id === item.id)
-        this.editedSubmission = item
+        this.loadedSubmission = item
         this.sentDocumentForEvaluationModal = true
 
         this.loadSubmissionById(item.id)
@@ -497,7 +464,7 @@ export default defineComponent({
     async loadSubmissionById(Id) {
       try {
         const data = await submissionRepository.getSubmissionById(Id)
-        this.editedSubmission = {
+        this.loadedSubmission = {
           id: data.id,
           submissionId: data.submissionId,
           createdAt: new Date(data.createdAt).toLocaleString(),
