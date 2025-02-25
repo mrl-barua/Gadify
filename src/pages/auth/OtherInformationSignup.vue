@@ -68,6 +68,10 @@ import { useForm, useToast } from 'vuestic-ui'
 const { validate } = useForm('form')
 const { push } = useRouter()
 const { init } = useToast()
+import { useProponentStore } from '../../stores/proponent-store'
+import { proponentsRepository } from '../../repository/proponentsRepository'
+
+const proponentStore = useProponentStore()
 
 const formData = reactive({
   email: '',
@@ -79,11 +83,32 @@ const formData = reactive({
 
 const submit = () => {
   if (validate()) {
-    init({
-      message: 'Success: You have signed up successfully',
-      color: 'success',
-    })
-    push({ name: 'login' })
+    try {
+      proponentStore.setProponentEmail(formData.email)
+      proponentStore.setProponentUsername(formData.userName)
+      proponentStore.setProponentPassword(formData.password)
+
+      const proponentData = proponentStore.proponent
+      proponentsRepository.registerProponent(
+        // proponentData.department,
+        1,
+        proponentData.fullname,
+        proponentData.username,
+        proponentData.email,
+        proponentData.password,
+      )
+    } catch (error: any) {
+      init({
+        message: 'An error occurred' + error,
+        color: 'error',
+      })
+    } finally {
+      init({
+        message: 'Success: You have signed up successfully',
+        color: 'success',
+      })
+      push({ name: 'login' })
+    }
   }
 }
 

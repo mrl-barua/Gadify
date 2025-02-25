@@ -110,6 +110,7 @@ export default defineComponent({
     const proponents = []
 
     const columns = [
+      { key: 'actions', label: 'Actions', width: 80 },
       { key: 'proponentId', label: 'Proponent ID', sortable: true },
       { key: 'department.departmentId', label: 'Department ID', sortable: true },
       { key: 'proponentType', label: 'Proponent Type', sortable: true },
@@ -121,7 +122,6 @@ export default defineComponent({
       { key: 'department.departmentName', label: 'Department Name', sortable: true },
       { key: 'department.campus.campusName', label: 'Campus Name', sortable: true },
       { key: 'department.campus.campusAddress', label: 'Campus Address', sortable: true },
-      { key: 'actions', label: 'Actions', width: 80 },
     ]
 
     return {
@@ -181,19 +181,27 @@ export default defineComponent({
 
     async approveProponent() {
       if (this.selectedRowIndex !== null) {
-        const item = this.proponents[this.selectedRowIndex]
-        await proponentsRepository.approveProponent(item.id)
-        this.approveModal = false
-        this.loadProponents()
+        try {
+          const item = this.proponents[this.selectedRowIndex]
+          await proponentsRepository.approveProponent(item.id)
+        } finally {
+          this.approveModal = false
+          this.loadProponents()
+          this.proponents = [...this.proponents.slice(0, id), ...this.proponents.slice(id + 1)]
+        }
       }
     },
 
     async rejectProponent() {
       if (this.selectedRowIndex !== null) {
-        const item = this.proponents[this.selectedRowIndex]
-        await proponentsRepository.rejectProponent(item.id)
-        this.rejectModal = false
-        this.loadProponents()
+        try {
+          const item = this.proponents[this.selectedRowIndex]
+          await proponentsRepository.rejectProponent(item.id)
+        } finally {
+          this.rejectModal = false
+          this.loadProponents()
+          this.proponents = [...this.proponents.slice(0, id), ...this.proponents.slice(id + 1)]
+        }
       }
     },
 

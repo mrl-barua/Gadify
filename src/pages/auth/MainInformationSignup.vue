@@ -27,6 +27,9 @@ import { useForm, useToast } from 'vuestic-ui'
 const { validate } = useForm('form')
 const { push } = useRouter()
 const { init } = useToast()
+import { useProponentStore } from '../../stores/proponent-store'
+
+const proponentStore = useProponentStore()
 
 const formData = reactive({
   lastName: '',
@@ -34,17 +37,25 @@ const formData = reactive({
   middleName: '',
   department: '',
   sex: '',
-  password: '',
-  repeatPassword: '',
 })
 
 const submit = () => {
   if (validate()) {
-    init({
-      message: 'Next step: proceed to other information',
-      color: 'success',
-    })
-    push({ name: 'next-signup' })
+    try {
+      proponentStore.setProponentFullName(formData.firstName + '' + formData.middleName + '' + formData.lastName)
+      proponentStore.setProponentDepartment(formData.department)
+    } catch {
+      init({
+        message: 'An error occurred',
+        color: 'error',
+      })
+    } finally {
+      init({
+        message: 'Next step: proceed to other information',
+        color: 'success',
+      })
+      push({ name: 'next-signup' })
+    }
   }
 }
 const departmentOptions = ['Human Resources', 'Information Technology', 'Finance', 'Marketing', 'Sales']

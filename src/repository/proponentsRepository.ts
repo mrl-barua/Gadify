@@ -50,20 +50,6 @@ export const proponentsRepository = {
     }
   },
 
-  createProponent: async (proponentData: any) => {
-    try {
-      const response = await apiClient.post('/api/proponents', proponentData, {
-        headers: {
-          Authorization: `Bearer ${jwtStore.getToken}`,
-        },
-      })
-      return response.data
-    } catch (error) {
-      console.error('Error:', error)
-      throw error
-    }
-  },
-
   updateProponent: async (
     id: number,
     departmentId: number,
@@ -152,6 +138,39 @@ export const proponentsRepository = {
       } catch (err) {
         console.log(err)
       }
+      return response.data
+    } catch (error) {
+      console.error('Error:', error)
+      throw error
+    }
+  },
+
+  registerProponent: async (
+    departmentId: number,
+    fullName: string,
+    userName: string,
+    email: string,
+    password: string,
+  ) => {
+    try {
+      const response = await apiClient.post(
+        `/api/register/proponent`,
+        {
+          id: 0,
+          departmentId: departmentId,
+          proponentType: 'Inside',
+          proponentStatus: 'Pending',
+          fullName: fullName,
+          userName: userName,
+          email: email,
+          password: password,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${jwtStore.getToken}`,
+          },
+        },
+      )
       return response.data
     } catch (error) {
       console.error('Error:', error)
