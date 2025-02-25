@@ -183,11 +183,14 @@ export default defineComponent({
       if (this.selectedRowIndex !== null) {
         try {
           const item = this.proponents[this.selectedRowIndex]
+          this.proponents = [
+            ...this.proponents.slice(0, this.selectedRowIndex),
+            ...this.proponents.slice(this.selectedRowIndex + 1),
+          ]
           await proponentsRepository.approveProponent(item.id)
         } finally {
           this.approveModal = false
           this.loadProponents()
-          this.proponents = [...this.proponents.slice(0, id), ...this.proponents.slice(id + 1)]
         }
       }
     },
@@ -200,7 +203,10 @@ export default defineComponent({
         } finally {
           this.rejectModal = false
           this.loadProponents()
-          this.proponents = [...this.proponents.slice(0, id), ...this.proponents.slice(id + 1)]
+          this.proponents = [
+            ...this.proponents.slice(0, this.selectedRowIndex),
+            ...this.proponents.slice(this.selectedRowIndex + 1),
+          ]
         }
       }
     },
