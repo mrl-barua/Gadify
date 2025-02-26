@@ -120,18 +120,18 @@
         <div class="flex flex-wrap -mx-2">
           <div class="w-full md:w-1/2 px-2 mb-4">
             <h3 class="text-lg font-semibold mb-2">Main Information</h3>
-            <p class="mb-1"><span class="font-medium">Document No:</span> {{ editedSubmission.id }}</p>
-            <p class="mb-1"><span class="font-medium">Date Created:</span> {{ editedSubmission.createdAt }}</p>
+            <p class="mb-1"><span class="font-medium">Document No:</span> {{ loadedSubmission.id }}</p>
+            <p class="mb-1"><span class="font-medium">Date Created:</span> {{ loadedSubmission.createdAt }}</p>
             <p class="mb-1">
-              <span class="font-medium">Submission Status:</span> {{ editedSubmission.submissionStatus }}
+              <span class="font-medium">Submission Status:</span> {{ loadedSubmission.submissionStatus }}
             </p>
           </div>
           <div class="w-full md:w-1/2 px-2 mb-4">
             <h3 class="text-lg font-semibold mb-2">Other Information</h3>
-            <p class="mb-1"><span class="font-medium">Project Proposal:</span> {{ editedSubmission.proposalTitle }}</p>
+            <p class="mb-1"><span class="font-medium">Project Proposal:</span> {{ loadedSubmission.proposalTitle }}</p>
 
-            <p class="mb-1"><span class="font-medium">Project Description:</span> {{ editedSubmission.description }}</p>
-            <p class="mb-1"><span class="font-medium">File Type:</span> {{ editedSubmission.fileType }}</p>
+            <p class="mb-1"><span class="font-medium">Project Description:</span> {{ loadedSubmission.description }}</p>
+            <p class="mb-1"><span class="font-medium">File Type:</span> {{ loadedSubmission.fileType }}</p>
           </div>
         </div>
 
@@ -157,21 +157,14 @@
               <VaSidebarItem
                 :active="isActive"
                 active-color="#C0C0C0"
-                @click="downloadSubmission(editedSubmission.resourcesLink, editedSubmission.fileType)"
+                @click="downloadSubmission(loadedSubmission.resourcesLink, loadedSubmission.fileType)"
               >
-                <VaSidebarItemContent class="hover-always">
-                  <VaIcon name="download" />
-                  <VaFlex vertical class="ml-2">
-                    <VaSidebarItemTitle>
-                      {{ editedSubmission.proposalTitle }}
-                    </VaSidebarItemTitle>
-
-                    <VaSidebarItemSubtitle>
-                      uploaded by: {{ editedSubmission.proponent.fullName }} uploaded on:
-                      {{ editedSubmission.createdAt }}
-                    </VaSidebarItemSubtitle>
-                  </VaFlex>
-                </VaSidebarItemContent>
+                <VaSidebarItemContent
+                  ><VaIcon name="download" />
+                  <VaSidebarItemTitle>
+                    {{ loadedSubmission.proposalTitle }}
+                  </VaSidebarItemTitle></VaSidebarItemContent
+                >
               </VaSidebarItem>
             </VaCardContent>
           </VaCard>
@@ -230,7 +223,7 @@
                     <VaDivider />
                   </div>
                 </template>
-                <VaInput v-model="editedSubmission.remarks" label="Remarks" placeholder="Enter remarks here" />
+                <VaInput v-model="loadedSubmission.remarks" label="Remarks" placeholder="Enter remarks here" />
                 <div class="mt-4">
                   <VaButton class="mr-2" color="success" @click="approveSubmission()">Approved</VaButton>
                   <VaButton class="mr-2" color="danger" @click="forCorrectionSubmission()">For Correction</VaButton>
@@ -321,7 +314,7 @@ export default defineComponent({
       documentRoutingLogModal: false,
       processSubmissionModal: false,
       selectedRowIndex: null,
-      editedSubmission: {
+      loadedSubmission: {
         id: '',
         submissionId: '',
         createdAt: '',
@@ -383,7 +376,7 @@ export default defineComponent({
     async assignEvaluatorToSubmission() {
       try {
         const data = await submissionRepository.assignEvaluatorToSubmission(
-          this.editedSubmission.id,
+          this.loadedSubmission.id,
           this.EvaluatorsValue,
         )
 
@@ -442,7 +435,7 @@ export default defineComponent({
       if (item) {
         this.getAssignedEvaluator(item.id)
         this.selectedRowIndex = this.submissions.findIndex((submission) => submission.id === item.id)
-        this.editedSubmission = item
+        this.loadedSubmission = item
         this.sentDocumentForEvaluationModal = true
 
         this.loadSubmissionById(item.id)
@@ -454,7 +447,7 @@ export default defineComponent({
     async loadSubmissionById(Id) {
       try {
         const data = await submissionRepository.getSubmissionById(Id)
-        this.editedSubmission = {
+        this.loadedSubmission = {
           id: data.id,
           submissionId: data.submissionId,
           createdAt: new Date(data.createdAt).toLocaleString(),
