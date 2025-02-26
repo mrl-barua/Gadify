@@ -93,6 +93,8 @@
 import { defineComponent } from 'vue'
 import { proponentsRepository } from '../../../repository/proponentsRepository'
 import { sleep } from '../../../services/utils'
+import { useToast } from 'vuestic-ui'
+const { init } = useToast()
 
 const defaultProponent = {
   proponentId: '',
@@ -182,12 +184,12 @@ export default defineComponent({
     async approveProponent() {
       if (this.selectedRowIndex !== null) {
         try {
+          init({ message: 'Proponent has been approved', color: 'success' })
           const item = this.proponents[this.selectedRowIndex]
-          this.proponents = [
-            ...this.proponents.slice(0, this.selectedRowIndex),
-            ...this.proponents.slice(this.selectedRowIndex + 1),
-          ]
           await proponentsRepository.approveProponent(item.id)
+        } catch (error) {
+          console.error('Failed to approve proponent:', error)
+          init({ message: 'Failed to approve proponent', color: 'danger' })
         } finally {
           this.approveModal = false
           this.loadProponents()
@@ -198,41 +200,19 @@ export default defineComponent({
     async rejectProponent() {
       if (this.selectedRowIndex !== null) {
         try {
+          init({ message: 'Proponent has been approved', color: 'success' })
           const item = this.proponents[this.selectedRowIndex]
           await proponentsRepository.rejectProponent(item.id)
+        } catch (error) {
+          console.error('Failed to reject proponent:', error)
+          init({ message: 'Failed to reject proponent', color: 'danger' })
         } finally {
           this.rejectModal = false
           this.loadProponents()
-          this.proponents = [
-            ...this.proponents.slice(0, this.selectedRowIndex),
-            ...this.proponents.slice(this.selectedRowIndex + 1),
-          ]
         }
       }
     },
 
-    reseteditedProponent() {
-      this.editedProponent = null
-      this.editedProponentId = null
-    },
-    resetcreatedProponent() {
-      this.createdProponent = { ...defaultProponent }
-    },
-    deleteItemById(id) {
-      this.proponents = [...this.proponents.slice(0, id), ...this.proponents.slice(id + 1)]
-    },
-    addNewItem() {
-      this.proponents = [...this.proponents, { ...this.createdProponent }]
-      this.resetcreatedProponent()
-    },
-    editItem() {
-      this.proponents = [
-        ...this.proponents.slice(0, this.editedProponentId),
-        { ...this.editedProponent },
-        ...this.proponents.slice(this.editedProponentId + 1),
-      ]
-      this.reseteditedProponent()
-    },
     openModalToEditItemById(id) {
       this.editedProponentId = id
       this.editedProponent = { ...this.proponents[id] }

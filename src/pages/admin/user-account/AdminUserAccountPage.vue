@@ -86,7 +86,7 @@ const showUpdateConfirmation = () => {
 
 const handleSubmit = async () => {
   try {
-    await updateCurrentlyLoggedInUserData() // Await the API update
+    await updateCurrentlyLoggedInUserData()
     init({ message: 'Account Updated Successfully', color: 'success' })
   } catch (error) {
     console.error('Failed to update user data:', error)
