@@ -18,7 +18,7 @@ const jwtStore = useJwtStore()
 export const departmentRepository = {
   getDepartments: async () => {
     try {
-      const response = await apiClient.get('/api/deparments/', {
+      const response = await apiClient.get('/api/departments', {
         headers: {
           Authorization: `Bearer ${jwtStore.getToken}`,
         },

@@ -8,7 +8,14 @@
     <VaInput v-model="formData.lastName" class="mb-4" label="Last Name" type="text" />
     <VaInput v-model="formData.firstName" class="mb-4" label="First Name" type="text" />
     <VaInput v-model="formData.middleName" class="mb-4" label="Middle Name" type="text" />
-    <VaSelect v-model="formData.department" class="mb-4" label="Office/Department" :options="departmentOptions" />
+    <VaSelect
+      v-model="formData.department"
+      class="mb-4"
+      label="Office/Department"
+      :options="departmentOptions"
+      text-by="label"
+      value-by="value"
+    />
     <VaRadioGroup v-model="formData.sex" class="mb-4" label="Sex">
       <VaRadio label="Male" name="sex" value="male" />
       <VaRadio label="Female" name="sex" value="female" />
@@ -20,7 +27,7 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive } from 'vue'
+import { reactive, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useForm, useToast } from 'vuestic-ui'
 
@@ -28,6 +35,8 @@ const { validate } = useForm('form')
 const { push } = useRouter()
 const { init } = useToast()
 import { useProponentStore } from '../../stores/proponent-store'
+
+import { departmentRepository } from '../../repository/departmentRepository'
 
 const proponentStore = useProponentStore()
 
@@ -37,6 +46,20 @@ const formData = reactive({
   middleName: '',
   department: '',
   sex: '',
+})
+
+const departmentOptions = ref<{ value: number; label: string }[]>([])
+
+const loadDepartments = async () => {
+  const departments = await departmentRepository.getDepartments()
+  departmentOptions.value = departments.map((department: { id: number; departmentName: string }) => ({
+    value: department.id,
+    label: department.departmentName,
+  }))
+}
+
+onMounted(() => {
+  loadDepartments()
 })
 
 const submit = () => {
@@ -58,5 +81,4 @@ const submit = () => {
     }
   }
 }
-const departmentOptions = ['Human Resources', 'Information Technology', 'Finance', 'Marketing', 'Sales']
 </script>
