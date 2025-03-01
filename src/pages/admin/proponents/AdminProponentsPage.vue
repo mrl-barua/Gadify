@@ -200,7 +200,7 @@ export default defineComponent({
     async rejectProponent() {
       if (this.selectedRowIndex !== null) {
         try {
-          init({ message: 'Proponent has been approved', color: 'success' })
+          init({ message: 'Proponent has been rejected', color: 'success' })
           const item = this.proponents[this.selectedRowIndex]
           await proponentsRepository.rejectProponent(item.id)
         } catch (error) {

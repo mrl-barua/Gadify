@@ -6,17 +6,18 @@
 </template>
 
 <script lang="ts" setup>
+import { computed } from 'vue'
 import ProfileDropdown from './dropdowns/ProfileDropdown.vue'
 
 defineProps({
   isMobile: { type: Boolean, default: false },
 })
 
-import { ref } from 'vue'
-// import { useI18n } from 'vue-i18n'
-// const { t } = useI18n()
+import { useJwtStore } from '../../../stores/jwtHandler'
 
-const name = ref('Marlo') // Replace 'Name' with the dynamic value you want
+const jwtStore = useJwtStore()
+
+const name = computed(() => jwtStore.getUsername)
 </script>
 
 <style lang="scss">

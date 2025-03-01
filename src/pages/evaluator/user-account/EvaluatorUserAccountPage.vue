@@ -55,8 +55,10 @@
 import { reactive, onMounted, ref, watch } from 'vue'
 import { proponentsRepository } from '../../../repository/proponentsRepository'
 import { useToast } from 'vuestic-ui'
+import { useJwtStore } from '../../../stores/jwtHandler'
 
 const { init } = useToast()
+const jwtStore = useJwtStore()
 
 const form = reactive({
   proponentId: '',
@@ -99,7 +101,8 @@ const handleSubmit = async () => {
 
 const loadCurrentlyLoggedinUser = async () => {
   try {
-    const data = await proponentsRepository.getProponentById(1)
+    const userId = jwtStore.getUserId
+    const data = await proponentsRepository.getProponentById(userId)
 
     Object.assign(form, {
       proponentId: data.proponentId,

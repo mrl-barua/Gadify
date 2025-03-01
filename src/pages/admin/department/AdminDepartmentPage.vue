@@ -3,7 +3,7 @@
     <template #headerAppend>
       <tr class="table-crud__slot">
         <th v-for="key in Object.keys(createdItem)" :key="key" class="p-1">
-          <VaInput v-if="createdItem[key].id" disabled="true" v-model="createdItem[key]" :placeholder="key" />
+          <VaInput v-if="createdItem[key].id" v-model="createdItem[key]" disabled="true" :placeholder="key" />
           <VaInput v-else v-model="createdItem[key]" :placeholder="key" />
         </th>
         <th class="p-1">

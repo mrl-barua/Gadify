@@ -55,8 +55,10 @@
 import { reactive, onMounted, ref, watch } from 'vue'
 import { proponentsRepository } from '../../../repository/proponentsRepository'
 import { useToast } from 'vuestic-ui'
+import { useJwtStore } from '../../../stores/jwtHandler'
 
 const { init } = useToast()
+const jwtStore = useJwtStore()
 
 const form = reactive({
   proponentId: '',
@@ -86,7 +88,7 @@ const showUpdateConfirmation = () => {
 
 const handleSubmit = async () => {
   try {
-    await updateCurrentlyLoggedInUserData() // Await the API update
+    await updateCurrentlyLoggedInUserData()
     init({ message: 'Account Updated Successfully', color: 'success' })
   } catch (error) {
     console.error('Failed to update user data:', error)
@@ -99,7 +101,8 @@ const handleSubmit = async () => {
 
 const loadCurrentlyLoggedinUser = async () => {
   try {
-    const data = await proponentsRepository.getProponentById(1)
+    const userId = jwtStore.getUserId
+    const data = await proponentsRepository.getProponentById(userId)
 
     Object.assign(form, {
       proponentId: data.proponentId,
@@ -110,10 +113,10 @@ const loadCurrentlyLoggedinUser = async () => {
       userName: data.userName,
       email: data.email,
     })
-
-    isLoading.value = false
   } catch (error) {
     console.error('Failed to load user data:', error)
+    isLoading.value = false
+  } finally {
     isLoading.value = false
   }
 }
@@ -133,6 +136,8 @@ const updateCurrentlyLoggedInUserData = async () => {
   } catch (error) {
     console.error('Failed to update user data:', error)
     throw error
+  } finally {
+    jwtStore.updateUserame(form.userName)
   }
 }
 

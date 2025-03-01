@@ -1,0 +1,68 @@
+@import 'vuestic-ui/dist/styles/css-variables.css';
+@import 'vuestic-ui/dist/styles/essential.css';
+@import 'vuestic-ui/dist/styles/theme.css';
+@import 'vuestic-ui/dist/styles/typography.css';
+.va-input,
+.va-select {
+  width: 100%;
+}
+
+:root {
+  --va-modal-padding-top: 1rem;
+  --va-modal-padding-right: 1rem;
+  --va-modal-padding-bottom: 1rem;
+  --va-modal-padding-left: 1rem;
+}
+
+.va-modal {
+  line-height: 20px;
+}
+.va-modal__message {
+  margin-bottom: 16px;
+}
+.va-modal__dialog {
+  border-radius: 8px;
+}
+@media (min-width: 640px) {
+  .va-modal__dialog {
+    border-radius: 4px;
+  }
+}
+
+.va-input-label {
+  font-size: 9px;
+  line-height: 14px;
+  letter-spacing: 0.4px;
+  min-height: 14px;
+}
+.va-input-label__required-mark {
+  font-size: 13px;
+}
+.va-input-wrapper__size-keeper {
+  height: auto;
+}
+.va-input-wrapper__label--outer {
+  margin-bottom: 4px;
+}
+.va-input-wrapper__field {
+  padding: 8px 12px;
+}
+
+.va-sidebar__item__content {
+  min-height: 44px;
+}
+
+.va-select--small .va-input-wrapper__field {
+  padding: 0 0.25rem;
+}
+.va-select-anchor__input {
+  flex: unset;
+}
+
+.va-card__title {
+  padding-bottom: calc(var(--va-card-padding) / 2) !important;
+}
+
+.va-data-table .va-inner-loading__spinner {
+  margin-top: 32px;
+} /*# sourceMappingURL=vuestic.css.map */

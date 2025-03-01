@@ -35,11 +35,9 @@ export const useJwtStore = defineStore('jwt', {
       this.decodedToken = jwtDecode<DecodedToken>(token)
       sessionStorage.setItem('token', token)
     },
-    getLoggedInUserId() {
-      return this.decodedToken?.id ?? null
-    },
-    getLoggedInUserRole() {
-      return this.decodedToken?.role ?? null
+    updateUserame(username: string) {
+      if (!this.decodedToken) return
+      this.decodedToken.username = username
     },
     logout() {
       console.log('Logging out')
@@ -58,5 +56,8 @@ export const useJwtStore = defineStore('jwt', {
     },
     getDecodedToken: (state) => state.decodedToken,
     getToken: (state) => state.token,
+    getUserId: (state) => state.decodedToken?.id ?? 0,
+    getUsername: (state) => state.decodedToken?.username,
+    getUserRole: (state) => state.decodedToken?.role,
   },
 })
