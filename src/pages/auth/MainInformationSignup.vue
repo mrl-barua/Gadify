@@ -75,7 +75,7 @@ const submit = () => {
   if (validate()) {
     try {
       proponentStore.setProponentFullName(formData.firstName + '' + formData.middleName + '' + formData.lastName)
-      proponentStore.setProponentDepartment(formData.department)
+      proponentStore.setProponentDepartment(Number(formData.department))
     } catch {
       init({
         message: 'An error occurred',

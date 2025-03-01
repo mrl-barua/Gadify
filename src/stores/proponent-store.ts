@@ -6,7 +6,7 @@ export const useProponentStore = defineStore({
     proponent: {
       fullname: '',
       username: '',
-      department: '',
+      department: 0,
       email: '',
       password: '',
     },
@@ -22,7 +22,7 @@ export const useProponentStore = defineStore({
       this.proponent.username = username
     },
 
-    setProponentDepartment(department: string) {
+    setProponentDepartment(department: number) {
       this.proponent.department = department
     },
     setProponentPassword(password: string) {

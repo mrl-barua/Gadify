@@ -96,8 +96,7 @@ const submit = () => {
 
       const proponentData = proponentStore.proponent
       proponentsRepository.registerProponent(
-        // proponentData.department,
-        1,
+        proponentData.department,
         proponentData.fullname,
         proponentData.username,
         proponentData.email,
