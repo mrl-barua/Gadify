@@ -1,7 +1,7 @@
 <template>
   <h1 class="page-title">User Account</h1>
   <div class="flex justify-center mb-8">
-    <VaAvatar class="mr-6" size="10rem"> M </VaAvatar>
+    <VaAvatar class="mr-6" size="10rem" style="font-size: 4rem">{{ userName[0] }}</VaAvatar>
   </div>
   <div class="flex justify-center -mb-4">
     <VaForm ref="formRef" class="flex flex-col items-baseline gap-6" @submit.prevent="showUpdateConfirmation">
@@ -69,6 +69,8 @@ const form = reactive({
   userName: '',
   email: '',
 })
+
+const userName = jwtStore.getUsername || ''
 
 const isDisabled = ref(false)
 const isLoading = ref(false)

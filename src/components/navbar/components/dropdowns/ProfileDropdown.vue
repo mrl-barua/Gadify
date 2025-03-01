@@ -3,7 +3,7 @@
     <template #anchor>
       <VaButton preset="secondary" color="textPrimary">
         <VaBadge overlap>
-          <VaAvatar :size="32" color="primary"> 😎 </VaAvatar>
+          <VaAvatar :size="32" color="primary"> {{ username[0] }} </VaAvatar>
         </VaBadge>
       </VaButton>
     </template>
@@ -28,6 +28,8 @@ const { t } = useI18n()
 import { computed } from 'vue'
 import { useColors } from 'vuestic-ui'
 import { useJwtStore } from '../../../../stores/jwtHandler'
+
+const username = useJwtStore().getUsername || ''
 
 const { applyPreset, currentPresetName } = useColors()
 
