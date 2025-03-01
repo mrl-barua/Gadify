@@ -379,21 +379,19 @@ export default defineComponent({
           this.loadedSubmission.id,
           this.EvaluatorsValue,
         )
-
-        console.log('Assigned evaluator to submission:', data)
-        toast.init({
-          message: 'Evaluator assigned successfully',
-          color: 'success',
-        })
       } catch (error) {
-        console.error('Failed to assign evaluator to submission:', error)
-
         toast.init({
           message: error.response?.data?.message || 'Failed to assign evaluator',
           color: 'danger',
         })
       } finally {
+        this.AssignedEvaluator = []
         this.EvaluatorsValue = []
+        this.getAssignedEvaluator(this.loadedSubmission.id)
+        toast.init({
+          message: 'Evaluator assigned successfully',
+          color: 'success',
+        })
       }
     },
 
