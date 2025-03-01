@@ -5,9 +5,13 @@
       Have an account?
       <RouterLink :to="{ name: 'login' }" class="font-semibold text-primary">Login</RouterLink>
     </p>
-    <VaInput v-model="formData.lastName" class="mb-4" label="Last Name" type="text" />
-    <VaInput v-model="formData.firstName" class="mb-4" label="First Name" type="text" />
-    <VaInput v-model="formData.middleName" class="mb-4" label="Middle Name" type="text" />
+    <VaInput v-model="formData.lastName" :rules="[rules.required]" class="mb-4" label="Last Name" type="text">
+      <template #label> Last Name <span style="color: red">*</span> </template>
+    </VaInput>
+    <VaInput v-model="formData.firstName" :rules="[rules.required]" class="mb-4" label="First Name" type="text">
+      <template #label> First Name <span style="color: red">*</span> </template></VaInput
+    >
+    <VaInput v-model="formData.middleName" class="mb-4" label="Middle Name" type="text" placeholder="(Optional)" />
     <VaSelect
       v-model="formData.department"
       class="mb-4"
@@ -15,7 +19,8 @@
       :options="departmentOptions"
       text-by="label"
       value-by="value"
-    />
+      ><template #label> Department <span style="color: red">*</span> </template>
+    </VaSelect>
     <VaRadioGroup v-model="formData.sex" class="mb-4" label="Sex">
       <VaRadio label="Male" name="sex" value="male" />
       <VaRadio label="Female" name="sex" value="female" />
@@ -39,6 +44,10 @@ import { useProponentStore } from '../../stores/proponent-store'
 import { departmentRepository } from '../../repository/departmentRepository'
 
 const proponentStore = useProponentStore()
+
+const rules = {
+  required: (value: string) => !!value || 'This field is required',
+}
 
 const formData = reactive({
   lastName: '',

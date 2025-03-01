@@ -375,10 +375,7 @@ export default defineComponent({
 
     async assignEvaluatorToSubmission() {
       try {
-        const data = await submissionRepository.assignEvaluatorToSubmission(
-          this.loadedSubmission.id,
-          this.EvaluatorsValue,
-        )
+        await submissionRepository.assignEvaluatorToSubmission(this.loadedSubmission.id, this.EvaluatorsValue)
       } catch (error) {
         toast.init({
           message: error.response?.data?.message || 'Failed to assign evaluator',

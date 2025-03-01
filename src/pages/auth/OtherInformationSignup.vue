@@ -11,9 +11,15 @@
       class="mb-4"
       label="Email"
       type="email"
-    />
-    <VaInput v-model="formData.contactNo" class="mb-4" label="Contact No" type="text" />
-    <VaInput v-model="formData.userName" class="mb-4" label="Username" type="text" />
+    >
+      <template #label> Email <span style="color: red">*</span> </template>
+    </VaInput>
+    <VaInput v-model="formData.contactNo" class="mb-4" label="Contact No" type="text"
+      ><template #label> Contact No. <span style="color: red">*</span> </template></VaInput
+    >
+    <VaInput v-model="formData.userName" class="mb-4" label="Username" type="text">
+      <template #label> Username <span style="color: red">*</span> </template>
+    </VaInput>
     <VaValue v-slot="isPasswordVisible" :default-value="false">
       <VaInput
         ref="password1"
