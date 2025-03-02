@@ -291,8 +291,9 @@
                 <VaInput v-model="loadedSubmission.remarks" label="Remarks" placeholder="Enter remarks here" />
                 <div class="mt-4">
                   <VaButton class="mr-2" color="success" @click="approveSubmission()">Approved</VaButton>
+                  <VaButton class="mr-2" color="warning" @click="forEvaluationSubmission()">For Evaluation</VaButton>
                   <VaButton class="mr-2" color="danger" @click="forCorrectionSubmission()">For Correction</VaButton>
-                  <VaButton class="mr-2" color="active" @click="closeProcessSubmissionmodal()">Close Modal</VaButton>
+                  <VaButton class="mr-2" color="active" @click="closeProcessSubmissionmodal()">Close</VaButton>
                 </div>
               </VaModal>
             </VaCardContent>
@@ -440,6 +441,10 @@ export default defineComponent({
     },
 
     approveSubmission() {
+      this.processSubmissionModal = false
+    },
+
+    forEvaluationSubmission() {
       this.processSubmissionModal = false
     },
 
