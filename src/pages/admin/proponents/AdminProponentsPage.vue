@@ -222,6 +222,7 @@ export default defineComponent({
     async approveProponent() {
       if (this.selectedRowIndex !== null) {
         try {
+          this.isLoading = true
           init({ message: 'Proponent has been approved', color: 'success' })
           const item = this.proponents[this.selectedRowIndex]
           await proponentsRepository.approveProponent(item.id)
@@ -230,7 +231,13 @@ export default defineComponent({
           init({ message: 'Failed to approve proponent', color: 'danger' })
         } finally {
           this.approveModal = false
-          this.loadProponents()
+          try {
+            await this.loadProponents()
+          } catch (error) {
+            console.error('Failed to load proponents:', error)
+          } finally {
+            this.isLoading = false
+          }
         }
       }
     },
@@ -238,6 +245,7 @@ export default defineComponent({
     async rejectProponent() {
       if (this.selectedRowIndex !== null) {
         try {
+          this.isLoading = true
           init({ message: 'Proponent has been rejected', color: 'success' })
           const item = this.proponents[this.selectedRowIndex]
           await proponentsRepository.rejectProponent(item.id)
@@ -246,7 +254,13 @@ export default defineComponent({
           init({ message: 'Failed to reject proponent', color: 'danger' })
         } finally {
           this.rejectModal = false
-          this.loadProponents()
+          try {
+            await this.loadProponents()
+          } catch (error) {
+            console.error('Failed to load proponents:', error)
+          } finally {
+            this.isLoading = false
+          }
         }
       }
     },
