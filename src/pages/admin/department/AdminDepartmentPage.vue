@@ -1,17 +1,5 @@
 <template>
   <VaDataTable class="table-crud" :items="departments" :columns="columns" striped>
-    <template #headerAppend>
-      <tr class="table-crud__slot">
-        <th v-for="key in Object.keys(createdItem)" :key="key" class="p-1">
-          <VaInput v-if="createdItem[key].id" v-model="createdItem[key]" disabled="true" :placeholder="key" />
-          <VaInput v-else v-model="createdItem[key]" :placeholder="key" />
-        </th>
-        <th class="p-1">
-          <VaButton :disabled="!isNewData" block @click="addNewItem"> Add </VaButton>
-        </th>
-      </tr>
-    </template>
-
     <template #cell(actions)="{ rowIndex }">
       <VaButton preset="plain" icon="edit" @click="openModalToEditItemById(rowIndex)" />
       <VaButton preset="plain" icon="delete" class="ml-3" @click="deleteItemById(rowIndex)" />
@@ -31,14 +19,13 @@
 </template>
 
 <script>
-
-import { defineComponent } from 'vue'
+import { defineComponent, onMounted } from 'vue'
+import { departmentRepository } from '../../../repository/departmentRepository'
 
 const defaultItem = {
   id: '',
-  departmentId: '',
-  campusId: '',
   departmentName: '',
+  campusName: '',
 }
 
 export default defineComponent({
@@ -46,10 +33,9 @@ export default defineComponent({
     const departments = []
 
     const columns = [
-      { key: 'id', sortable: true },
-      { key: 'departmentId', sortable: true },
-      { key: 'campusId', sortable: true },
-      { key: 'departmentName', sortable: true },
+      { key: 'departmentId', label: 'Department Id', sortable: true },
+      { key: 'departmentName', label: 'Department Name', sortable: true },
+      { key: 'campus.campusName', label: 'Campus', sortable: true },
       { key: 'actions', width: 80 },
     ]
 
@@ -68,8 +54,14 @@ export default defineComponent({
     },
   },
 
+  mounted() {
+    this.loadDepartments()
+  },
+
   methods: {
-    async loadDepartments() {},
+    async loadDepartments() {
+      this.departments = await departmentRepository.getDepartments()
+    },
 
     resetEditedItem() {
       this.editedItem = null
