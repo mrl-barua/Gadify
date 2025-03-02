@@ -26,6 +26,11 @@
         striped
         :loading="isLoading"
       >
+        <template #cell(proponentStatus)="{ value }">
+          <VaChip size="small" color="warning">
+            {{ value }}
+          </VaChip>
+        </template>
         <template #cell(actions)="{ rowIndex }">
           <VaButton preset="plain" icon="check" @click="showApproveModal(pendingProponents[rowIndex])" />
           <VaButton
@@ -54,6 +59,12 @@
         striped
         :loading="isLoading"
       >
+        <template #cell(proponentStatus)="{ value }">
+          <VaChip size="small" color="primary">
+            {{ value }}
+          </VaChip>
+        </template>
+
         <template #cell(actions)="{ rowIndex }">
           <VaButton
             preset="plain"
@@ -77,6 +88,11 @@
         striped
         :loading="isLoading"
       >
+        <template #cell(proponentStatus)="{ value }">
+          <VaChip size="small" color="danger">
+            {{ value }}
+          </VaChip>
+        </template>
         <template #cell(actions)="{ rowIndex }">
           <VaButton preset="plain" icon="check" @click="showApproveModal(disapprovedProponents[rowIndex])" />
           <VaModal v-model="approveModal" ok-text="Approve" @ok="approveProponent(selectedRowIndex)">
@@ -114,16 +130,16 @@ export default defineComponent({
     const columns = [
       { key: 'actions', label: 'Actions', width: 80 },
       { key: 'proponentId', label: 'Proponent ID', sortable: true },
-      { key: 'department.departmentId', label: 'Department ID', sortable: true },
+      // { key: 'department.departmentId', label: 'Department ID', sortable: true },
       { key: 'proponentType', label: 'Proponent Type', sortable: true },
       { key: 'proponentStatus', label: 'Proponent Status', sortable: true },
       { key: 'fullName', label: 'Full Name', sortable: true },
       { key: 'userName', label: 'User Name', sortable: true },
       { key: 'email', label: 'Email', sortable: true },
       { key: 'createdAt', label: 'Created At', sortable: true },
-      { key: 'department.departmentName', label: 'Department Name', sortable: true },
-      { key: 'department.campus.campusName', label: 'Campus Name', sortable: true },
-      { key: 'department.campus.campusAddress', label: 'Campus Address', sortable: true },
+      // { key: 'department.departmentName', label: 'Department Name', sortable: true },
+      // { key: 'department.campus.campusName', label: 'Campus Name', sortable: true },
+      // { key: 'department.campus.campusAddress', label: 'Campus Address', sortable: true },
     ]
 
     return {
