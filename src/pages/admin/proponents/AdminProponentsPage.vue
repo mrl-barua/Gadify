@@ -26,6 +26,9 @@
         striped
         :loading="isLoading"
       >
+        <template #cell(createdAt)="{ value }">
+          {{ formatDate(value) }}
+        </template>
         <template #cell(proponentStatus)="{ value }">
           <VaChip size="small" color="warning">
             {{ value }}
@@ -59,6 +62,9 @@
         striped
         :loading="isLoading"
       >
+        <template #cell(createdAt)="{ value }">
+          {{ formatDate(value) }}
+        </template>
         <template #cell(proponentStatus)="{ value }">
           <VaChip size="small" color="primary">
             {{ value }}
@@ -88,6 +94,9 @@
         striped
         :loading="isLoading"
       >
+        <template #cell(createdAt)="{ value }">
+          {{ formatDate(value) }}
+        </template>
         <template #cell(proponentStatus)="{ value }">
           <VaChip size="small" color="danger">
             {{ value }}
@@ -170,6 +179,19 @@ export default defineComponent({
   },
 
   methods: {
+    formatDate(date) {
+      if (!date) return 'N/A' 
+      return new Date(date).toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true,
+      })
+    },
+
     async loadProponents() {
       this.isLoading = true
       await sleep(1000)
