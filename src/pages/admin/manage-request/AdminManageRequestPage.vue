@@ -27,6 +27,20 @@
         striped
         :loading="isLoading"
       >
+        <template #cell(fileType)="{ value }">
+          <VaChip v-if="value === 'File'" size="small" color="primary">
+            {{ value }}
+          </VaChip>
+          <VaChip v-if="value === 'Link'" size="small" color="success">
+            {{ value }}
+          </VaChip>
+        </template>
+
+        <template #cell(submissionStatus)="{ value }">
+          <VaChip size="small" color="warning">
+            {{ value }}
+          </VaChip>
+        </template>
         <template #cell(actions)="{ rowIndex }">
           <VaButton
             preset="plain"
@@ -51,6 +65,19 @@
         striped
         :loading="isLoading"
       >
+        <template #cell(fileType)="{ value }">
+          <VaChip v-if="value === 'File'" size="small" color="primary">
+            {{ value }}
+          </VaChip>
+          <VaChip v-if="value === 'Link'" size="small" color="success">
+            {{ value }}
+          </VaChip>
+        </template>
+        <template #cell(submissionStatus)="{ value }">
+          <VaChip size="small" color="warning">
+            {{ value }}
+          </VaChip>
+        </template>
         <template #cell(actions)="{ rowIndex }">
           <VaButton
             preset="plain"
@@ -75,6 +102,19 @@
         striped
         :loading="isLoading"
       >
+        <template #cell(fileType)="{ value }">
+          <VaChip v-if="value === 'File'" size="small" color="primary">
+            {{ value }}
+          </VaChip>
+          <VaChip v-if="value === 'Link'" size="small" color="success">
+            {{ value }}
+          </VaChip>
+        </template>
+        <template #cell(submissionStatus)="{ value }">
+          <VaChip size="small" color="primary">
+            {{ value }}
+          </VaChip>
+        </template>
         <template #cell(actions)="{ rowIndex }">
           <VaButton
             preset="plain"
@@ -99,6 +139,19 @@
         striped
         :loading="isLoading"
       >
+        <template #cell(fileType)="{ value }">
+          <VaChip v-if="value === 'File'" size="small" color="primary">
+            {{ value }}
+          </VaChip>
+          <VaChip v-if="value === 'Link'" size="small" color="success">
+            {{ value }}
+          </VaChip>
+        </template>
+        <template #cell(submissionStatus)="{ value }">
+          <VaChip size="small" color="danger">
+            {{ value }}
+          </VaChip>
+        </template>
         <template #cell(actions)="{ rowIndex }">
           <VaButton
             preset="plain"
@@ -300,8 +353,8 @@ export default defineComponent({
       { key: 'fileType', label: 'File Type', sortable: true },
       { key: 'createdAt', label: 'Date Filed', sortable: true },
       { key: 'submissionId', label: 'Document No.', sortable: true },
-      { key: 'submissionStatus', label: 'Proponent', sortable: true },
-      { key: 'proponent.fullName', label: 'Department', sortable: true },
+      { key: 'proponent.fullName', label: 'Proponent', sortable: true },
+      { key: 'proponent.department.departmentName', label: 'Department', sortable: true },
       { key: 'proposalTitle', label: 'Proposal Title', sortable: true },
       { key: 'submissionStatus', label: 'Status', sortable: true },
       { key: 'actions', label: 'Actions', width: 80 },
