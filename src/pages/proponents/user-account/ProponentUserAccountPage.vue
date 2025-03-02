@@ -125,7 +125,8 @@ const loadCurrentlyLoggedinUser = async () => {
 
 const updateCurrentlyLoggedInUserData = async () => {
   try {
-    const data = await proponentsRepository.getProponentById(1)
+    const userId = jwtStore.getUserId
+    const data = await proponentsRepository.getProponentById(userId)
     await proponentsRepository.updateProponent(
       data.id,
       data.departmentId,

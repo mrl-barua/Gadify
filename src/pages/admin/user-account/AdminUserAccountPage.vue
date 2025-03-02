@@ -6,30 +6,20 @@
   <div class="flex justify-center -mb-4">
     <VaForm ref="formRef" class="flex flex-col items-baseline gap-6" @submit.prevent="showUpdateConfirmation">
       <div class="flex flex-wrap justify-center -mx-2">
-        <!-- Left Column -->
-        <div class="w-full md:w-1/2 px-2 mb-4">
-          <template v-if="isLoading">
-            <VaSkeleton v-for="n in 4" :key="n" height="40px" class="mb-4" />
-          </template>
-          <template v-else>
-            <VaInput v-model="form.proponentId" label="Proponent Id" disabled class="mb-4" />
-            <VaInput v-model="form.proponentType" label="Proponent Type" disabled class="mb-4" />
-            <VaInput v-model="form.proponentStatus" label="Proponent Status" disabled class="mb-4" />
-            <VaInput v-model="form.department" label="Department" disabled class="mb-4" />
-          </template>
-        </div>
+        <template v-if="isLoading">
+          <VaSkeleton v-for="n in 4" :key="n" height="40px" class="mb-4" />
+        </template>
+        <template v-else>
+          <VaInput v-model="form.adminId" label="Admin Id" disabled class="mb-4" />
+        </template>
 
-        <!-- Right Column -->
-        <div class="w-full md:w-1/2 px-2 mb-4">
-          <template v-if="isLoading">
-            <VaSkeleton v-for="n in 3" :key="n" height="40px" class="mb-4" />
-          </template>
-          <template v-else>
-            <VaInput v-model="form.fullName" label="Full Name" class="mb-4" />
-            <VaInput v-model="form.userName" label="Username" class="mb-4" />
-            <VaInput v-model="form.email" label="Email" class="mb-4" />
-          </template>
-        </div>
+        <template v-if="isLoading">
+          <VaSkeleton v-for="n in 3" :key="n" height="40px" class="mb-4" />
+        </template>
+        <template v-else>
+          <VaInput v-model="form.fullName" label="Full Name" class="mb-4" />
+          <VaInput v-model="form.email" label="Email" class="mb-4" />
+        </template>
       </div>
 
       <!-- Submit Button -->
@@ -53,19 +43,15 @@
 
 <script setup lang="ts">
 import { reactive, onMounted, ref, watch } from 'vue'
-import { proponentsRepository } from '../../../repository/proponentsRepository'
+import { adminRepository } from '../../../repository/adminRepository'
 import { useToast } from 'vuestic-ui'
 import { useJwtStore } from '../../../stores/jwtHandler'
 const { init } = useToast()
 const jwtStore = useJwtStore()
 
 const form = reactive({
-  proponentId: '',
-  proponentType: '',
-  proponentStatus: '',
-  department: '',
+  adminId: '',
   fullName: '',
-  userName: '',
   email: '',
 })
 
@@ -101,10 +87,10 @@ const handleSubmit = async () => {
 const loadCurrentlyLoggedinUser = async () => {
   try {
     const userId = jwtStore.getUserId
-    const data = await proponentsRepository.getProponentById(userId)
+    const data = await adminRepository.getAdminById(userId)
 
     Object.assign(form, {
-      proponentId: data.proponentId,
+      adminId: data.adminId,
       proponentType: data.proponentType,
       proponentStatus: data.proponentStatus,
       department: data.department?.departmentName || '',
@@ -122,16 +108,9 @@ const loadCurrentlyLoggedinUser = async () => {
 
 const updateCurrentlyLoggedInUserData = async () => {
   try {
-    const data = await proponentsRepository.getProponentById(1)
-    await proponentsRepository.updateProponent(
-      data.id,
-      data.departmentId,
-      form.proponentType,
-      form.proponentStatus,
-      form.fullName,
-      form.userName,
-      form.email,
-    )
+    const userId = jwtStore.getUserId
+    const data = await adminRepository.getAdminById(userId)
+    await adminRepository.updateAdmin(data.id, data.adminId, form.fullName, form.email)
   } catch (error) {
     console.error('Failed to update user data:', error)
     throw error
