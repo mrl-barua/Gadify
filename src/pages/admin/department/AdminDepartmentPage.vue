@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import { defineComponent, onMounted } from 'vue'
+import { defineComponent } from 'vue'
 import { departmentRepository } from '../../../repository/departmentRepository'
 
 const defaultItem = {

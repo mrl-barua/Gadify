@@ -180,7 +180,7 @@ export default defineComponent({
 
   methods: {
     formatDate(date) {
-      if (!date) return 'N/A' 
+      if (!date) return 'N/A'
       return new Date(date).toLocaleString('en-US', {
         year: 'numeric',
         month: 'short',
