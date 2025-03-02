@@ -31,6 +31,7 @@
 </template>
 
 <script>
+
 import { defineComponent } from 'vue'
 
 const defaultItem = {
@@ -42,62 +43,7 @@ const defaultItem = {
 
 export default defineComponent({
   data() {
-    const departments = [
-      {
-        id: 1,
-        departmentId: 'D-0001',
-        campusId: 1,
-        departmentName: 'cc',
-      },
-      {
-        id: 2,
-        departmentId: 'D-0002',
-        campusId: 2,
-        departmentName: 'cc',
-      },
-      {
-        id: 3,
-        departmentId: 'D-0003',
-        campusId: 1,
-        departmentName: 'ccc',
-      },
-      {
-        id: 4,
-        departmentId: 'D-0004',
-        campusId: 1,
-        departmentName: 'ccc',
-      },
-      {
-        id: 5,
-        departmentId: 'D-0005',
-        campusId: 1,
-        departmentName: 'ccc',
-      },
-      {
-        id: 6,
-        departmentId: 'D-0006',
-        campusId: 1,
-        departmentName: 'ccc',
-      },
-      {
-        id: 7,
-        departmentId: 'D-0007',
-        campusId: 1,
-        departmentName: 'ccc',
-      },
-      {
-        id: 8,
-        departmentId: 'D-0008',
-        campusId: 1,
-        departmentName: 'ccc',
-      },
-      {
-        id: 9,
-        departmentId: 'D-0009',
-        campusId: 1,
-        departmentName: 'ccc',
-      },
-    ]
+    const departments = []
 
     const columns = [
       { key: 'id', sortable: true },
@@ -123,6 +69,8 @@ export default defineComponent({
   },
 
   methods: {
+    async loadDepartments() {},
+
     resetEditedItem() {
       this.editedItem = null
       this.editedItemId = null
