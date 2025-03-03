@@ -26,7 +26,20 @@
         :columns="columns"
         striped
         :loading="isLoading"
+        :per-page="perPage"
+        :current-page="onHoldCurrentPage"
+        :filter="filter"
+        @filtered="filteredOnHold = $event.items"
       >
+        <template #bodyAppend>
+          <tr>
+            <td colspan="6">
+              <div class="flex justify-center mt-4">
+                <VaPagination v-model="onHoldCurrentPage" :pages="onHoldPages" />
+              </div>
+            </td>
+          </tr>
+        </template>
         <template #cell(proposalTitle)="{ value }">
           {{ truncateText(value, 25) }}
         </template>
@@ -70,7 +83,20 @@
         :columns="columns"
         striped
         :loading="isLoading"
+        :per-page="perPage"
+        :current-page="evaluationCurrentPage"
+        :filter="filteredEvaluation"
+        @filtered="filtered = $event.items"
       >
+        <template #bodyAppend>
+          <tr>
+            <td colspan="6">
+              <div class="flex justify-center mt-4">
+                <VaPagination v-model="evaluationCurrentPage" :pages="evaluationPages" />
+              </div>
+            </td>
+          </tr>
+        </template>
         <template #cell(proposalTitle)="{ value }">
           {{ truncateText(value, 25) }}
         </template>
@@ -113,7 +139,20 @@
         :columns="columns"
         striped
         :loading="isLoading"
+        :per-page="perPage"
+        :current-page="completedCurrentPage"
+        :filter="filter"
+        @filtered="filteredCompleted = $event.items"
       >
+        <template #bodyAppend>
+          <tr>
+            <td colspan="6">
+              <div class="flex justify-center mt-4">
+                <VaPagination v-model="completedCurrentPage" :pages="completedPages" />
+              </div>
+            </td>
+          </tr>
+        </template>
         <template #cell(proposalTitle)="{ value }">
           {{ truncateText(value, 25) }}
         </template>
@@ -156,7 +195,20 @@
         :columns="columns"
         striped
         :loading="isLoading"
+        :per-page="perPage"
+        :current-page="forCorrectionCurrentPage"
+        :filter="filter"
+        @filtered="filteredForCorrection = $event.items"
       >
+        <template #bodyAppend>
+          <tr>
+            <td colspan="6">
+              <div class="flex justify-center mt-4">
+                <VaPagination v-model="forCorrectionCurrentPage" :pages="forCorrectionpages" />
+              </div>
+            </td>
+          </tr>
+        </template>
         <template #cell(proposalTitle)="{ value }">
           {{ truncateText(value, 25) }}
         </template>
@@ -373,6 +425,10 @@ const defaultSubmission = {
 export default defineComponent({
   data() {
     const submissions = []
+    const onHoldSubmissions = []
+    const evaluationSubmissions = []
+    const completedSubmissions = []
+    const forCorrectionSubmissions = []
 
     const columns = [
       { key: 'fileType', label: 'File Type', sortable: true },
@@ -387,6 +443,10 @@ export default defineComponent({
 
     return {
       submissions,
+      onHoldSubmissions,
+      evaluationSubmissions,
+      completedSubmissions,
+      forCorrectionSubmissions,
       columns,
       sentDocumentForEvaluationModal: false,
       documentRoutingLogModal: false,
@@ -408,21 +468,50 @@ export default defineComponent({
       createdSubmission: { ...defaultSubmission },
       currentTable: 'onHold',
       modalTable: 'attachments',
-      onHoldSubmissions: [],
-      evaluationSubmissions: [],
-      completedSubmissions: [],
-      forCorrectionSubmissions: [],
+
       EvaluatorsValue: [],
       EvaluatorOptions: [],
       AssignedEvaluator: [],
       isLoading: true,
       isVaSelectLoading,
+
+      perPage: 10,
+      onHoldCurrentPage: 1,
+      evaluationCurrentPage: 1,
+      completedCurrentPage: 1,
+      forCorrectionCurrentPage: 1,
+      filter: '',
+
+      filteredOnHold: onHoldSubmissions,
+      filteredEvaluation: evaluationSubmissions,
+      filteredCompleted: completedSubmissions,
+      filteredForCorrection: forCorrectionSubmissions,
     }
   },
 
   computed: {
     isNewData() {
       return Object.keys(this.createdSubmission).every((key) => !!this.createdSubmission[key])
+    },
+    onHoldPages() {
+      return this.perPage && this.perPage !== 0
+        ? Math.ceil(this.filteredOnHold.length / this.perPage)
+        : this.filteredOnHold.length
+    },
+    evaluationPages() {
+      return this.perPage && this.perPage !== 0
+        ? Math.ceil(this.filteredEvaluation.length / this.perPage)
+        : this.filteredEvaluation.length
+    },
+    completedPages() {
+      return this.perPage && this.perPage !== 0
+        ? Math.ceil(this.filteredCompleted.length / this.perPage)
+        : this.filteredCompleted.length
+    },
+    forCorrectionpages() {
+      return this.perPage && this.perPage !== 0
+        ? Math.ceil(this.filteredForCorrection.length / this.perPage)
+        : this.filteredForCorrection.length
     },
   },
 
