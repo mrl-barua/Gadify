@@ -14,28 +14,42 @@ export default {
       name: 'proponents',
       displayName: 'menu.proponents',
       meta: {
-        icon: 'vuestic-iconset-user',
+        icon: 'group',
       },
     },
     {
       name: 'manage-requests',
       displayName: 'menu.requests',
       meta: {
-        icon: 'vuestic-iconset-files',
+        icon: 'assignment',
       },
     },
     {
       name: 'certificates',
       displayName: 'menu.certificates',
       meta: {
-        icon: 'vuestic-iconset-files',
+        icon: 'content_paste',
       },
     },
     {
       name: 'department',
       displayName: 'menu.department',
       meta: {
-        icon: 'vuestic-iconset-user',
+        icon: 'domain',
+      },
+    },
+    {
+      name: 'evaluators',
+      displayName: 'menu.evaluator',
+      meta: {
+        icon: 'groups_2',
+      },
+    },
+    {
+      name: 'admins',
+      displayName: 'menu.admin',
+      meta: {
+        icon: 'manage_accounts',
       },
     },
     {
@@ -52,7 +66,7 @@ export default {
       name: 'evaluation',
       displayName: 'menu.evaluation',
       meta: {
-        icon: 'vuestic-iconset-user',
+        icon: 'content_paste',
       },
     },
     {
