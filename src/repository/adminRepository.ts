@@ -13,6 +13,15 @@ const apiClient = axios.create({
 const jwtStore = useJwtStore()
 
 export const adminRepository = {
+  getAllAdmin: async () => {
+    const response = await apiClient.get(`/api/admin`, {
+      headers: {
+        Authorization: `Bearer ${jwtStore.getToken}`,
+      },
+    })
+    return response.data
+  },
+
   getAdminById: async (id: number) => {
     try {
       const response = await apiClient.post(

@@ -42,6 +42,8 @@
     "certificates": "Certificate",
     "department": "Department",
     "userAccount": "User Account",
+    "evaluator": "Evaluators",
+    "admin": "Admins",
 
     "evaluation": "Evaluation",
 
