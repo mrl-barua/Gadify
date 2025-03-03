@@ -448,10 +448,12 @@ export default defineComponent({
       completedSubmissions,
       forCorrectionSubmissions,
       columns,
+
       sentDocumentForEvaluationModal: false,
       documentRoutingLogModal: false,
       processSubmissionModal: false,
       selectedRowIndex: null,
+
       loadedSubmission: {
         id: '',
         submissionId: '',
@@ -465,6 +467,7 @@ export default defineComponent({
         evaluator: '',
         remarks: '',
       },
+
       createdSubmission: { ...defaultSubmission },
       currentTable: 'onHold',
       modalTable: 'attachments',
