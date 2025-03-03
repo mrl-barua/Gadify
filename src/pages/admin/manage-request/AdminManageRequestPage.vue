@@ -27,6 +27,9 @@
         striped
         :loading="isLoading"
       >
+        <template #cell(proposalTitle)="{ value }">
+          {{ truncateText(value, 25) }}
+        </template>
         <template #cell(createdAt)="{ value }">
           {{ formatDate(value) }}
         </template>
@@ -68,6 +71,9 @@
         striped
         :loading="isLoading"
       >
+        <template #cell(proposalTitle)="{ value }">
+          {{ truncateText(value, 25) }}
+        </template>
         <template #cell(createdAt)="{ value }">
           {{ formatDate(value) }}
         </template>
@@ -108,6 +114,9 @@
         striped
         :loading="isLoading"
       >
+        <template #cell(proposalTitle)="{ value }">
+          {{ truncateText(value, 25) }}
+        </template>
         <template #cell(createdAt)="{ value }">
           {{ formatDate(value) }}
         </template>
@@ -148,6 +157,9 @@
         striped
         :loading="isLoading"
       >
+        <template #cell(proposalTitle)="{ value }">
+          {{ truncateText(value, 25) }}
+        </template>
         <template #cell(createdAt)="{ value }">
           {{ formatDate(value) }}
         </template>
@@ -419,6 +431,13 @@ export default defineComponent({
   },
 
   methods: {
+    truncateText(text, length) {
+      if (text.length > length) {
+        return text.substring(0, length) + '...'
+      }
+      return text
+    },
+
     formatDate(date) {
       if (!date) return 'N/A'
       return new Date(date).toLocaleString('en-US', {
