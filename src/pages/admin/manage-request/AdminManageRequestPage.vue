@@ -401,11 +401,10 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import { submissionRepository } from '../../../repository/submissionRepository'
 import { evaluatorsRepository } from '../../../repository/evaluatorRepository'
 import { useToast } from 'vuestic-ui'
-import { ref } from 'vue'
 
 const toast = useToast()
 

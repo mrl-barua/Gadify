@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { useJwtStore } from '../stores/jwtHandler'
+import { create } from 'domain'
 
 const BASE_URL = import.meta.env.VITE_API_URL
 console.log('API URL:', BASE_URL)
@@ -23,6 +24,28 @@ export const departmentRepository = {
           Authorization: `Bearer ${jwtStore.getToken}`,
         },
       })
+      console.log('Data:', response.data)
+      return response.data
+    } catch (error) {
+      console.error('Error:', error)
+      throw error
+    }
+  },
+
+  createDepartment: async (campusId: number, departmentName: string) => {
+    try {
+      const response = await apiClient.post(
+        '/api/departments',
+        {
+          campusId: campusId,
+          departmentName: departmentName,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${jwtStore.getToken}`,
+          },
+        },
+      )
       console.log('Data:', response.data)
       return response.data
     } catch (error) {
