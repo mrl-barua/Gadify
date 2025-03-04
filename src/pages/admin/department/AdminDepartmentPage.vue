@@ -50,7 +50,7 @@
           >
           </VaSelect>
           <VaInput
-            v-model="departmentModel.campusId"
+            v-model="departmentModel.departmentName"
             :rules="[rules.required]"
             class="mb-4"
             label="Department Name"
@@ -183,7 +183,12 @@ export default defineComponent({
 
     async createDepartment() {
       const campusId = Number(this.departmentModel.campusId)
-      alert(campusId)
+
+      if (campusId === 0) {
+        alert('Please select a campus')
+        /* fix this -- add a validation to check if user didnt select a campus if no do not turn the modal off */
+      }
+
       try {
         await departmentRepository.createDepartment(campusId, this.departmentModel.departmentName)
         toast.init({
@@ -191,12 +196,14 @@ export default defineComponent({
           color: 'danger',
         })
       } catch (error) {
+        this.addDepartmentModal = true
         console.log(error)
         toast.init({
           message: 'Created department successfully',
           color: 'success',
         })
       } finally {
+        this.addDepartmentModal = false
         this.loadDepartments()
       }
     },

@@ -35,7 +35,7 @@ export const departmentRepository = {
   createDepartment: async (campusId: number, departmentName: string) => {
     try {
       const response = await apiClient.post(
-        '/api/departments',
+        '/api/department',
         {
           campusId: campusId,
           departmentName: departmentName,
