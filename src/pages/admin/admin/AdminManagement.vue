@@ -21,7 +21,7 @@
           <tr>
             <td colspan="6">
               <div class="flex justify-center mt-4">
-                <VaPagination v-model="currentPage" :pages="departmentPages" />
+                <VaPagination v-model="currentPage" :pages="adminPages" />
               </div>
             </td>
           </tr>
@@ -81,7 +81,7 @@
 </template>
 
 <script>
-import { defineComponent, ref, reactive } from 'vue'
+import { defineComponent, ref, reactive, computed } from 'vue'
 import { useToast } from 'vuestic-ui'
 import { adminRepository } from '../../../repository/adminRepository'
 
@@ -89,7 +89,6 @@ export default defineComponent({
   setup() {
     const toast = useToast()
 
-    const isVaSelectLoading = ref(false)
     const addAdminModal = ref(false)
     const isEditing = ref(false)
 
@@ -123,8 +122,9 @@ export default defineComponent({
     const currentPage = ref(1)
     const isLoading = ref(false)
 
-    const departmentPages = () =>
-      perPage.value && perPage.value !== 0 ? Math.ceil(filtered.value.length / perPage.value) : filtered.value.length
+    const adminPages = computed(() =>
+      perPage.value && perPage.value !== 0 ? Math.ceil(filtered.value.length / perPage.value) : 1,
+    )
 
     const loadAdmins = async () => {
       try {
@@ -187,7 +187,7 @@ export default defineComponent({
       perPage,
       currentPage,
       isLoading,
-      departmentPages,
+      adminPages,
       addAdminModal,
       isEditing,
       adminModel,

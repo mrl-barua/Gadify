@@ -3,12 +3,12 @@
   <VaCard>
     <VaCardContent>
       <div class="flex flex-col md:flex-row gap-2 mb-2 justify-end">
-        <VaButton @click="addDepartmentModal = !addDepartmentModal">Add Department</VaButton>
+        <VaButton @click="addEvaluatorModal = !addEvaluatorModal">Add Evaluator</VaButton>
       </div>
 
       <VaDataTable
         class="table-crud"
-        :items="departments"
+        :items="evaluators"
         :columns="columns"
         striped
         :loading="isLoading"
@@ -21,7 +21,7 @@
           <tr>
             <td colspan="6">
               <div class="flex justify-center mt-4">
-                <VaPagination v-model="currentPage" :pages="departmentPages" />
+                <VaPagination v-model="currentPage" :pages="evaluatorPages" />
               </div>
             </td>
           </tr>
@@ -32,222 +32,185 @@
         </template>
       </VaDataTable>
 
-      <VaModal v-model="addDepartmentModal" ok-text="Save" size="large" hide-default-actions="true">
-        <h3 class="va-h3">Add New Department</h3>
-        <VaForm ref="formRef">
-          <VaSelect
-            v-model="departmentModel.campusId"
-            label="Select Campus"
-            :options="campusesOptions"
-            outer-label
-            :loading="isVaSelectLoading"
-            track-by="value"
-            text-by="text"
-            value-by="value"
+      <!-- Add Evaluator Modal -->
+      <VaModal v-model="addEvaluatorModal" size="large" hide-default-actions>
+        <h3 class="va-h3">Add New Evaluator</h3>
+        <VaForm ref="formRef" @submit.prevent="createEvaluator">
+          <VaInput v-model="evaluatorModel.fullName" :rules="[rules.required]" class="mb-4" label="Full Name" />
+          <VaInput v-model="evaluatorModel.email" :rules="[rules.required, rules.email]" class="mb-4" label="Email" />
+
+          <VaInput
+            v-model="evaluatorModel.password"
+            :rules="[rules.required, rules.passwordStrength]"
+            class="mb-4"
+            label="Password"
+            type="password"
           />
 
           <VaInput
-            v-model="departmentModel.departmentName"
-            :rules="[rules.required]"
+            v-model="evaluatorModel.repeatPassword"
+            :rules="[rules.required, rules.matchPassword]"
             class="mb-4"
-            label="Department Name"
-            type="text"
-          >
-            <template #label>Department Name <span style="color: red">*</span></template>
-          </VaInput>
+            label="Repeat Password"
+            type="password"
+          />
 
           <div class="flex justify-end gap-2 mt-4">
-            <VaButton color="danger" @click="addDepartmentModal = false">Cancel</VaButton>
-            <VaButton color="primary" @click="createDepartment">Save</VaButton>
+            <VaButton color="danger" @click="addEvaluatorModal = false">Cancel</VaButton>
+            <VaButton color="primary" type="submit">Save</VaButton>
           </div>
         </VaForm>
       </VaModal>
 
-      <VaModal
-        class="modal-crud"
-        :model-value="!!editedItem"
-        title="Edit item"
-        size="small"
-        @ok="editItem"
-        @cancel="resetEditedItem"
-      >
+      <!-- Edit Evaluator Modal -->
+      <VaModal class="modal-crud" v-model="isEditing" title="Edit Evaluator" size="small">
         <VaInput
           v-for="key in Object.keys(editedItem)"
           :key="key"
           v-model="editedItem[key]"
           class="my-6"
           :label="key"
-        /> </VaModal
-    ></VaCardContent>
+        />
+        <div class="flex justify-end gap-2 mt-4">
+          <VaButton color="danger" @click="isEditing = false">Cancel</VaButton>
+          <VaButton color="primary" @click="editItem">Save</VaButton>
+        </div>
+      </VaModal>
+    </VaCardContent>
   </VaCard>
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue'
-import { departmentRepository } from '../../../repository/departmentRepository'
-import { campusRepository } from '../../../repository/campusRepository'
+import { defineComponent, ref, reactive, computed } from 'vue'
 import { useToast } from 'vuestic-ui'
-
-const toast = useToast()
-
-const isVaSelectLoading = ref(false)
-
-const rules = {
-  required: (value) => !!value || 'This field is required',
-}
-
-const defaultItem = {
-  id: '',
-  departmentName: '',
-  campusName: '',
-}
+import { evaluatorsRepository } from '../../../repository/evaluatorRepository'
 
 export default defineComponent({
-  data() {
-    const departments = []
+  setup() {
+    const toast = useToast()
 
+    const addEvaluatorModal = ref(false)
+    const isEditing = ref(false)
+
+    const evaluatorModel = reactive({
+      fullName: '',
+      email: '',
+      password: '',
+      repeatPassword: '',
+    })
+
+    const editedItem = reactive({})
+    const editedItemId = ref(null)
+
+    const rules = {
+      required: (value) => !!value || 'This field is required',
+      email: (value) => /\S+@\S+\.\S+/.test(value) || 'Please enter a valid email',
+      passwordStrength: (value) => value.length >= 6 || 'Password must be at least 6 characters',
+      matchPassword: (value) => value === evaluatorModel.password || 'Passwords do not match',
+    }
+
+    const evaluators = ref([])
     const columns = [
-      { key: 'departmentId', label: 'Department Id', sortable: true },
-      { key: 'departmentName', label: 'Department Name', sortable: true },
-      { key: 'campus.campusName', label: 'Campus', sortable: true },
+      { key: 'evaluatorId', label: 'Evaluator Id', sortable: true },
+      { key: 'fullName', label: 'Fullname', sortable: true },
+      { key: 'email', label: 'Email', sortable: true },
+      { key: 'department.departmentName', label: 'Department Name', sortable: true },
+      { key: 'department.campus.campusName', label: 'Campus Name', sortable: true },
+      { key: 'office.officeName', label: 'Office', sortable: true },
       { key: 'actions', width: 80 },
     ]
 
-    return {
-      rules,
-      departments,
-      columns,
-      editedItemId: null,
-      editedItem: null,
-      createdItem: { ...defaultItem },
-      addDepartmentModal: false,
+    const filtered = ref([])
+    const perPage = ref(10)
+    const currentPage = ref(1)
+    const isLoading = ref(false)
 
-      campusesOptions: [],
-      departmentModel: {
-        campusId: '',
-        departmentName: '',
-      },
+    const evaluatorPages = computed(() =>
+      perPage.value && perPage.value !== 0 ? Math.ceil(filtered.value.length / perPage.value) : 1,
+    )
 
-      filtered: departments,
-      perPage: 10,
-      currentPage: 1,
-      filter: '',
-
-      isLoading: false,
-      isVaSelectLoading,
+    const loadevaluators = async () => {
+      try {
+        isLoading.value = true
+        evaluators.value = await evaluatorsRepository.getEvaluators()
+      } catch (error) {
+        console.log(error)
+      } finally {
+        isLoading.value = false
+      }
     }
-  },
 
-  computed: {
-    isNewData() {
-      return Object.keys(this.createdItem).every((key) => !!this.createdItem[key])
-    },
-    departmentPages() {
-      return this.perPage && this.perPage !== 0 ? Math.ceil(this.filtered.length / this.perPage) : this.filtered.length
-    },
-  },
-
-  mounted() {
-    this.loadDepartments()
-    this.loadCampuses()
-  },
-
-  methods: {
-    async loadDepartments() {
-      try {
-        this.isLoading = true
-        this.departments = await departmentRepository.getDepartments()
-      } catch (error) {
-        console.log(error)
-      } finally {
-        this.isLoading = false
-      }
-    },
-
-    async loadCampuses() {
-      isVaSelectLoading.value = true
-      try {
-        const data = await campusRepository.getCampuses()
-        this.campusesOptions = data.map((campus) => ({
-          text: campus.campusName,
-          value: campus.id,
-        }))
-      } catch (error) {
-        console.log(error)
-      } finally {
-        isVaSelectLoading.value = false
-      }
-    },
-
-    async loadDepartmentById(id) {
-      return await departmentRepository.getDepartmentById(id)
-    },
-
-    async createDepartment() {
-      const campusId = Number(this.departmentModel.campusId)
-      const departmentName = this.departmentModel.departmentName.trim()
-
-      if (!campusId) {
+    const createEvaluator = async () => {
+      if (!evaluatorModel.fullName || !evaluatorModel.email || !evaluatorModel.password) {
         toast.init({
-          message: 'Please select a campus',
-          color: 'danger',
-        })
-        return
-      }
-
-      if (!departmentName) {
-        toast.init({
-          message: 'Department Name cannot be empty',
+          message: 'Please fill in all required fields',
           color: 'danger',
         })
         return
       }
 
       try {
-        await departmentRepository.createDepartment(campusId, departmentName)
+        await evaluatorsRepository.createEvaluator(
+          evaluatorModel.fullName,
+          evaluatorModel.email,
+          evaluatorModel.password,
+        )
+
         toast.init({
-          message: 'Created department successfully',
+          message: 'Evaluator created successfully',
           color: 'success',
         })
 
-        this.addDepartmentModal = false
-        this.loadDepartments()
+        addEvaluatorModal.value = false
+        loadevaluators()
       } catch (error) {
         console.log(error)
         toast.init({
-          message: error.response?.data?.message || 'Failed to create department',
+          message: error.response?.data?.message || 'Failed to create evaluator',
           color: 'danger',
         })
-        this.addDepartmentModal = true
       }
-    },
+    }
 
-    resetEditedItem() {
-      this.editedItem = null
-      this.editedItemId = null
-    },
-    resetCreatedItem() {
-      this.createdItem = { ...defaultItem }
-    },
-    deleteItemById(id) {
-      this.departments = [...this.departments.slice(0, id), ...this.departments.slice(id + 1)]
-    },
-    addNewItem() {
-      this.departments = [...this.departments, { ...this.createdItem }]
-      this.resetCreatedItem()
-    },
-    editItem() {
-      this.departments = [
-        ...this.departments.slice(0, this.editedItemId),
-        { ...this.editedItem },
-        ...this.departments.slice(this.editedItemId + 1),
-      ]
-      this.resetEditedItem()
-    },
-    openModalToEditItemById(id) {
-      this.editedItemId = id
-      this.editedItem = { ...this.departments[id] }
-    },
+    const editItem = () => {
+      evaluators.value = evaluators.value.map((evaluator, index) =>
+        index === editedItemId.value ? { ...editedItem } : evaluator,
+      )
+      isEditing.value = false
+    }
+
+    const openModalToEditItemById = (id) => {
+      editedItemId.value = id
+      Object.assign(editedItem, evaluators.value[id])
+      isEditing.value = true
+    }
+
+    const deleteItemById = (id) => {
+      evaluators.value.splice(id, 1)
+    }
+
+    return {
+      evaluators,
+      columns,
+      filtered,
+      perPage,
+      currentPage,
+      isLoading,
+      evaluatorPages,
+      addEvaluatorModal,
+      isEditing,
+      evaluatorModel,
+      editedItem,
+      rules,
+      createEvaluator,
+      editItem,
+      openModalToEditItemById,
+      deleteItemById,
+      loadevaluators,
+    }
+  },
+  mounted() {
+    this.loadevaluators()
   },
 })
 </script>
