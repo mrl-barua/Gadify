@@ -32,23 +32,20 @@
         </template>
       </VaDataTable>
 
-      <VaModal v-model="addDepartmentModal" ok-text="Save" size="large" @ok="createDepartment()">
+      <VaModal v-model="addDepartmentModal" ok-text="Save" size="large" hide-default-actions="true">
         <h3 class="va-h3">Add New Department</h3>
-        <VaForm>
+        <VaForm ref="formRef">
           <VaSelect
             v-model="departmentModel.campusId"
-            placeholder=""
             label="Select Campus"
             :options="campusesOptions"
             outer-label
-            :multiple="false"
-            selected-top-shown
             :loading="isVaSelectLoading"
             track-by="value"
             text-by="text"
             value-by="value"
-          >
-          </VaSelect>
+          />
+
           <VaInput
             v-model="departmentModel.departmentName"
             :rules="[rules.required]"
@@ -56,9 +53,14 @@
             label="Department Name"
             type="text"
           >
-            <template #label> Department Name <span style="color: red">*</span> </template></VaInput
-          ></VaForm
-        >
+            <template #label>Department Name <span style="color: red">*</span></template>
+          </VaInput>
+
+          <div class="flex justify-end gap-2 mt-4">
+            <VaButton color="danger" @click="addDepartmentModal = false">Cancel</VaButton>
+            <VaButton color="primary" @click="createDepartment">Save</VaButton>
+          </div>
+        </VaForm>
       </VaModal>
 
       <VaModal
@@ -183,28 +185,40 @@ export default defineComponent({
 
     async createDepartment() {
       const campusId = Number(this.departmentModel.campusId)
+      const departmentName = this.departmentModel.departmentName.trim()
 
-      if (campusId === 0) {
-        alert('Please select a campus')
-        /* fix this -- add a validation to check if user didnt select a campus if no do not turn the modal off */
+      if (!campusId) {
+        toast.init({
+          message: 'Please select a campus',
+          color: 'danger',
+        })
+        return // Stop execution
+      }
+
+      if (!departmentName) {
+        toast.init({
+          message: 'Department Name cannot be empty',
+          color: 'danger',
+        })
+        return // Stop execution
       }
 
       try {
-        await departmentRepository.createDepartment(campusId, this.departmentModel.departmentName)
-        toast.init({
-          message: error.response?.data?.message || 'Failed to create department',
-          color: 'danger',
-        })
-      } catch (error) {
-        this.addDepartmentModal = true
-        console.log(error)
+        await departmentRepository.createDepartment(campusId, departmentName)
         toast.init({
           message: 'Created department successfully',
           color: 'success',
         })
-      } finally {
-        this.addDepartmentModal = false
+
+        this.addDepartmentModal = false // Close modal on success
         this.loadDepartments()
+      } catch (error) {
+        console.log(error)
+        toast.init({
+          message: error.response?.data?.message || 'Failed to create department',
+          color: 'danger',
+        })
+        this.addDepartmentModal = true
       }
     },
 
