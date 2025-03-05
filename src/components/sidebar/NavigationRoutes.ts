@@ -83,21 +83,21 @@ export default {
       name: 'proponent-request',
       displayName: 'menu.requests',
       meta: {
-        icon: 'vuestic-iconset-user',
+        icon: 'assignment',
       },
     },
     {
       name: 'proponent-issued-certificates',
       displayName: 'menu.certificates',
       meta: {
-        icon: 'vuestic-iconset-files',
+        icon: 'content_paste',
       },
     },
     {
       name: 'proponent-user-account',
       displayName: 'menu.userAccount',
       meta: {
-        icon: 'vuestic-iconset-files',
+        icon: 'vuestic-iconset-user',
       },
     },
   ] as INavigationRoute[],
