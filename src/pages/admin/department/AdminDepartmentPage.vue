@@ -1,5 +1,5 @@
 <template>
-  <h1 class="page-title">Department</h1>
+  <h1 class="page-title">Department Management</h1>
   <VaCard>
     <VaCardContent>
       <div class="flex flex-col md:flex-row gap-2 mb-2 justify-end">
@@ -192,7 +192,7 @@ export default defineComponent({
           message: 'Please select a campus',
           color: 'danger',
         })
-        return // Stop execution
+        return
       }
 
       if (!departmentName) {
@@ -200,7 +200,7 @@ export default defineComponent({
           message: 'Department Name cannot be empty',
           color: 'danger',
         })
-        return // Stop execution
+        return
       }
 
       try {
@@ -210,7 +210,7 @@ export default defineComponent({
           color: 'success',
         })
 
-        this.addDepartmentModal = false // Close modal on success
+        this.addDepartmentModal = false
         this.loadDepartments()
       } catch (error) {
         console.log(error)
