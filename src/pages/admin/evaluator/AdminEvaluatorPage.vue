@@ -93,10 +93,13 @@ export default defineComponent({
     const isEditing = ref(false)
 
     const evaluatorModel = reactive({
+      id: 0,
+      campusId: 0,
+      departmentId: 0,
+      officeId: 0,
       fullName: '',
       email: '',
       password: '',
-      repeatPassword: '',
     })
 
     const editedItem = reactive({})
@@ -150,7 +153,10 @@ export default defineComponent({
       }
 
       try {
-        await evaluatorsRepository.createEvaluator(
+        await evaluatorsRepository.createNewEvaluator(
+          evaluatorModel.campusId,
+          evaluatorModel.departmentId,
+          evaluatorModel.officeId,
           evaluatorModel.fullName,
           evaluatorModel.email,
           evaluatorModel.password,
