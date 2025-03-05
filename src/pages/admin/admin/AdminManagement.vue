@@ -1,200 +1,207 @@
 <template>
-  <h1 class="page-title">Admin</h1>
-  <div class="grid md:grid-cols-2 gap-6 mb-6">
-    <VaInput v-model="filter" placeholder="Filter..." class="w-full" />
-    <VaSelect
-      v-model="filterByFields"
-      placeholder="Select filter fields"
-      :options="columnsWithName"
-      value-by="value"
-      multiple
-    />
-  </div>
+  <h1 class="page-title">Admin Management</h1>
+  <VaCard>
+    <VaCardContent>
+      <div class="flex flex-col md:flex-row gap-2 mb-2 justify-end">
+        <VaButton @click="addAdminModal = !addAdminModal">Add Admin</VaButton>
+      </div>
 
-  <VaDataTable
-    :items="items"
-    :columns="columns"
-    :filter="filter"
-    :filter-method="customFilteringFn"
-    @filtered="filteredCount = $event.items.length"
-  >
-    <template #cell(actions)="{ rowIndex }">
-      <VaModal v-model="certificateModal" ok-text="Go Back" @ok="showCertificate(selectedRowIndex)">
-        <h3 class="va-h3">Certificate</h3>
-        <p>Template for certificate</p>
+      <VaDataTable
+        class="table-crud"
+        :items="admins"
+        :columns="columns"
+        striped
+        :loading="isLoading"
+        :per-page="perPage"
+        :current-page="currentPage"
+        :filter="filter"
+        @filtered="filtered = $event.items"
+      >
+        <template #bodyAppend>
+          <tr>
+            <td colspan="6">
+              <div class="flex justify-center mt-4">
+                <VaPagination v-model="currentPage" :pages="departmentPages" />
+              </div>
+            </td>
+          </tr>
+        </template>
+        <template #cell(actions)="{ rowIndex }">
+          <VaButton preset="plain" icon="edit" @click="openModalToEditItemById(rowIndex)" />
+          <VaButton preset="plain" icon="delete" class="ml-3" @click="deleteItemById(rowIndex)" />
+        </template>
+      </VaDataTable>
+
+      <!-- Add Admin Modal -->
+      <VaModal v-model="addAdminModal" size="large" hide-default-actions>
+        <h3 class="va-h3">Add New Admin</h3>
+        <VaForm ref="formRef" @submit.prevent="createAdmin">
+          <VaInput v-model="adminModel.fullName" :rules="[rules.required]" class="mb-4" label="Full Name" />
+          <VaInput v-model="adminModel.email" :rules="[rules.required, rules.email]" class="mb-4" label="Email" />
+
+          <VaInput
+            v-model="adminModel.password"
+            :rules="[rules.required, rules.passwordStrength]"
+            class="mb-4"
+            label="Password"
+            type="password"
+          />
+
+          <VaInput
+            v-model="adminModel.repeatPassword"
+            :rules="[rules.required, rules.matchPassword]"
+            class="mb-4"
+            label="Repeat Password"
+            type="password"
+          />
+
+          <div class="flex justify-end gap-2 mt-4">
+            <VaButton color="danger" @click="addAdminModal = false">Cancel</VaButton>
+            <VaButton color="primary" type="submit">Save</VaButton>
+          </div>
+        </VaForm>
       </VaModal>
 
-      <VaButton preset="plain" icon="check" @click="showApproveModal(items[rowIndex])" />
-    </template>
-  </VaDataTable>
+      <!-- Edit Admin Modal -->
+      <VaModal class="modal-crud" v-model="isEditing" title="Edit Admin" size="small">
+        <VaInput
+          v-for="key in Object.keys(editedItem)"
+          :key="key"
+          v-model="editedItem[key]"
+          class="my-6"
+          :label="key"
+        />
+        <div class="flex justify-end gap-2 mt-4">
+          <VaButton color="danger" @click="isEditing = false">Cancel</VaButton>
+          <VaButton color="primary" @click="editItem">Save</VaButton>
+        </div>
+      </VaModal>
+    </VaCardContent>
+  </VaCard>
 </template>
 
-<script setup>
-import { ref } from 'vue'
+<script>
+import { defineComponent, ref, reactive } from 'vue'
+import { useToast } from 'vuestic-ui'
+import { adminRepository } from '../../../repository/adminRepository'
 
-const items = [
-  {
-    id: 1,
-    name: 'Leanne Graham',
-    username: 'Bret',
-    email: 'Sincere@april.biz',
-    address: {
-      street: 'Kulas Light',
-      suite: 'Apt. 556',
-      city: 'Gwenborough',
-      zipcode: '92998-3874',
-      geo: {
-        lat: '-37.3159',
-        lng: '81.1496',
-      },
-    },
-    phone: '1-770-736-8031 x56442',
-    website: 'hildegard.org',
-    company: {
-      name: 'Romaguera-Crona',
-      catchPhrase: 'Multi-layered client-server neural-net',
-      bs: 'harness real-time e-markets',
-    },
+export default defineComponent({
+  setup() {
+    const toast = useToast()
+
+    const isVaSelectLoading = ref(false)
+    const addAdminModal = ref(false)
+    const isEditing = ref(false)
+
+    const adminModel = reactive({
+      fullName: '',
+      email: '',
+      password: '',
+      repeatPassword: '',
+    })
+
+    const editedItem = reactive({})
+    const editedItemId = ref(null)
+
+    const rules = {
+      required: (value) => !!value || 'This field is required',
+      email: (value) => /\S+@\S+\.\S+/.test(value) || 'Please enter a valid email',
+      passwordStrength: (value) => value.length >= 6 || 'Password must be at least 6 characters',
+      matchPassword: (value) => value === adminModel.password || 'Passwords do not match',
+    }
+
+    const admins = ref([])
+    const columns = [
+      { key: 'adminId', label: 'Admin Id', sortable: true },
+      { key: 'fullName', label: 'Fullname', sortable: true },
+      { key: 'email', label: 'Email', sortable: true },
+      { key: 'actions', width: 80 },
+    ]
+
+    const filtered = ref([])
+    const perPage = ref(10)
+    const currentPage = ref(1)
+    const isLoading = ref(false)
+
+    const departmentPages = () =>
+      perPage.value && perPage.value !== 0 ? Math.ceil(filtered.value.length / perPage.value) : filtered.value.length
+
+    const loadAdmins = async () => {
+      try {
+        isLoading.value = true
+        admins.value = await adminRepository.getAllAdmin()
+      } catch (error) {
+        console.log(error)
+      } finally {
+        isLoading.value = false
+      }
+    }
+
+    const createAdmin = async () => {
+      if (!adminModel.fullName || !adminModel.email || !adminModel.password) {
+        toast.init({
+          message: 'Please fill in all required fields',
+          color: 'danger',
+        })
+        return
+      }
+
+      try {
+        await adminRepository.createAdmin(adminModel.fullName, adminModel.email, adminModel.password)
+
+        toast.init({
+          message: 'Admin created successfully',
+          color: 'success',
+        })
+
+        addAdminModal.value = false
+        loadAdmins()
+      } catch (error) {
+        console.log(error)
+        toast.init({
+          message: error.response?.data?.message || 'Failed to create admin',
+          color: 'danger',
+        })
+      }
+    }
+
+    const editItem = () => {
+      admins.value = admins.value.map((admin, index) => (index === editedItemId.value ? { ...editedItem } : admin))
+      isEditing.value = false
+    }
+
+    const openModalToEditItemById = (id) => {
+      editedItemId.value = id
+      Object.assign(editedItem, admins.value[id])
+      isEditing.value = true
+    }
+
+    const deleteItemById = (id) => {
+      admins.value.splice(id, 1)
+    }
+
+    return {
+      admins,
+      columns,
+      filtered,
+      perPage,
+      currentPage,
+      isLoading,
+      departmentPages,
+      addAdminModal,
+      isEditing,
+      adminModel,
+      editedItem,
+      rules,
+      createAdmin,
+      editItem,
+      openModalToEditItemById,
+      deleteItemById,
+      loadAdmins,
+    }
   },
-  {
-    id: 2,
-    name: 'Ervin Howell',
-    username: 'Antonette',
-    email: 'Shanna@melissa.tv',
-    address: {
-      street: 'Victor Plains',
-      suite: 'Suite 879',
-      city: 'Wisokyburgh',
-      zipcode: '90566-7771',
-      geo: {
-        lat: '-43.9509',
-        lng: '-34.4618',
-      },
-    },
-    phone: '010-692-6593 x09125',
-    website: 'anastasia.net',
-    company: {
-      name: 'Deckow-Crist',
-      catchPhrase: 'Proactive didactic contingency',
-      bs: 'synergize scalable supply-chains',
-    },
+  mounted() {
+    this.loadAdmins()
   },
-  {
-    id: 3,
-    name: 'Clementine Bauch',
-    username: 'Samantha',
-    email: 'Nathan@yesenia.net',
-    address: {
-      street: 'Douglas Extension',
-      suite: 'Suite 847',
-      city: 'McKenziehaven',
-      zipcode: '59590-4157',
-      geo: {
-        lat: '-68.6102',
-        lng: '-47.0653',
-      },
-    },
-    phone: '1-463-123-4447',
-    website: 'ramiro.info',
-    company: {
-      name: 'Romaguera-Jacobson',
-      catchPhrase: 'Face to face bifurcated interface',
-      bs: 'e-enable strategic applications',
-    },
-  },
-  {
-    id: 4,
-    name: 'Patricia Lebsack',
-    username: 'Karianne',
-    email: 'Julianne.OConner@kory.org',
-    address: {
-      street: 'Hoeger Mall',
-      suite: 'Apt. 692',
-      city: 'South Elvis',
-      zipcode: '53919-4257',
-      geo: {
-        lat: '29.4572',
-        lng: '-164.2990',
-      },
-    },
-    phone: '493-170-9623 x156',
-    website: 'kale.biz',
-    company: {
-      name: 'Robel-Corkery',
-      catchPhrase: 'Multi-tiered zero tolerance productivity',
-      bs: 'transition cutting-edge web services',
-    },
-  },
-  {
-    id: 5,
-    name: 'Chelsey Dietrich',
-    username: 'Kamren',
-    email: 'Lucio_Hettinger@annie.ca',
-    address: {
-      street: 'Skiles Walks',
-      suite: 'Suite 351',
-      city: 'Roscoeview',
-      zipcode: '33263',
-      geo: {
-        lat: '-31.8129',
-        lng: '62.5342',
-      },
-    },
-    phone: '(254)954-1289',
-    website: 'demarco.info',
-    company: {
-      name: 'Keebler LLC',
-      catchPhrase: 'User-centric fault-tolerant solution',
-      bs: 'revolutionize end-to-end systems',
-    },
-  },
-]
-
-const certificateModal = ref(false)
-const selectedRowIndex = ref(null)
-
-const showApproveModal = (proponent) => {
-  selectedRowIndex.value = proponent
-  certificateModal.value = true
-}
-
-const showCertificate = (proponent) => {
-  alert(JSON.stringify(proponent, null, 2))
-}
-
-const columns = [
-  { key: 'id', sortable: true },
-  { key: 'username', sortable: true },
-  { key: 'name', sortable: true },
-  { key: 'email', sortable: true },
-  { key: 'address.zipcode', label: 'Zipcode' },
-  { key: 'actions', label: 'Actions', width: 80 },
-]
-
-const columnsWithName = [
-  { value: 'id', text: 'ID' },
-  { value: 'username', text: 'Username' },
-  { value: 'name', text: 'Name' },
-  { value: 'email', text: 'Email' },
-  { value: 'address.zipcode', text: 'Zipcode' },
-]
-
-const filter = ref('')
-const filterByFields = ref([])
-const filteredCount = ref(items.length)
-
-const customFilteringFn = (source, cellData) => {
-  if (!filter.value) {
-    return true
-  }
-
-  if (filterByFields.value.length >= 1) {
-    const searchInCurrentRow = filterByFields.value.some((field) => cellData.column.key === field)
-    if (!searchInCurrentRow) return false
-  }
-
-  const filterRegex = new RegExp(filter.value, 'i')
-
-  return filterRegex.test(source)
-}
+})
 </script>

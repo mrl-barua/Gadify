@@ -1,200 +1,253 @@
 <template>
-  <h1 class="page-title">Evaluators</h1>
-  <div class="grid md:grid-cols-2 gap-6 mb-6">
-    <VaInput v-model="filter" placeholder="Filter..." class="w-full" />
-    <VaSelect
-      v-model="filterByFields"
-      placeholder="Select filter fields"
-      :options="columnsWithName"
-      value-by="value"
-      multiple
-    />
-  </div>
+  <h1 class="page-title">Evaluator Management</h1>
+  <VaCard>
+    <VaCardContent>
+      <div class="flex flex-col md:flex-row gap-2 mb-2 justify-end">
+        <VaButton @click="addDepartmentModal = !addDepartmentModal">Add Department</VaButton>
+      </div>
 
-  <VaDataTable
-    :items="items"
-    :columns="columns"
-    :filter="filter"
-    :filter-method="customFilteringFn"
-    @filtered="filteredCount = $event.items.length"
-  >
-    <template #cell(actions)="{ rowIndex }">
-      <VaModal v-model="certificateModal" ok-text="Go Back" @ok="showCertificate(selectedRowIndex)">
-        <h3 class="va-h3">Certificate</h3>
-        <p>Template for certificate</p>
+      <VaDataTable
+        class="table-crud"
+        :items="departments"
+        :columns="columns"
+        striped
+        :loading="isLoading"
+        :per-page="perPage"
+        :current-page="currentPage"
+        :filter="filter"
+        @filtered="filtered = $event.items"
+      >
+        <template #bodyAppend>
+          <tr>
+            <td colspan="6">
+              <div class="flex justify-center mt-4">
+                <VaPagination v-model="currentPage" :pages="departmentPages" />
+              </div>
+            </td>
+          </tr>
+        </template>
+        <template #cell(actions)="{ rowIndex }">
+          <VaButton preset="plain" icon="edit" @click="openModalToEditItemById(rowIndex)" />
+          <VaButton preset="plain" icon="delete" class="ml-3" @click="deleteItemById(rowIndex)" />
+        </template>
+      </VaDataTable>
+
+      <VaModal v-model="addDepartmentModal" ok-text="Save" size="large" hide-default-actions="true">
+        <h3 class="va-h3">Add New Department</h3>
+        <VaForm ref="formRef">
+          <VaSelect
+            v-model="departmentModel.campusId"
+            label="Select Campus"
+            :options="campusesOptions"
+            outer-label
+            :loading="isVaSelectLoading"
+            track-by="value"
+            text-by="text"
+            value-by="value"
+          />
+
+          <VaInput
+            v-model="departmentModel.departmentName"
+            :rules="[rules.required]"
+            class="mb-4"
+            label="Department Name"
+            type="text"
+          >
+            <template #label>Department Name <span style="color: red">*</span></template>
+          </VaInput>
+
+          <div class="flex justify-end gap-2 mt-4">
+            <VaButton color="danger" @click="addDepartmentModal = false">Cancel</VaButton>
+            <VaButton color="primary" @click="createDepartment">Save</VaButton>
+          </div>
+        </VaForm>
       </VaModal>
 
-      <VaButton preset="plain" icon="check" @click="showApproveModal(items[rowIndex])" />
-    </template>
-  </VaDataTable>
+      <VaModal
+        class="modal-crud"
+        :model-value="!!editedItem"
+        title="Edit item"
+        size="small"
+        @ok="editItem"
+        @cancel="resetEditedItem"
+      >
+        <VaInput
+          v-for="key in Object.keys(editedItem)"
+          :key="key"
+          v-model="editedItem[key]"
+          class="my-6"
+          :label="key"
+        /> </VaModal
+    ></VaCardContent>
+  </VaCard>
 </template>
 
-<script setup>
-import { ref } from 'vue'
+<script>
+import { defineComponent, ref } from 'vue'
+import { departmentRepository } from '../../../repository/departmentRepository'
+import { campusRepository } from '../../../repository/campusRepository'
+import { useToast } from 'vuestic-ui'
 
-const items = [
-  {
-    id: 1,
-    name: 'Leanne Graham',
-    username: 'Bret',
-    email: 'Sincere@april.biz',
-    address: {
-      street: 'Kulas Light',
-      suite: 'Apt. 556',
-      city: 'Gwenborough',
-      zipcode: '92998-3874',
-      geo: {
-        lat: '-37.3159',
-        lng: '81.1496',
-      },
-    },
-    phone: '1-770-736-8031 x56442',
-    website: 'hildegard.org',
-    company: {
-      name: 'Romaguera-Crona',
-      catchPhrase: 'Multi-layered client-server neural-net',
-      bs: 'harness real-time e-markets',
-    },
-  },
-  {
-    id: 2,
-    name: 'Ervin Howell',
-    username: 'Antonette',
-    email: 'Shanna@melissa.tv',
-    address: {
-      street: 'Victor Plains',
-      suite: 'Suite 879',
-      city: 'Wisokyburgh',
-      zipcode: '90566-7771',
-      geo: {
-        lat: '-43.9509',
-        lng: '-34.4618',
-      },
-    },
-    phone: '010-692-6593 x09125',
-    website: 'anastasia.net',
-    company: {
-      name: 'Deckow-Crist',
-      catchPhrase: 'Proactive didactic contingency',
-      bs: 'synergize scalable supply-chains',
-    },
-  },
-  {
-    id: 3,
-    name: 'Clementine Bauch',
-    username: 'Samantha',
-    email: 'Nathan@yesenia.net',
-    address: {
-      street: 'Douglas Extension',
-      suite: 'Suite 847',
-      city: 'McKenziehaven',
-      zipcode: '59590-4157',
-      geo: {
-        lat: '-68.6102',
-        lng: '-47.0653',
-      },
-    },
-    phone: '1-463-123-4447',
-    website: 'ramiro.info',
-    company: {
-      name: 'Romaguera-Jacobson',
-      catchPhrase: 'Face to face bifurcated interface',
-      bs: 'e-enable strategic applications',
-    },
-  },
-  {
-    id: 4,
-    name: 'Patricia Lebsack',
-    username: 'Karianne',
-    email: 'Julianne.OConner@kory.org',
-    address: {
-      street: 'Hoeger Mall',
-      suite: 'Apt. 692',
-      city: 'South Elvis',
-      zipcode: '53919-4257',
-      geo: {
-        lat: '29.4572',
-        lng: '-164.2990',
-      },
-    },
-    phone: '493-170-9623 x156',
-    website: 'kale.biz',
-    company: {
-      name: 'Robel-Corkery',
-      catchPhrase: 'Multi-tiered zero tolerance productivity',
-      bs: 'transition cutting-edge web services',
-    },
-  },
-  {
-    id: 5,
-    name: 'Chelsey Dietrich',
-    username: 'Kamren',
-    email: 'Lucio_Hettinger@annie.ca',
-    address: {
-      street: 'Skiles Walks',
-      suite: 'Suite 351',
-      city: 'Roscoeview',
-      zipcode: '33263',
-      geo: {
-        lat: '-31.8129',
-        lng: '62.5342',
-      },
-    },
-    phone: '(254)954-1289',
-    website: 'demarco.info',
-    company: {
-      name: 'Keebler LLC',
-      catchPhrase: 'User-centric fault-tolerant solution',
-      bs: 'revolutionize end-to-end systems',
-    },
-  },
-]
+const toast = useToast()
 
-const certificateModal = ref(false)
-const selectedRowIndex = ref(null)
+const isVaSelectLoading = ref(false)
 
-const showApproveModal = (proponent) => {
-  selectedRowIndex.value = proponent
-  certificateModal.value = true
+const rules = {
+  required: (value) => !!value || 'This field is required',
 }
 
-const showCertificate = (proponent) => {
-  alert(JSON.stringify(proponent, null, 2))
+const defaultItem = {
+  id: '',
+  departmentName: '',
+  campusName: '',
 }
 
-const columns = [
-  { key: 'id', sortable: true },
-  { key: 'username', sortable: true },
-  { key: 'name', sortable: true },
-  { key: 'email', sortable: true },
-  { key: 'address.zipcode', label: 'Zipcode' },
-  { key: 'actions', label: 'Actions', width: 80 },
-]
+export default defineComponent({
+  data() {
+    const departments = []
 
-const columnsWithName = [
-  { value: 'id', text: 'ID' },
-  { value: 'username', text: 'Username' },
-  { value: 'name', text: 'Name' },
-  { value: 'email', text: 'Email' },
-  { value: 'address.zipcode', text: 'Zipcode' },
-]
+    const columns = [
+      { key: 'departmentId', label: 'Department Id', sortable: true },
+      { key: 'departmentName', label: 'Department Name', sortable: true },
+      { key: 'campus.campusName', label: 'Campus', sortable: true },
+      { key: 'actions', width: 80 },
+    ]
 
-const filter = ref('')
-const filterByFields = ref([])
-const filteredCount = ref(items.length)
+    return {
+      rules,
+      departments,
+      columns,
+      editedItemId: null,
+      editedItem: null,
+      createdItem: { ...defaultItem },
+      addDepartmentModal: false,
 
-const customFilteringFn = (source, cellData) => {
-  if (!filter.value) {
-    return true
-  }
+      campusesOptions: [],
+      departmentModel: {
+        campusId: '',
+        departmentName: '',
+      },
 
-  if (filterByFields.value.length >= 1) {
-    const searchInCurrentRow = filterByFields.value.some((field) => cellData.column.key === field)
-    if (!searchInCurrentRow) return false
-  }
+      filtered: departments,
+      perPage: 10,
+      currentPage: 1,
+      filter: '',
 
-  const filterRegex = new RegExp(filter.value, 'i')
+      isLoading: false,
+      isVaSelectLoading,
+    }
+  },
 
-  return filterRegex.test(source)
-}
+  computed: {
+    isNewData() {
+      return Object.keys(this.createdItem).every((key) => !!this.createdItem[key])
+    },
+    departmentPages() {
+      return this.perPage && this.perPage !== 0 ? Math.ceil(this.filtered.length / this.perPage) : this.filtered.length
+    },
+  },
+
+  mounted() {
+    this.loadDepartments()
+    this.loadCampuses()
+  },
+
+  methods: {
+    async loadDepartments() {
+      try {
+        this.isLoading = true
+        this.departments = await departmentRepository.getDepartments()
+      } catch (error) {
+        console.log(error)
+      } finally {
+        this.isLoading = false
+      }
+    },
+
+    async loadCampuses() {
+      isVaSelectLoading.value = true
+      try {
+        const data = await campusRepository.getCampuses()
+        this.campusesOptions = data.map((campus) => ({
+          text: campus.campusName,
+          value: campus.id,
+        }))
+      } catch (error) {
+        console.log(error)
+      } finally {
+        isVaSelectLoading.value = false
+      }
+    },
+
+    async loadDepartmentById(id) {
+      return await departmentRepository.getDepartmentById(id)
+    },
+
+    async createDepartment() {
+      const campusId = Number(this.departmentModel.campusId)
+      const departmentName = this.departmentModel.departmentName.trim()
+
+      if (!campusId) {
+        toast.init({
+          message: 'Please select a campus',
+          color: 'danger',
+        })
+        return
+      }
+
+      if (!departmentName) {
+        toast.init({
+          message: 'Department Name cannot be empty',
+          color: 'danger',
+        })
+        return
+      }
+
+      try {
+        await departmentRepository.createDepartment(campusId, departmentName)
+        toast.init({
+          message: 'Created department successfully',
+          color: 'success',
+        })
+
+        this.addDepartmentModal = false
+        this.loadDepartments()
+      } catch (error) {
+        console.log(error)
+        toast.init({
+          message: error.response?.data?.message || 'Failed to create department',
+          color: 'danger',
+        })
+        this.addDepartmentModal = true
+      }
+    },
+
+    resetEditedItem() {
+      this.editedItem = null
+      this.editedItemId = null
+    },
+    resetCreatedItem() {
+      this.createdItem = { ...defaultItem }
+    },
+    deleteItemById(id) {
+      this.departments = [...this.departments.slice(0, id), ...this.departments.slice(id + 1)]
+    },
+    addNewItem() {
+      this.departments = [...this.departments, { ...this.createdItem }]
+      this.resetCreatedItem()
+    },
+    editItem() {
+      this.departments = [
+        ...this.departments.slice(0, this.editedItemId),
+        { ...this.editedItem },
+        ...this.departments.slice(this.editedItemId + 1),
+      ]
+      this.resetEditedItem()
+    },
+    openModalToEditItemById(id) {
+      this.editedItemId = id
+      this.editedItem = { ...this.departments[id] }
+    },
+  },
+})
 </script>

@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { useJwtStore } from '../../src/stores/jwtHandler'
+import { create } from 'domain'
 
 const BASE_URL = import.meta.env.VITE_API_URL
 
@@ -49,6 +50,28 @@ export const adminRepository = {
           adminId: adminId,
           fullName: fullName,
           email: email,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${jwtStore.getToken}`,
+          },
+        },
+      )
+      return response.data
+    } catch (error) {
+      console.error('Error:', error)
+      throw error
+    }
+  },
+
+  createAdmin: async (fullName: string, email: string, password: string) => {
+    try {
+      const response = await apiClient.post(
+        `/api/register/admin`,
+        {
+          fullName: fullName,
+          email: email,
+          password: password,
         },
         {
           headers: {
