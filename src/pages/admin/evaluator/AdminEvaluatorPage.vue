@@ -63,7 +63,7 @@
       </VaModal>
 
       <!-- Edit Evaluator Modal -->
-      <VaModal class="modal-crud" v-model="isEditing" title="Edit Evaluator" size="small">
+      <VaModal v-model="isEditing" class="modal-crud" title="Edit Evaluator" size="small">
         <VaInput
           v-for="key in Object.keys(editedItem)"
           :key="key"
