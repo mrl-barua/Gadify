@@ -19,7 +19,7 @@
       >
         <template #bodyAppend>
           <tr>
-            <td colspan="6">
+            <td colspan="12">
               <div class="flex justify-center mt-4">
                 <VaPagination v-model="currentPage" :pages="evaluatorPages" />
               </div>

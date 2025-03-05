@@ -33,7 +33,7 @@
       >
         <template #bodyAppend>
           <tr>
-            <td colspan="6">
+            <td colspan="12">
               <div class="flex justify-center mt-4">
                 <VaPagination v-model="onHoldCurrentPage" :pages="onHoldPages" />
               </div>
@@ -90,7 +90,7 @@
       >
         <template #bodyAppend>
           <tr>
-            <td colspan="6">
+            <td colspan="12">
               <div class="flex justify-center mt-4">
                 <VaPagination v-model="evaluationCurrentPage" :pages="evaluationPages" />
               </div>
@@ -146,7 +146,7 @@
       >
         <template #bodyAppend>
           <tr>
-            <td colspan="6">
+            <td colspan="12">
               <div class="flex justify-center mt-4">
                 <VaPagination v-model="completedCurrentPage" :pages="completedPages" />
               </div>
@@ -202,7 +202,7 @@
       >
         <template #bodyAppend>
           <tr>
-            <td colspan="6">
+            <td colspan="12">
               <div class="flex justify-center mt-4">
                 <VaPagination v-model="forCorrectionCurrentPage" :pages="forCorrectionpages" />
               </div>
