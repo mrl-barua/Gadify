@@ -204,6 +204,7 @@ export default defineComponent({
         this.disapprovedProponents = data.filter((proponent) => proponent.proponentStatus === 'Rejected')
       } catch (error) {
         console.error('Failed to load proponents:', error)
+        alert(error.message)
       } finally {
         this.isLoading = false
       }

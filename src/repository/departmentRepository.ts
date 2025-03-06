@@ -52,4 +52,27 @@ export const departmentRepository = {
       throw error
     }
   },
+
+  updateDepartment: async (id: number, campusId: number, departmentName: string) => {
+    try {
+      const response = await apiClient.put(
+        `/api/department`,
+        {
+          id: id,
+          campusId: campusId,
+          departmentName: departmentName,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${jwtStore.getToken}`,
+          },
+        },
+      )
+      console.log('Data:', response.data)
+      return response.data
+    } catch (error) {
+      console.error('Error:', error)
+      throw error
+    }
+  },
 }

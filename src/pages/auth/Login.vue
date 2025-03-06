@@ -78,6 +78,7 @@ const removeLocalAndSessionStorage = () => {
   // } else {
   //   jwtStore.logout()
   // }
+  jwtStore.logout()
 }
 
 const loginOptions = ref(['Proponent', 'Evaluator', 'Admin'])

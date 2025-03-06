@@ -45,7 +45,6 @@ export const useJwtStore = defineStore('jwt', {
       this.decodedToken = null
       localStorage.removeItem('token')
       sessionStorage.removeItem('token')
-      alert('You have been logged out')
     },
   },
   getters: {

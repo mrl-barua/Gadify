@@ -27,8 +27,8 @@
           </tr>
         </template>
         <template #cell(actions)="{ rowIndex }">
-          <VaButton preset="plain" icon="edit" @click="openModalToEditItemById(rowIndex)" />
-          <VaButton preset="plain" icon="delete" class="ml-3" @click="deleteItemById(rowIndex)" />
+          <VaButton preset="plain" class="ml-3" icon="edit" @click="openModalToEditItemById(rowIndex)" />
+          <!-- <VaButton preset="plain" icon="delete" class="ml-3" @click="deleteItemById(rowIndex)" /> -->
         </template>
       </VaDataTable>
 

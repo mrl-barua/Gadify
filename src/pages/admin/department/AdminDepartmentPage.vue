@@ -27,8 +27,8 @@
           </tr>
         </template>
         <template #cell(actions)="{ rowIndex }">
-          <VaButton preset="plain" icon="edit" @click="openModalToEditItemById(rowIndex)" />
-          <VaButton preset="plain" icon="delete" class="ml-3" @click="deleteItemById(rowIndex)" />
+          <VaButton preset="plain" class="ml-3" icon="edit" @click="openModalToEditItemById(rowIndex)" />
+          <!-- <VaButton preset="plain" icon="delete" class="ml-3" @click="deleteItemById(rowIndex)" /> -->
         </template>
       </VaDataTable>
 
@@ -65,19 +65,29 @@
 
       <VaModal
         class="modal-crud"
-        :model-value="!!editedItem"
+        :model-value="!!editedDepartment"
         title="Edit item"
         size="small"
-        @ok="editItem"
+        @ok="editDepartment"
         @cancel="resetEditedItem"
       >
+        <VaSelect
+          v-model="editedDepartment.campusId"
+          label="Select Campus"
+          :options="campusesOptions"
+          outer-label
+          :loading="isVaSelectLoading"
+          track-by="value"
+          text-by="text"
+          value-by="value" />
+
         <VaInput
-          v-for="key in Object.keys(editedItem)"
-          :key="key"
-          v-model="editedItem[key]"
-          class="my-6"
-          :label="key"
-        /> </VaModal
+          v-model="editedDepartment.departmentName"
+          :rules="[rules.required]"
+          class="mb-4"
+          label="Department Name"
+          type="text"
+        ></VaInput></VaModal
     ></VaCardContent>
   </VaCard>
 </template>
@@ -118,7 +128,7 @@ export default defineComponent({
       departments,
       columns,
       editedItemId: null,
-      editedItem: null,
+      editedDepartment: null,
       createdItem: { ...defaultItem },
       addDepartmentModal: false,
 
@@ -223,7 +233,7 @@ export default defineComponent({
     },
 
     resetEditedItem() {
-      this.editedItem = null
+      this.editedDepartment = null
       this.editedItemId = null
     },
     resetCreatedItem() {
@@ -236,17 +246,35 @@ export default defineComponent({
       this.departments = [...this.departments, { ...this.createdItem }]
       this.resetCreatedItem()
     },
-    editItem() {
+    editDepartment() {
       this.departments = [
         ...this.departments.slice(0, this.editedItemId),
-        { ...this.editedItem },
+        { ...this.editedDepartment },
         ...this.departments.slice(this.editedItemId + 1),
       ]
-      this.resetEditedItem()
+      try {
+        departmentRepository.updateDepartment(
+          this.editedDepartment.id,
+          this.editedDepartment.campusId,
+          this.editedDepartment.departmentName,
+        )
+        toast.init({
+          message: 'Department updated successfully',
+          color: 'success',
+        })
+      } catch (error) {
+        console.log(error)
+        toast.init({
+          message: error.response?.data?.message || 'Failed to update department',
+          color: 'danger',
+        })
+      } finally {
+        this.resetEditedItem()
+      }
     },
     openModalToEditItemById(id) {
       this.editedItemId = id
-      this.editedItem = { ...this.departments[id] }
+      this.editedDepartment = { ...this.departments[id] }
     },
   },
 })
