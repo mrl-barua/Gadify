@@ -28,20 +28,11 @@ export const evaluatorsRepository = {
     }
   },
 
-  createNewEvaluator: async (
-    campusId: number,
-    departmentId: number,
-    officeId: number,
-    fullName: string,
-    email: string,
-    password: string,
-  ) => {
+  createNewEvaluator: async (officeId: number, fullName: string, email: string, password: string) => {
     try {
       const response = await apiClient.post(
         '/api/register/evaluator',
         {
-          campusId: campusId,
-          departmentId: departmentId,
           officeId: officeId,
           fullName: fullName,
           email: email,
@@ -61,20 +52,12 @@ export const evaluatorsRepository = {
     }
   },
 
-  updateEvaluator: async (
-    id: number,
-    campusId: number,
-    departmentId: number,
-    officeId: number,
-    fullName: string,
-    email: string,
-  ) => {
+  updateEvaluator: async (id: number, departmentId: number, officeId: number, fullName: string, email: string) => {
     try {
       const response = await apiClient.put(
         '/api/updateEvaluator',
         {
           id: id,
-          campusId: campusId,
           departmentId: departmentId,
           officeId: officeId,
           fullName: fullName,

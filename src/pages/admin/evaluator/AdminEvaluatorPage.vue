@@ -39,6 +39,17 @@
           <VaInput v-model="evaluatorModel.fullName" :rules="[rules.required]" class="mb-4" label="Full Name" />
           <VaInput v-model="evaluatorModel.email" :rules="[rules.required, rules.email]" class="mb-4" label="Email" />
 
+          <VaSelect
+            v-model="evaluatorModel.officeId"
+            label="Select Office"
+            :options="officeOptions"
+            outer-label
+            :loading="isVaSelectLoading"
+            track-by="value"
+            text-by="text"
+            value-by="value"
+          />
+
           <VaInput
             v-model="evaluatorModel.password"
             :rules="[rules.required, rules.passwordStrength]"
@@ -84,6 +95,7 @@
 import { defineComponent, ref, reactive, computed } from 'vue'
 import { useToast } from 'vuestic-ui'
 import { evaluatorsRepository } from '../../../repository/evaluatorRepository'
+import { officeRepository } from '../../../repository/officeRepository'
 
 export default defineComponent({
   setup() {
@@ -94,13 +106,22 @@ export default defineComponent({
 
     const evaluatorModel = reactive({
       id: 0,
-      campusId: 0,
       departmentId: 0,
-      officeId: 0,
+      officeId: null,
       fullName: '',
       email: '',
       password: '',
+      repeatPassword: '',
     })
+
+    const resetEvaluatorModel = () => {
+      evaluatorModel.id = 0
+      evaluatorModel.departmentId = 0
+      evaluatorModel.officeId = null
+      evaluatorModel.fullName = ''
+      evaluatorModel.email = ''
+      evaluatorModel.password = ''
+    }
 
     const editedItem = reactive({})
     const editedItemId = ref(null)
@@ -113,13 +134,14 @@ export default defineComponent({
     }
 
     const evaluators = ref([])
+    const officeOptions = ref([])
     const columns = [
       { key: 'evaluatorId', label: 'Evaluator Id', sortable: true },
       { key: 'fullName', label: 'Fullname', sortable: true },
       { key: 'email', label: 'Email', sortable: true },
-      { key: 'department.departmentName', label: 'Department Name', sortable: true },
-      { key: 'department.campus.campusName', label: 'Campus Name', sortable: true },
       { key: 'office.officeName', label: 'Office', sortable: true },
+      { key: 'office.department.departmentName', label: 'Department Name', sortable: true },
+      { key: 'office.department.campus.campusName', label: 'Campus Name', sortable: true },
       { key: 'actions', width: 80 },
     ]
 
@@ -131,6 +153,19 @@ export default defineComponent({
     const evaluatorPages = computed(() =>
       perPage.value && perPage.value !== 0 ? Math.ceil(filtered.value.length / perPage.value) : 1,
     )
+
+    const loadoffices = async () => {
+      try {
+        const data = await officeRepository.getOffices()
+        officeOptions.value = data.map((office) => ({
+          text: office.officeName,
+          value: office.id,
+        }))
+      } catch (error) {
+        console.log(error)
+      } finally {
+      }
+    }
 
     const loadevaluators = async () => {
       try {
@@ -144,7 +179,13 @@ export default defineComponent({
     }
 
     const createEvaluator = async () => {
-      if (!evaluatorModel.fullName || !evaluatorModel.email || !evaluatorModel.password) {
+      if (
+        !evaluatorModel.fullName ||
+        !evaluatorModel.email ||
+        !evaluatorModel.password ||
+        !evaluatorModel.repeatPassword ||
+        !evaluatorModel.officeId
+      ) {
         toast.init({
           message: 'Please fill in all required fields',
           color: 'danger',
@@ -152,16 +193,30 @@ export default defineComponent({
         return
       }
 
+      if (evaluatorModel.password !== evaluatorModel.repeatPassword) {
+        toast.init({
+          message: 'Passwords do not match',
+          color: 'danger',
+        })
+        return
+      }
+
       try {
         await evaluatorsRepository.createNewEvaluator(
-          evaluatorModel.campusId,
-          evaluatorModel.departmentId,
           evaluatorModel.officeId,
           evaluatorModel.fullName,
           evaluatorModel.email,
           evaluatorModel.password,
         )
-
+        isLoading.value = true
+      } catch (error) {
+        console.log(error)
+        toast.init({
+          message: error.response?.data?.message || 'Failed to create evaluator',
+          color: 'danger',
+        })
+        isLoading.value = false
+      } finally {
         toast.init({
           message: 'Evaluator created successfully',
           color: 'success',
@@ -169,12 +224,8 @@ export default defineComponent({
 
         addEvaluatorModal.value = false
         loadevaluators()
-      } catch (error) {
-        console.log(error)
-        toast.init({
-          message: error.response?.data?.message || 'Failed to create evaluator',
-          color: 'danger',
-        })
+        isLoading.value = false
+        resetEvaluatorModel()
       }
     }
 
@@ -196,6 +247,7 @@ export default defineComponent({
     }
 
     return {
+      officeOptions,
       evaluators,
       columns,
       filtered,
@@ -213,10 +265,12 @@ export default defineComponent({
       openModalToEditItemById,
       deleteItemById,
       loadevaluators,
+      loadoffices,
     }
   },
   mounted() {
     this.loadevaluators()
+    this.loadoffices()
   },
 })
 </script>
