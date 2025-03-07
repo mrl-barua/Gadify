@@ -74,17 +74,28 @@
       </VaModal>
 
       <!-- Edit Evaluator Modal -->
-      <VaModal v-model="isEditing" class="modal-crud" title="Edit Evaluator" size="small">
+      <VaModal v-model="editEvaluatorModal" class="modal-crud" size="small" hide-default-actions="true">
+        <VaInput v-model="editedEvaluatorModel.fullName" :rules="[rules.required]" class="mb-4" label="Full Name" />
         <VaInput
-          v-for="key in Object.keys(editedItem)"
-          :key="key"
-          v-model="editedItem[key]"
-          class="my-6"
-          :label="key"
+          v-model="editedEvaluatorModel.email"
+          :rules="[rules.required, rules.email]"
+          class="mb-4"
+          label="Email"
+        />
+
+        <VaSelect
+          v-model="editedEvaluatorModel.officeId"
+          label="Select Office"
+          :options="officeOptions"
+          outer-label
+          :loading="isVaSelectLoading"
+          track-by="value"
+          text-by="text"
+          value-by="value"
         />
         <div class="flex justify-end gap-2 mt-4">
-          <VaButton color="danger" @click="isEditing = false">Cancel</VaButton>
-          <VaButton color="primary" @click="editItem">Save</VaButton>
+          <VaButton color="danger" @click="editEvaluatorModal = false">Cancel</VaButton>
+          <VaButton color="primary" @click="editEvaluator">Save</VaButton>
         </div>
       </VaModal>
     </VaCardContent>
@@ -102,16 +113,22 @@ export default defineComponent({
     const toast = useToast()
 
     const addEvaluatorModal = ref(false)
-    const isEditing = ref(false)
+    const editEvaluatorModal = ref(false)
 
     const evaluatorModel = reactive({
       id: 0,
-      departmentId: 0,
       officeId: null,
       fullName: '',
       email: '',
       password: '',
       repeatPassword: '',
+    })
+
+    const editedEvaluatorModel = reactive({
+      id: 0,
+      officeId: null,
+      fullName: '',
+      email: '',
     })
 
     const resetEvaluatorModel = () => {
@@ -209,6 +226,11 @@ export default defineComponent({
           evaluatorModel.email,
           evaluatorModel.password,
         )
+        toast.init({
+          message: 'Evaluator created successfully',
+          color: 'success',
+        })
+
         isLoading.value = true
       } catch (error) {
         console.log(error)
@@ -218,11 +240,6 @@ export default defineComponent({
         })
         isLoading.value = false
       } finally {
-        toast.init({
-          message: 'Evaluator created successfully',
-          color: 'success',
-        })
-
         addEvaluatorModal.value = false
         loadevaluators()
         isLoading.value = false
@@ -230,17 +247,42 @@ export default defineComponent({
       }
     }
 
-    const editItem = () => {
-      evaluators.value = evaluators.value.map((evaluator, index) =>
-        index === editedItemId.value ? { ...editedItem } : evaluator,
-      )
-      isEditing.value = false
+    const editEvaluator = async () => {
+      try {
+        await evaluatorsRepository.updateEvaluator(
+          editedEvaluatorModel.id,
+          editedEvaluatorModel.officeId,
+          editedEvaluatorModel.fullName,
+          editedEvaluatorModel.email,
+        )
+        toast.init({
+          message: 'Evaluator updated successfully',
+          color: 'success',
+        })
+      } catch (error) {
+        console.log(error)
+        toast.init({
+          message: error.response?.data?.message || 'Failed to update evaluator',
+          color: 'danger',
+        })
+      } finally {
+        loadevaluators()
+        editEvaluatorModal.value = false
+      }
     }
 
     const openModalToEditItemById = (id) => {
-      editedItemId.value = id
-      Object.assign(editedItem, evaluators.value[id])
-      isEditing.value = true
+      try {
+        const evaluator = evaluators.value[id]
+        editedEvaluatorModel.id = evaluator.id
+        editedEvaluatorModel.officeId = evaluator.officeId
+        editedEvaluatorModel.fullName = evaluator.fullName
+        editedEvaluatorModel.email = evaluator.email
+      } catch (error) {
+        console.log(error)
+      } finally {
+        editEvaluatorModal.value = true
+      }
     }
 
     const deleteItemById = (id) => {
@@ -257,12 +299,13 @@ export default defineComponent({
       isLoading,
       evaluatorPages,
       addEvaluatorModal,
-      isEditing,
+      editEvaluatorModal,
       evaluatorModel,
+      editedEvaluatorModel,
       editedItem,
       rules,
       createEvaluator,
-      editItem,
+      editEvaluator,
       openModalToEditItemById,
       deleteItemById,
       loadevaluators,

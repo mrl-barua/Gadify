@@ -52,13 +52,12 @@ export const evaluatorsRepository = {
     }
   },
 
-  updateEvaluator: async (id: number, departmentId: number, officeId: number, fullName: string, email: string) => {
+  updateEvaluator: async (id: number, officeId: number, fullName: string, email: string) => {
     try {
       const response = await apiClient.put(
         '/api/updateEvaluator',
         {
           id: id,
-          departmentId: departmentId,
           officeId: officeId,
           fullName: fullName,
           email: email,
