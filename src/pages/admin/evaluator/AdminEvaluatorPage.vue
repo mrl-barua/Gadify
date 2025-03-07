@@ -141,7 +141,6 @@ export default defineComponent({
     }
 
     const editedItem = reactive({})
-    const editedItemId = ref(null)
 
     const rules = {
       required: (value) => !!value || 'This field is required',
