@@ -32,6 +32,20 @@ export default {
       },
     },
     {
+      name: 'evaluators',
+      displayName: 'menu.evaluator',
+      meta: {
+        icon: 'groups_2',
+      },
+    },
+    {
+      name: 'office',
+      displayName: 'menu.office',
+      meta: {
+        icon: 'domain',
+      },
+    },
+    {
       name: 'department',
       displayName: 'menu.department',
       meta: {
@@ -39,12 +53,13 @@ export default {
       },
     },
     {
-      name: 'evaluators',
-      displayName: 'menu.evaluator',
+      name: 'campus',
+      displayName: 'menu.campus',
       meta: {
-        icon: 'groups_2',
+        icon: 'domain',
       },
     },
+
     {
       name: 'admins',
       displayName: 'menu.admin',

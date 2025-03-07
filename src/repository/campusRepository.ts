@@ -30,4 +30,49 @@ export const campusRepository = {
       throw error
     }
   },
+
+  createCampus: async (campusName: string, campusAddress: string) => {
+    try {
+      const response = await apiClient.post(
+        '/api/campus',
+        {
+          name: campusName,
+          address: campusAddress,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${jwtStore.getToken}`,
+          },
+        },
+      )
+      console.log('Data:', response.data)
+      return response.data
+    } catch (error) {
+      console.error('Error:', error)
+      throw error
+    }
+  },
+
+  updateCampus: async (id: number, campusName: string, campusAddress: string) => {
+    try {
+      const response = await apiClient.put(
+        '/api/campus',
+        {
+          id: id,
+          name: campusName,
+          address: campusAddress,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${jwtStore.getToken}`,
+          },
+        },
+      )
+      console.log('Data:', response.data)
+      return response.data
+    } catch (error) {
+      console.error('Error:', error)
+      throw error
+    }
+  },
 }

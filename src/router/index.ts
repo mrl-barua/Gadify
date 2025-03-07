@@ -51,6 +51,16 @@ const routes = [
         component: () => import('../pages/admin/evaluator/AdminEvaluatorPage.vue'),
       },
       {
+        name: 'office',
+        path: 'office',
+        component: () => import('../pages/admin/office/AdminOfficePage.vue'),
+      },
+      {
+        name: 'campus',
+        path: 'campus',
+        component: () => import('../pages/admin/campus/AdminCampusPage.vue'),
+      },
+      {
         name: 'admins',
         path: 'admins',
         component: () => import('../pages/admin/admin/AdminManagement.vue'),
