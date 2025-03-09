@@ -49,14 +49,14 @@ export default {
       name: 'department',
       displayName: 'menu.department',
       meta: {
-        icon: 'domain',
+        icon: 'corporate_fare',
       },
     },
     {
       name: 'campus',
       displayName: 'menu.campus',
       meta: {
-        icon: 'domain',
+        icon: 'apartment',
       },
     },
 
