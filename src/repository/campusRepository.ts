@@ -36,8 +36,8 @@ export const campusRepository = {
       const response = await apiClient.post(
         '/api/campus',
         {
-          name: campusName,
-          address: campusAddress,
+          campusName: campusName,
+          campusAddress: campusAddress,
         },
         {
           headers: {

@@ -129,23 +129,9 @@ export default defineComponent({
     }
 
     const createCampus = async () => {
-      if (
-        !campusModel.fullName ||
-        !campusModel.email ||
-        !campusModel.password ||
-        !campusModel.repeatPassword ||
-        !campusModel.officeId
-      ) {
+      if (!campusModel.campusName || !campusModel.campusAddress) {
         toast.init({
           message: 'Please fill in all required fields',
-          color: 'danger',
-        })
-        return
-      }
-
-      if (campusModel.password !== campusModel.repeatPassword) {
-        toast.init({
-          message: 'Passwords do not match',
           color: 'danger',
         })
         return
