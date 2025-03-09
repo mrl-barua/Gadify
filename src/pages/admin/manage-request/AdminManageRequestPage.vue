@@ -287,18 +287,27 @@
         <div v-if="modalTable === 'attachments'">
           <VaCard>
             <VaCardContent>
-              <VaSidebarItem
-                :active="isActive"
-                active-color="#C0C0C0"
-                @click="downloadSubmission(loadedSubmission.resourcesLink, loadedSubmission.fileType)"
+              <div
+                v-if="loadedSubmission && loadedSubmission.submissionFiles && loadedSubmission.submissionFiles.length"
               >
-                <VaSidebarItemContent
-                  ><VaIcon name="download" />
-                  <VaSidebarItemTitle>
-                    {{ loadedSubmission.proposalTitle }}
-                  </VaSidebarItemTitle></VaSidebarItemContent
+                <VaSidebarItem
+                  v-for="(attachment, index) in loadedSubmission.submissionFiles"
+                  :key="index"
+                  :active="isActive"
+                  active-color="#C0C0C0"
+                  @click="downloadSubmission(attachment.resourcesLink, loadedSubmission.fileType)"
                 >
-              </VaSidebarItem>
+                  <VaSidebarItemContent>
+                    <VaIcon name="download" />
+                    <VaSidebarItemTitle>
+                      {{ loadedSubmission.proposalTitle }} - Attachment {{ index + 1 }}
+                    </VaSidebarItemTitle>
+                  </VaSidebarItemContent>
+                </VaSidebarItem>
+              </div>
+              <div v-else>
+                <p>No attachments available</p>
+              </div>
             </VaCardContent>
           </VaCard>
         </div>
@@ -464,11 +473,11 @@ export default defineComponent({
         proposalTitle: '',
         proposalDescription: '',
         fileType: '',
-        resourcesLink: '',
         submissionStatus: '',
         proponent: '',
         evaluator: '',
         remarks: '',
+        submissionFiles: [],
       },
 
       createdSubmission: { ...defaultSubmission },
@@ -651,6 +660,7 @@ export default defineComponent({
           proponent: data.proponent,
           evaluator: data.evaluator,
           remarks: data.remarks,
+          submissionFiles: data.submissionFiles,
         }
         this.sentDocumentForEvaluationModal = true
       } catch (error) {
