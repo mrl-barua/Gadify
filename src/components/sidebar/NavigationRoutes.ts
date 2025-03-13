@@ -71,7 +71,7 @@ export default {
       name: 'user-account',
       displayName: 'menu.userAccount',
       meta: {
-        icon: 'vuestic-iconset-settings',
+        icon: 'manage_accounts',
       },
     },
   ] as INavigationRoute[],
@@ -88,7 +88,7 @@ export default {
       name: 'evaluator-user-account',
       displayName: 'menu.userAccount',
       meta: {
-        icon: 'vuestic-iconset-user',
+        icon: 'manage_accounts',
       },
     },
   ] as INavigationRoute[],
@@ -112,7 +112,7 @@ export default {
       name: 'proponent-user-account',
       displayName: 'menu.userAccount',
       meta: {
-        icon: 'vuestic-iconset-user',
+        icon: 'manage_accounts',
       },
     },
   ] as INavigationRoute[],

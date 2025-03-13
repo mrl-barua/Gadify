@@ -3,13 +3,13 @@
     <template #left>
       <RouterLink
         class="bg-primary h-full flex items-center justify-center"
-        style="width: 45vw"
+        style="width: 60vw"
         to="/"
         aria-label="Visit homepage"
       >
         <VaImage
           fit="contain"
-          class="w-full max-w-[700px] md:max-w-[500px] lg:max-w-[600px]"
+          class="w-full max-w-[600px] md:max-w-[400px] lg:max-w-[600px]"
           src="/login_image_3.png"
         />
       </RouterLink>

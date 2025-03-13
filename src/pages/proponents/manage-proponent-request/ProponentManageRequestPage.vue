@@ -73,17 +73,18 @@
         </template>
         <template #cell(actions)="{ rowIndex }">
           <VaButton
+            class="ml-3"
             preset="plain"
             icon="view_timeline"
             @click="showSentDocumentForEvaluationModal(onHoldSubmissions[rowIndex])"
           />
-          <VaButton
+          <!-- <VaButton
             preset="plain"
             icon="clear_all"
             color="danger"
             class="ml-3"
             @click="documentRoutingLogModal = !documentRoutingLogModal"
-          />
+          /> -->
         </template>
       </VaDataTable>
 
@@ -129,17 +130,18 @@
         </template>
         <template #cell(actions)="{ rowIndex }">
           <VaButton
+            class="ml-3"
             preset="plain"
             icon="view_timeline"
             @click="showSentDocumentForEvaluationModal(evaluationSubmissions[rowIndex])"
           />
-          <VaButton
+          <!-- <VaButton
             preset="plain"
             icon="clear_all"
             color="danger"
             class="ml-3"
             @click="documentRoutingLogModal = !documentRoutingLogModal"
-          />
+          /> -->
         </template>
       </VaDataTable>
 
@@ -185,17 +187,18 @@
         </template>
         <template #cell(actions)="{ rowIndex }">
           <VaButton
+            class="ml-3"
             preset="plain"
             icon="view_timeline"
             @click="showSentDocumentForEvaluationModal(completedSubmissions[rowIndex])"
           />
-          <VaButton
+          <!-- <VaButton
             preset="plain"
             icon="clear_all"
             color="danger"
             class="ml-3"
             @click="documentRoutingLogModal = !documentRoutingLogModal"
-          />
+          /> -->
         </template>
       </VaDataTable>
 
@@ -241,17 +244,18 @@
         </template>
         <template #cell(actions)="{ rowIndex }">
           <VaButton
+            class="ml-3"
             preset="plain"
             icon="view_timeline"
             @click="showSentDocumentForEvaluationModal(forCorrection[rowIndex])"
           />
-          <VaButton
+          <!-- <VaButton
             preset="plain"
             icon="clear_all"
             color="danger"
             class="ml-3"
             @click="documentRoutingLogModal = !documentRoutingLogModal"
-          />
+          /> -->
         </template>
       </VaDataTable>
 

@@ -238,12 +238,7 @@
             icon="view_timeline"
             @click="showSentDocumentForEvaluationModal(forCorrectionSubmissions[rowIndex])"
           />
-          <!-- <VaButton
-            preset="plain"
-            icon="clear_all"
-            color="danger"
-            class="ml-3"
-            @click="documentRoutingLogModal = !documentRoutingLogModal"
+
           /> -->
         </template>
       </VaDataTable>
