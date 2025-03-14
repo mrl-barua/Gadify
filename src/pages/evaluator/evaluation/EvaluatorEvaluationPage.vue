@@ -522,7 +522,7 @@
                     <VaInput label="Comment" name="Comment" />
                   </section>
                 </VaForm>
-                <VaButton @click="" color="primary">Submit Evaluation</VaButton>
+                <VaButton color="primary">Submit Evaluation</VaButton>
               </section>
             </VaCardContent>
           </VaCard>
