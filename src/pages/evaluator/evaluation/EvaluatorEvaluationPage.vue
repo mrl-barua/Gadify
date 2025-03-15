@@ -755,12 +755,14 @@ export default defineComponent({
 
     showSentDocumentForEvaluationModal(item) {
       if (item) {
-        this.getAssignedEvaluator(item.id)
-        this.selectedRowIndex = this.submissions.findIndex((submission) => submission.id === item.id)
+        this.getAssignedEvaluator(item.submissionId)
+        this.selectedRowIndex = this.submissions.findIndex(
+          (submission) => submission.submissionId === item.submissionId,
+        )
         this.loadedSubmission = item
         this.sentDocumentForEvaluationModal = true
 
-        this.loadSubmissionById(item.id)
+        this.loadSubmissionById(item.submissionId)
       } else {
         console.error('Item is undefined or null')
       }
