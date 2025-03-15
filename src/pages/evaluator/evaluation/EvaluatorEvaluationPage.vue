@@ -537,8 +537,10 @@ import { defineComponent, ref } from 'vue'
 import { submissionRepository } from '../../../repository/submissionRepository'
 import { evaluatorsRepository } from '../../../repository/evaluatorRepository'
 import { useToast } from 'vuestic-ui'
+import { useJwtStore } from '../../../stores/jwtHandler'
 
 const toast = useToast()
+const jwtStore = useJwtStore()
 
 const isVaSelectLoading = ref(false)
 
@@ -562,13 +564,13 @@ export default defineComponent({
     const forCorrectionSubmissions = []
 
     const columns = [
-      { key: 'fileType', label: 'File Type', sortable: true },
-      { key: 'createdAt', label: 'Date Filed', sortable: true },
+      { key: 'submission.fileType', label: 'File Type', sortable: true },
+      { key: 'submission.createdAt', label: 'Date Filed', sortable: true },
       { key: 'submissionId', label: 'Document No.', sortable: true },
-      { key: 'proponent.fullName', label: 'Proponent', sortable: true },
-      { key: 'proponent.department.departmentName', label: 'Department', sortable: true },
-      { key: 'proposalTitle', label: 'Proposal Title', sortable: true },
-      { key: 'submissionStatus', label: 'Status', sortable: true },
+      { key: 'submission.proponent.fullName', label: 'Proponent', sortable: true },
+      { key: 'submission.proponent.department.departmentName', label: 'Department', sortable: true },
+      { key: 'submission.proposalTitle', label: 'Proposal Title', sortable: true },
+      { key: 'submission.submissionStatus', label: 'Status', sortable: true },
       { key: 'actions', label: 'Actions', width: 80 },
     ]
 
@@ -650,7 +652,7 @@ export default defineComponent({
   },
 
   mounted() {
-    this.loadSubmissions()
+    this.loadSubmissionsToBeEvaluated()
   },
 
   methods: {
@@ -787,15 +789,17 @@ export default defineComponent({
       }
     },
 
-    async loadSubmissions() {
+    async loadSubmissionsToBeEvaluated() {
       this.isLoading = true
       try {
-        const data = await submissionRepository.getSubmissions()
-        this.submissions = data
-        this.onHoldSubmissions = data.filter((submission) => submission.submissionStatus === 'OnHold')
-        this.evaluationSubmissions = data.filter((submission) => submission.submissionStatus === 'Evaluation')
-        this.completedSubmissions = data.filter((submission) => submission.submissionStatus === 'Completed')
-        this.forCorrectionSubmissions = data.filter((submission) => submission.submissionStatus === 'ForCorrection')
+        const evaluatorId = jwtStore.getUserId
+        const data = await evaluatorsRepository.getSubmissionToBeEvaluatedByEvaluatorId(evaluatorId)
+
+        this.submission = data
+        this.onHoldSubmissions = data.filter((item) => item.submission.submissionStatus === 'OnHold')
+        this.evaluationSubmissions = data.filter((item) => item.submission.submissionStatus === 'Evaluation')
+        this.completedSubmissions = data.filter((item) => item.submission.submissionStatus === 'Completed')
+        this.forCorrectionSubmissions = data.filter((item) => item.submission.submissionStatus === 'ForCorrection')
       } catch (error) {
         console.error('Failed to load submissions:', error)
       } finally {
