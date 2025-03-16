@@ -94,4 +94,44 @@ export const evaluatorsRepository = {
       throw error
     }
   },
+
+  evaluateSubmission: async (
+    submissionId: number,
+    evaluatorId: number,
+    genderAssessments: Array<{
+      sectionId: number
+      doneNo: boolean
+      donePartly: boolean
+      doneYes: boolean
+      score: number
+      comments?: string
+    }>,
+  ) => {
+    try {
+      console.log({
+        submissionId,
+        evaluatorId,
+        genderAssessments,
+      })
+      const response = await apiClient.post(
+        '/api/evaluateSubmission',
+        {
+          submissionId,
+          evaluatorId,
+          genderAssessments,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${jwtStore.getToken}`,
+          },
+        },
+      )
+
+      console.log('Submission Evaluated:', response.data)
+      return response.data
+    } catch (error) {
+      console.error('Error evaluating submission:', error)
+      throw error
+    }
+  },
 }

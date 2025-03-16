@@ -292,62 +292,73 @@
                 <VaDivider />
                 <VaForm ref="myForm" immediate hide-error-messages class="flex flex-col gap-2 mb-2">
                   <section class="1.0 mb-3">
-                    <div class="mb-3">1.0 Involvement of women and men(max score: 2; 1 for each item)</div>
-                    <div class="mb-3">Done</div>
-                    <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
-                    <div class="mb-3">Score</div>
-                    <VaInput label="Comment" name="Comment" />
+                    <div class="mb-3 va-text-bold">1.0 Involvement of women and men(max score: 2; 1 for each item)</div>
                   </section>
-                  <VaDivider />
                   <section class="1.1 mb-3">
                     <div class="mb-3">
-                      "1.1 Participation of women and men in beneficiary groups in problem identification (possible
+                      1.1 Participation of women and men in beneficiary groups in problem identification (possible
                       scores: 0, 0.5, 1.0)
                     </div>
-                    <div class="mb-3">Done</div>
-                    <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
+                    <div>Done</div>
+
+                    <VaRadio
+                      v-model="submissionEvaluation.genderAssessments[1].selectedOption"
+                      class="mb-3"
+                      :options="['No', 'Partly', 'Yes']"
+                      @update:modelValue="updateGenderAssessment(1, $event)"
+                    />
+
                     <div class="mb-3">Score</div>
-                    <VaInput label="Comment" name="Comment" />
+
+                    <VaInput
+                      v-model="submissionEvaluation.genderAssessments[1].comments"
+                      label="Comment"
+                      name="Comment"
+                    />
                   </section>
-                  <VaDivider />
+
                   <section class="1.2 mb-3">
                     <div class="mb-3">
                       1.2 Participation of women and men in beneficiary groups in project design (possible scores: 0,
                       0.5, 1.0)
                     </div>
-                    <div class="mb-3">Done</div>
-                    <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
+
+                    <VaRadio
+                      v-model="submissionEvaluation.genderAssessments[2].selectedOption"
+                      class="mb-3"
+                      :options="['No', 'Partly', 'Yes']"
+                      @update:modelValue="updateGenderAssessment(2, $event)"
+                    />
                     <div class="mb-3">Score</div>
-                    <VaInput label="Comment" name="Comment" />
+                    <VaInput
+                      v-model="submissionEvaluation.genderAssessments[2].comments"
+                      label="Comment"
+                      name="Comment"
+                    />
                   </section>
                   <VaDivider />
                   <section class="2.0 mb-3">
-                    <div class="mb-3">
+                    <div class="mb-3 va-text-bold">
                       2.0 Collection of sex-disaggregated data and gender-related information (possible scores: 0, 1.0,
                       2.0)
                     </div>
-                    <div class="mb-3">Done</div>
+
                     <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
                     <div class="mb-3">Score</div>
                     <VaInput label="Comment" name="Comment" />
                   </section>
                   <VaDivider />
                   <section class="3.0 mb-3">
-                    <div class="mb-3">
+                    <div class="mb-3 va-text-bold">
                       3.0 Conduct of gender analysis and identification of gender issues (max score: 2; 1 for each item)
                     </div>
-                    <div class="mb-3">Done</div>
-                    <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
-                    <div class="mb-3">Score</div>
-                    <VaInput label="Comment" name="Comment" />
                   </section>
-                  <VaDivider />
                   <section class="3.1 mb-3">
                     <div class="mb-3">
                       3.1 Analysis of gender gaps and inequalities related to gender roles, perspectives and needs, or
                       access to and control of resources (possible scores: 0, 0.5, 1.0)
                     </div>
-                    <div class="mb-3">Done</div>
+
                     <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
                     <div class="mb-3">Score</div>
                     <VaInput label="Comment" name="Comment" />
@@ -358,51 +369,47 @@
                       3.2 Analysis of constraints and opportunities related to women and men’s participation in the
                       project (possible scores: 0, 0.5, 1.0)
                     </div>
-                    <div class="mb-3">Done</div>
+
                     <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
                     <div class="mb-3">Score</div>
                     <VaInput label="Comment" name="Comment" />
                   </section>
                   <VaDivider />
                   <section class="4.0 mb-3">
-                    <div class="mb-3">
+                    <div class="mb-3 va-text-bold">
                       4.0 Gender equality goals, outcomes, and outputs (possible scores: 0, 1.0, 2.0) - Does the project
                       have clearly stated gender equality goals, objectives, outcomes, or outputs?
                     </div>
-                    <div class="mb-3">Done</div>
+
                     <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
                     <div class="mb-3">Score</div>
                     <VaInput label="Comment" name="Comment" />
                   </section>
                   <VaDivider />
                   <section class="1.0 mb-3">
-                    <div class="mb-3">
+                    <div class="mb-3 va-text-bold">
                       5.0 Matching of strategies with gender issues (possible scores: 0, 1.0, 2.0) - Do the strategies
                       and activities match the gender issues and gender equality goals identified?
                     </div>
-                    <div class="mb-3">Done</div>
+
                     <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
                     <div class="mb-3">Score</div>
                     <VaInput label="Comment" name="Comment" />
                   </section>
                   <VaDivider />
                   <section class="6.0 mb-3">
-                    <div class="mb-3">
+                    <div class="mb-3 va-text-bold">
                       6.0 Gender analysis of likely impacts of the project (max score: 2; for each item or question,
                       0.67)
                     </div>
-                    <div class="mb-3">Done</div>
-                    <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
-                    <div class="mb-3">Score</div>
-                    <VaInput label="Comment" name="Comment" />
                   </section>
-                  <VaDivider />
+
                   <section class="6.1 mb-3">
                     <div class="mb-3">
                       6.1 Are women and girl children among the direct or indirect beneficiaries? (Possible scores: 0,
                       0.33, 0.67)
                     </div>
-                    <div class="mb-3">Done</div>
+
                     <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
                     <div class="mb-3">Score</div>
                     <VaInput label="Comment" name="Comment" />
@@ -413,7 +420,7 @@
                       6.2 Has the project considered its long-term impact on women’s socioeconomic status and
                       empowerment? (Possible scores: 0, 0.33, 0.67)
                     </div>
-                    <div class="mb-3">Done</div>
+
                     <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
                     <div class="mb-3">Score</div>
                     <VaInput label="Comment" name="Comment" />
@@ -424,43 +431,43 @@
                       6.3 Has the project included strategies for avoiding or minimizing negative impact on women’s
                       status and welfare? (Possible scores: 0, 0.33, 0.67)
                     </div>
-                    <div class="mb-3">Done</div>
+
                     <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
                     <div class="mb-3">Score</div>
                     <VaInput label="Comment" name="Comment" />
                   </section>
                   <VaDivider />
                   <section class="7.0 mb-3">
-                    <div class="mb-3">7.0 Monitoring targets and indicators (possible scores: 0, 1.0, 2.0)</div>
-                    <div class="mb-3">Done</div>
+                    <div class="mb-3 va-text-bold">
+                      7.0 Monitoring targets and indicators (possible scores: 0, 1.0, 2.0)
+                    </div>
+
                     <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
                     <div class="mb-3">Score</div>
                     <VaInput label="Comment" name="Comment" />
                   </section>
                   <VaDivider />
                   <section class="8.0 mb-3">
-                    <div class="mb-3">8.0 Sex-disaggregated database requirement (possible scores: 0, 1.0, 2.0)</div>
-                    <div class="mb-3">Done</div>
+                    <div class="mb-3 va-text-bold">
+                      8.0 Sex-disaggregated database requirement (possible scores: 0, 1.0, 2.0)
+                    </div>
+
                     <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
                     <div class="mb-3">Score</div>
                     <VaInput label="Comment" name="Comment" />
                   </section>
                   <VaDivider />
                   <section class="9.0 mb-3">
-                    <div class="mb-3">9.0 Resources (max score: 2; for each question, 1)</div>
-                    <div class="mb-3">Done</div>
-                    <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
-                    <div class="mb-3">Score</div>
-                    <VaInput label="Comment" name="Comment" />
+                    <div class="mb-3 va-text-bold">9.0 Resources (max score: 2; for each question, 1)</div>
                   </section>
-                  <VaDivider />
+
                   <section class="9.1 mb-3">
                     <div class="mb-3">
                       9.1 Is the project’s budget allotment sufficient for gender equality promotion or integration? OR
                       will the project tap counterpart funds from LGUs/partners for its GAD efforts? (Possible scores:
                       0, 0.5, 1.0)
                     </div>
-                    <div class="mb-3">Done</div>
+
                     <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
                     <div class="mb-3">Score</div>
                     <VaInput label="Comment" name="Comment" />
@@ -472,29 +479,24 @@
                       does the project commit itself to investing project staff time in building capacities within the
                       project to integrate GAD or promote gender equality? (Possible scores: 0, 0.5, 1.0)
                     </div>
-                    <div class="mb-3">Done</div>
+
                     <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
                     <div class="mb-3">Score</div>
                     <VaInput label="Comment" name="Comment" />
                   </section>
                   <VaDivider />
                   <section class="10.0 mb-3">
-                    <div class="mb-3">
+                    <div class="mb-3 va-text-bold">
                       10.0 Relationship with the agency’s GAD efforts (max score: 2; for each question or item, 0.67"
                     </div>
-                    <div class="mb-3">Done</div>
-                    <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
-                    <div class="mb-3">Score</div>
-                    <VaInput label="Comment" name="Comment" />
                   </section>
-                  <VaDivider />
                   <section class="10.1 mb-3">
                     <div class="mb-3">
                       10.1 Will the project build on or strengthen the agency/ NCRFW/ government’s commitment to the
                       empowerment of women? (Possible scores: 0, 0.33, 0.67) IF THE AGENCY HAS NO GAD PLAN: Will the
                       project help in the formulation of the implementing agency’s GAD plan?
                     </div>
-                    <div class="mb-3">Done</div>
+
                     <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
                     <div class="mb-3">Score</div>
                     <VaInput label="Comment" name="Comment" />
@@ -505,7 +507,7 @@
                       10.2 Will the project build on the initiatives or actions of other organizations in the area?
                       (Possible scores: 0, 0.33, 0.67)
                     </div>
-                    <div class="mb-3">Done</div>
+
                     <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
                     <div class="mb-3">Score</div>
                     <VaInput label="Comment" name="Comment" />
@@ -516,13 +518,13 @@
                       10.3 Does the project have an exit plan that will ensure the sustainability of GAD efforts and
                       benefits? (Possible scores: 0, 0.33, 0.67)
                     </div>
-                    <div class="mb-3">Done</div>
+
                     <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
                     <div class="mb-3">Score</div>
                     <VaInput label="Comment" name="Comment" />
                   </section>
                 </VaForm>
-                <VaButton color="primary">Submit Evaluation</VaButton>
+                <VaButton @click="submitEvaluation()" color="primary">Submit Evaluation</VaButton>
               </section>
             </VaCardContent>
           </VaCard>
@@ -601,6 +603,211 @@ export default defineComponent({
         submissionFiles: [],
       },
 
+      submissionEvaluation: {
+        submissionId: 0,
+        evaluatorId: 0,
+        genderAssessments: [
+          {
+            // 1.0 Involvement of women and men (max score: 2; 1 for each item)
+            sectionId: 1,
+            doneNo: false,
+            donePartly: false,
+            doneYes: false,
+            score: '',
+            comments: '',
+          },
+          {
+            // 1.1 Participation of women and men in beneficiary groups in problem identification (possible scores: 0, 0.5, 1.0)
+            sectionId: 2,
+            doneNo: false,
+            donePartly: false,
+            doneYes: false,
+            score: '',
+            comments: '',
+          },
+          {
+            // 1.2 Participation of women and men in beneficiary groups in project design (possible scores: 0, 0.5, 1.0)
+            sectionId: 3,
+            doneNo: false,
+            donePartly: false,
+            doneYes: false,
+            score: '',
+            comments: '',
+          },
+          {
+            // 2.0 Collection of sex-disaggregated data and gender-related information (possible scores: 0, 1.0, 2.0)
+            sectionId: 4,
+            doneNo: false,
+            donePartly: false,
+            doneYes: false,
+            score: '',
+            comments: '',
+          },
+          {
+            // 3.0 Conduct of gender analysis and identification of gender issues (max score: 2; 1 for each item)
+            sectionId: 5,
+            doneNo: false,
+            donePartly: false,
+            doneYes: false,
+            score: '',
+            comments: '',
+          },
+          {
+            // 3.1 Analysis of gender gaps and inequalities related to gender roles, perspectives and needs, or access to and control of resources (possible scores: 0, 0.5, 1.0)
+            sectionId: 6,
+            doneNo: false,
+            donePartly: false,
+            doneYes: false,
+            score: '',
+            comments: '',
+          },
+          {
+            // 3.2 Analysis of constraints and opportunities related to women and men’s participation in the project (possible scores: 0, 0.5, 1.0)
+            sectionId: 7,
+            doneNo: false,
+            donePartly: false,
+            doneYes: false,
+            score: '',
+            comments: '',
+          },
+          {
+            // 4.0 Gender equality goals, outcomes, and outputs (possible scores: 0, 1.0, 2.0)
+            sectionId: 8,
+            doneNo: false,
+            donePartly: false,
+            doneYes: false,
+            score: '',
+            comments: '',
+          },
+          {
+            // 5.0 Matching of strategies with gender issues (possible scores: 0, 1.0, 2.0)
+            sectionId: 9,
+            doneNo: false,
+            donePartly: false,
+            doneYes: false,
+            score: '',
+            comments: '',
+          },
+          {
+            // 6.0 Gender analysis of likely impacts of the project (max score: 2; for each item or question, 0.67)
+            sectionId: 10,
+            doneNo: false,
+            donePartly: false,
+            doneYes: false,
+            score: '',
+            comments: '',
+          },
+          {
+            // 6.1 Are women and girl children among the direct or indirect beneficiaries? (Possible scores: 0, 0.33, 0.67)
+            sectionId: 11,
+            doneNo: false,
+            donePartly: false,
+            doneYes: false,
+            score: '',
+            comments: '',
+          },
+          {
+            // 6.2 Has the project considered its long-term impact on women’s socioeconomic status and empowerment? (Possible scores: 0, 0.33, 0.67)
+            sectionId: 12,
+            doneNo: false,
+            donePartly: false,
+            doneYes: false,
+            score: '',
+            comments: '',
+          },
+          {
+            // 6.3 Has the project included strategies for avoiding or minimizing negative impact on women’s status and welfare? (Possible scores: 0, 0.33, 0.67)
+            sectionId: 13,
+            doneNo: false,
+            donePartly: false,
+            doneYes: false,
+            score: '',
+            comments: '',
+          },
+          {
+            // 7.0 Monitoring targets and indicators (possible scores: 0, 1.0, 2.0)
+            sectionId: 14,
+            doneNo: false,
+            donePartly: false,
+            doneYes: false,
+            score: '',
+            comments: '',
+          },
+          {
+            // 8.0 Sex-disaggregated database requirement (possible scores: 0, 1.0, 2.0)
+            sectionId: 15,
+            doneNo: false,
+            donePartly: false,
+            doneYes: false,
+            score: '',
+            comments: '',
+          },
+          {
+            // 9.0 Resources (max score: 2; for each question, 1)
+            sectionId: 16,
+            doneNo: false,
+            donePartly: false,
+            doneYes: false,
+            score: '',
+            comments: '',
+          },
+          {
+            // 9.1 Is the project’s budget allotment sufficient for gender equality promotion or integration? (Possible scores: 0, 0.5, 1.0)
+            sectionId: 17,
+            doneNo: false,
+            donePartly: false,
+            doneYes: false,
+            score: '',
+            comments: '',
+          },
+          {
+            // 9.2 Does the project have the expertise in promoting gender equality and women’s empowerment? (Possible scores: 0, 0.5, 1.0)
+            sectionId: 18,
+            doneNo: false,
+            donePartly: false,
+            doneYes: false,
+            score: '',
+            comments: '',
+          },
+          {
+            // 10.0 Relationship with the agency’s GAD efforts (max score: 2; for each question or item, 0.67)
+            sectionId: 19,
+            doneNo: false,
+            donePartly: false,
+            doneYes: false,
+            score: '',
+            comments: '',
+          },
+          {
+            // 10.1 Will the project build on or strengthen the agency/ NCRFW/ government’s commitment to the empowerment of women? (Possible scores: 0, 0.33, 0.67)
+            sectionId: 20,
+            doneNo: false,
+            donePartly: false,
+            doneYes: false,
+            score: '',
+            comments: '',
+          },
+          {
+            // 10.2 Will the project build on the initiatives or actions of other organizations in the area? (Possible scores: 0, 0.33, 0.67)
+            sectionId: 21,
+            doneNo: false,
+            donePartly: false,
+            doneYes: false,
+            score: '',
+            comments: '',
+          },
+          {
+            // 10.3 Does the project have an exit plan that will ensure the sustainability of GAD efforts and benefits? (Possible scores: 0, 0.33, 0.67)
+            sectionId: 22,
+            doneNo: false,
+            donePartly: false,
+            doneYes: false,
+            score: '',
+            comments: '',
+          },
+        ],
+      },
+
       createdSubmission: { ...defaultSubmission },
       currentTable: 'onHold',
       modalTable: 'attachments',
@@ -656,6 +863,19 @@ export default defineComponent({
   },
 
   methods: {
+    updateGenderAssessment(index, value) {
+      this.submissionEvaluation.genderAssessments[index].doneNo = false
+      this.submissionEvaluation.genderAssessments[index].donePartly = false
+      this.submissionEvaluation.genderAssessments[index].doneYes = false
+
+      if (value === 'No') {
+        this.submissionEvaluation.genderAssessments[index].doneNo = true
+      } else if (value === 'Partly') {
+        this.submissionEvaluation.genderAssessments[index].donePartly = true
+      } else if (value === 'Yes') {
+        this.submissionEvaluation.genderAssessments[index].doneYes = true
+      }
+    },
     truncateText(text, length) {
       if (text.length > length) {
         return text.substring(0, length) + '...'
@@ -726,6 +946,16 @@ export default defineComponent({
       } catch (error) {
         this.AssignedEvaluator = []
         console.error('Failed to load assigned evaluator:', error)
+      }
+    },
+
+    async submitEvaluation() {
+      try {
+        const SubmissionId = this.loadedSubmission.id
+        const EvaluatorId = jwtStore.getUserId
+        const data = await evaluatorsRepository.evaluateSubmission(SubmissionId, EvaluatorId, this.submissionEvaluation.genderAssessments)
+      } catch (error) {
+        console.error('Failed to submit evaluation:', error)
       }
     },
 
