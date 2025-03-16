@@ -524,7 +524,7 @@
                     <VaInput label="Comment" name="Comment" />
                   </section>
                 </VaForm>
-                <VaButton @click="submitEvaluation()" color="primary">Submit Evaluation</VaButton>
+                <VaButton color="primary" @click="submitEvaluation()">Submit Evaluation</VaButton>
               </section>
             </VaCardContent>
           </VaCard>
@@ -951,9 +951,11 @@ export default defineComponent({
 
     async submitEvaluation() {
       try {
-        const SubmissionId = this.loadedSubmission.id
-        const EvaluatorId = jwtStore.getUserId
-        const data = await evaluatorsRepository.evaluateSubmission(SubmissionId, EvaluatorId, this.submissionEvaluation.genderAssessments)
+        await evaluatorsRepository.evaluateSubmission(
+          this.loadedSubmission.id,
+          jwtStore.getUserId,
+          this.submissionEvaluation.genderAssessments,
+        )
       } catch (error) {
         console.error('Failed to submit evaluation:', error)
       }

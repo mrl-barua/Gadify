@@ -2,18 +2,24 @@
   <VaLayout v-if="breakpoint.lgUp" class="h-screen bg-[var(--va-background-secondary)]">
     <template #left>
       <RouterLink
-        class="bg-primary h-full flex items-center justify-center"
+        class="h-full flex items-center justify-center relative overflow-hidden"
         style="width: 60vw"
         to="/"
         aria-label="Visit homepage"
       >
+        <div
+          class="absolute inset-0 bg-cover bg-center bg-no-repeat backdrop-blur-lg"
+          style="background-image: url('/Gadify_Background.webp')"
+        ></div>
+
         <VaImage
           fit="contain"
-          class="w-full max-w-[600px] md:max-w-[400px] lg:max-w-[600px]"
+          class="relative z-10 w-full max-w-[600px] md:max-w-[400px] lg:max-w-[600px] sharpened-image"
           src="/login_image_3.png"
         />
       </RouterLink>
     </template>
+
     <template #content>
       <main class="h-full flex items-center justify-center mx-auto max-w-[420px]">
         <RouterView />
@@ -43,3 +49,9 @@ import VuesticLogo from '../components/GadifyLogo.vue'
 
 const breakpoint = useBreakpoint()
 </script>
+
+<style scoped>
+.sharpened-image {
+  filter: brightness(1.1) contrast(1.2) saturate(2.1);
+}
+</style>
