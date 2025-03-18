@@ -343,9 +343,18 @@
                       2.0)
                     </div>
 
-                    <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
+                    <VaRadio
+                      v-model="submissionEvaluation.genderAssessments[3].selectedOption"
+                      class="mb-3"
+                      :options="['No', 'Partly', 'Yes']"
+                      @update:modelValue="updateGenderAssessment(3, $event)"
+                    />
                     <div class="mb-3">Score</div>
-                    <VaInput label="Comment" name="Comment" />
+                    <VaInput
+                      v-model="submissionEvaluation.genderAssessments[3].comments"
+                      label="Comment"
+                      name="Comment"
+                    />
                   </section>
                   <VaDivider />
                   <section class="3.0 mb-3">
@@ -359,9 +368,18 @@
                       access to and control of resources (possible scores: 0, 0.5, 1.0)
                     </div>
 
-                    <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
+                    <VaRadio
+                      v-model="submissionEvaluation.genderAssessments[5].selectedOption"
+                      class="mb-3"
+                      :options="['No', 'Partly', 'Yes']"
+                      @update:modelValue="updateGenderAssessment(5, $event)"
+                    />
                     <div class="mb-3">Score</div>
-                    <VaInput label="Comment" name="Comment" />
+                    <VaInput
+                      v-model="submissionEvaluation.genderAssessments[5].comments"
+                      label="Comment"
+                      name="Comment"
+                    />
                   </section>
                   <VaDivider />
                   <section class="3.2 mb-3">
@@ -370,9 +388,18 @@
                       project (possible scores: 0, 0.5, 1.0)
                     </div>
 
-                    <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
+                    <VaRadio
+                      v-model="submissionEvaluation.genderAssessments[6].selectedOption"
+                      class="mb-3"
+                      :options="['No', 'Partly', 'Yes']"
+                      @update:modelValue="updateGenderAssessment(6, $event)"
+                    />
                     <div class="mb-3">Score</div>
-                    <VaInput label="Comment" name="Comment" />
+                    <VaInput
+                      v-model="submissionEvaluation.genderAssessments[6].comments"
+                      label="Comment"
+                      name="Comment"
+                    />
                   </section>
                   <VaDivider />
                   <section class="4.0 mb-3">
@@ -381,9 +408,18 @@
                       have clearly stated gender equality goals, objectives, outcomes, or outputs?
                     </div>
 
-                    <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
+                    <VaRadio
+                      v-model="submissionEvaluation.genderAssessments[7].selectedOption"
+                      class="mb-3"
+                      :options="['No', 'Partly', 'Yes']"
+                      @update:modelValue="updateGenderAssessment(7, $event)"
+                    />
                     <div class="mb-3">Score</div>
-                    <VaInput label="Comment" name="Comment" />
+                    <VaInput
+                      v-model="submissionEvaluation.genderAssessments[7].comments"
+                      label="Comment"
+                      name="Comment"
+                    />
                   </section>
                   <VaDivider />
                   <section class="1.0 mb-3">
@@ -392,9 +428,18 @@
                       and activities match the gender issues and gender equality goals identified?
                     </div>
 
-                    <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
+                    <VaRadio
+                      v-model="submissionEvaluation.genderAssessments[8].selectedOption"
+                      class="mb-3"
+                      :options="['No', 'Partly', 'Yes']"
+                      @update:modelValue="updateGenderAssessment(8, $event)"
+                    />
                     <div class="mb-3">Score</div>
-                    <VaInput label="Comment" name="Comment" />
+                    <VaInput
+                      v-model="submissionEvaluation.genderAssessments[8].comments"
+                      label="Comment"
+                      name="Comment"
+                    />
                   </section>
                   <VaDivider />
                   <section class="6.0 mb-3">
@@ -410,9 +455,18 @@
                       0.33, 0.67)
                     </div>
 
-                    <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
+                    <VaRadio
+                      v-model="submissionEvaluation.genderAssessments[10].selectedOption"
+                      class="mb-3"
+                      :options="['No', 'Partly', 'Yes']"
+                      @update:modelValue="updateGenderAssessment(10, $event)"
+                    />
                     <div class="mb-3">Score</div>
-                    <VaInput label="Comment" name="Comment" />
+                    <VaInput
+                      v-model="submissionEvaluation.genderAssessments[10].comments"
+                      label="Comment"
+                      name="Comment"
+                    />
                   </section>
                   <VaDivider />
                   <section class="6.2 mb-3">
@@ -421,9 +475,18 @@
                       empowerment? (Possible scores: 0, 0.33, 0.67)
                     </div>
 
-                    <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
+                    <VaRadio
+                      v-model="submissionEvaluation.genderAssessments[11].selectedOption"
+                      class="mb-3"
+                      :options="['No', 'Partly', 'Yes']"
+                      @update:modelValue="updateGenderAssessment(11, $event)"
+                    />
                     <div class="mb-3">Score</div>
-                    <VaInput label="Comment" name="Comment" />
+                    <VaInput
+                      v-model="submissionEvaluation.genderAssessments[11].comments"
+                      label="Comment"
+                      name="Comment"
+                    />
                   </section>
                   <VaDivider />
                   <section class="6.3 mb-3">
@@ -432,9 +495,18 @@
                       status and welfare? (Possible scores: 0, 0.33, 0.67)
                     </div>
 
-                    <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
+                    <VaRadio
+                      v-model="submissionEvaluation.genderAssessments[12].selectedOption"
+                      class="mb-3"
+                      :options="['No', 'Partly', 'Yes']"
+                      @update:modelValue="updateGenderAssessment(12, $event)"
+                    />
                     <div class="mb-3">Score</div>
-                    <VaInput label="Comment" name="Comment" />
+                    <VaInput
+                      v-model="submissionEvaluation.genderAssessments[12].comments"
+                      label="Comment"
+                      name="Comment"
+                    />
                   </section>
                   <VaDivider />
                   <section class="7.0 mb-3">
@@ -442,9 +514,18 @@
                       7.0 Monitoring targets and indicators (possible scores: 0, 1.0, 2.0)
                     </div>
 
-                    <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
+                    <VaRadio
+                      v-model="submissionEvaluation.genderAssessments[13].selectedOption"
+                      class="mb-3"
+                      :options="['No', 'Partly', 'Yes']"
+                      @update:modelValue="updateGenderAssessment(13, $event)"
+                    />
                     <div class="mb-3">Score</div>
-                    <VaInput label="Comment" name="Comment" />
+                    <VaInput
+                      v-model="submissionEvaluation.genderAssessments[13].comments"
+                      label="Comment"
+                      name="Comment"
+                    />
                   </section>
                   <VaDivider />
                   <section class="8.0 mb-3">
@@ -452,9 +533,18 @@
                       8.0 Sex-disaggregated database requirement (possible scores: 0, 1.0, 2.0)
                     </div>
 
-                    <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
+                    <VaRadio
+                      v-model="submissionEvaluation.genderAssessments[14].selectedOption"
+                      class="mb-3"
+                      :options="['No', 'Partly', 'Yes']"
+                      @update:modelValue="updateGenderAssessment(14, $event)"
+                    />
                     <div class="mb-3">Score</div>
-                    <VaInput label="Comment" name="Comment" />
+                    <VaInput
+                      v-model="submissionEvaluation.genderAssessments[14].comments"
+                      label="Comment"
+                      name="Comment"
+                    />
                   </section>
                   <VaDivider />
                   <section class="9.0 mb-3">
@@ -468,9 +558,18 @@
                       0, 0.5, 1.0)
                     </div>
 
-                    <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
+                    <VaRadio
+                      v-model="submissionEvaluation.genderAssessments[16].selectedOption"
+                      class="mb-3"
+                      :options="['No', 'Partly', 'Yes']"
+                      @update:modelValue="updateGenderAssessment(16, $event)"
+                    />
                     <div class="mb-3">Score</div>
-                    <VaInput label="Comment" name="Comment" />
+                    <VaInput
+                      v-model="submissionEvaluation.genderAssessments[16].comments"
+                      label="Comment"
+                      name="Comment"
+                    />
                   </section>
                   <VaDivider />
                   <section class="9.2 mb-3">
@@ -480,9 +579,18 @@
                       project to integrate GAD or promote gender equality? (Possible scores: 0, 0.5, 1.0)
                     </div>
 
-                    <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
+                    <VaRadio
+                      v-model="submissionEvaluation.genderAssessments[17].selectedOption"
+                      class="mb-3"
+                      :options="['No', 'Partly', 'Yes']"
+                      @update:modelValue="updateGenderAssessment(17, $event)"
+                    />
                     <div class="mb-3">Score</div>
-                    <VaInput label="Comment" name="Comment" />
+                    <VaInput
+                      v-model="submissionEvaluation.genderAssessments[17].comments"
+                      label="Comment"
+                      name="Comment"
+                    />
                   </section>
                   <VaDivider />
                   <section class="10.0 mb-3">
@@ -497,9 +605,18 @@
                       project help in the formulation of the implementing agency’s GAD plan?
                     </div>
 
-                    <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
+                    <VaRadio
+                      v-model="submissionEvaluation.genderAssessments[19].selectedOption"
+                      class="mb-3"
+                      :options="['No', 'Partly', 'Yes']"
+                      @update:modelValue="updateGenderAssessment(19, $event)"
+                    />
                     <div class="mb-3">Score</div>
-                    <VaInput label="Comment" name="Comment" />
+                    <VaInput
+                      v-model="submissionEvaluation.genderAssessments[19].comments"
+                      label="Comment"
+                      name="Comment"
+                    />
                   </section>
                   <VaDivider />
                   <section class="10.2 mb-3">
@@ -508,9 +625,18 @@
                       (Possible scores: 0, 0.33, 0.67)
                     </div>
 
-                    <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
+                    <VaRadio
+                      v-model="submissionEvaluation.genderAssessments[20].selectedOption"
+                      class="mb-3"
+                      :options="['No', 'Partly', 'Yes']"
+                      @update:modelValue="updateGenderAssessment(20, $event)"
+                    />
                     <div class="mb-3">Score</div>
-                    <VaInput label="Comment" name="Comment" />
+                    <VaInput
+                      v-model="submissionEvaluation.genderAssessments[20].comments"
+                      label="Comment"
+                      name="Comment"
+                    />
                   </section>
                   <VaDivider />
                   <section class="10.3 mb-3">
@@ -519,9 +645,18 @@
                       benefits? (Possible scores: 0, 0.33, 0.67)
                     </div>
 
-                    <VaRadio v-model="value" class="mb-3" :options="['One', 'Two', 'Three']" />
+                    <VaRadio
+                      v-model="submissionEvaluation.genderAssessments[21].selectedOption"
+                      class="mb-3"
+                      :options="['No', 'Partly', 'Yes']"
+                      @update:modelValue="updateGenderAssessment(21, $event)"
+                    />
                     <div class="mb-3">Score</div>
-                    <VaInput label="Comment" name="Comment" />
+                    <VaInput
+                      v-model="submissionEvaluation.genderAssessments[21].comments"
+                      label="Comment"
+                      name="Comment"
+                    />
                   </section>
                 </VaForm>
                 <VaButton color="primary" @click="submitEvaluation()">Submit Evaluation</VaButton>
@@ -613,7 +748,7 @@ export default defineComponent({
             doneNo: false,
             donePartly: false,
             doneYes: false,
-            score: '',
+            score: 0,
             comments: '',
           },
           {
@@ -622,7 +757,7 @@ export default defineComponent({
             doneNo: false,
             donePartly: false,
             doneYes: false,
-            score: '',
+            score: 0,
             comments: '',
           },
           {
@@ -631,7 +766,7 @@ export default defineComponent({
             doneNo: false,
             donePartly: false,
             doneYes: false,
-            score: '',
+            score: 0,
             comments: '',
           },
           {
@@ -640,7 +775,7 @@ export default defineComponent({
             doneNo: false,
             donePartly: false,
             doneYes: false,
-            score: '',
+            score: 0,
             comments: '',
           },
           {
@@ -649,7 +784,7 @@ export default defineComponent({
             doneNo: false,
             donePartly: false,
             doneYes: false,
-            score: '',
+            score: 0,
             comments: '',
           },
           {
@@ -658,7 +793,7 @@ export default defineComponent({
             doneNo: false,
             donePartly: false,
             doneYes: false,
-            score: '',
+            score: 0,
             comments: '',
           },
           {
@@ -667,7 +802,7 @@ export default defineComponent({
             doneNo: false,
             donePartly: false,
             doneYes: false,
-            score: '',
+            score: 0,
             comments: '',
           },
           {
@@ -676,7 +811,7 @@ export default defineComponent({
             doneNo: false,
             donePartly: false,
             doneYes: false,
-            score: '',
+            score: 0,
             comments: '',
           },
           {
@@ -685,7 +820,7 @@ export default defineComponent({
             doneNo: false,
             donePartly: false,
             doneYes: false,
-            score: '',
+            score: 0,
             comments: '',
           },
           {
@@ -694,7 +829,7 @@ export default defineComponent({
             doneNo: false,
             donePartly: false,
             doneYes: false,
-            score: '',
+            score: 0,
             comments: '',
           },
           {
@@ -703,7 +838,7 @@ export default defineComponent({
             doneNo: false,
             donePartly: false,
             doneYes: false,
-            score: '',
+            score: 0,
             comments: '',
           },
           {
@@ -712,7 +847,7 @@ export default defineComponent({
             doneNo: false,
             donePartly: false,
             doneYes: false,
-            score: '',
+            score: 0,
             comments: '',
           },
           {
@@ -721,7 +856,7 @@ export default defineComponent({
             doneNo: false,
             donePartly: false,
             doneYes: false,
-            score: '',
+            score: 0,
             comments: '',
           },
           {
@@ -730,7 +865,7 @@ export default defineComponent({
             doneNo: false,
             donePartly: false,
             doneYes: false,
-            score: '',
+            score: 0,
             comments: '',
           },
           {
@@ -739,7 +874,7 @@ export default defineComponent({
             doneNo: false,
             donePartly: false,
             doneYes: false,
-            score: '',
+            score: 0,
             comments: '',
           },
           {
@@ -748,7 +883,7 @@ export default defineComponent({
             doneNo: false,
             donePartly: false,
             doneYes: false,
-            score: '',
+            score: 0,
             comments: '',
           },
           {
@@ -757,7 +892,7 @@ export default defineComponent({
             doneNo: false,
             donePartly: false,
             doneYes: false,
-            score: '',
+            score: 0,
             comments: '',
           },
           {
@@ -766,7 +901,7 @@ export default defineComponent({
             doneNo: false,
             donePartly: false,
             doneYes: false,
-            score: '',
+            score: 0,
             comments: '',
           },
           {
@@ -775,7 +910,7 @@ export default defineComponent({
             doneNo: false,
             donePartly: false,
             doneYes: false,
-            score: '',
+            score: 0,
             comments: '',
           },
           {
@@ -784,7 +919,7 @@ export default defineComponent({
             doneNo: false,
             donePartly: false,
             doneYes: false,
-            score: '',
+            score: 0,
             comments: '',
           },
           {
@@ -793,7 +928,7 @@ export default defineComponent({
             doneNo: false,
             donePartly: false,
             doneYes: false,
-            score: '',
+            score: 0,
             comments: '',
           },
           {
@@ -802,7 +937,7 @@ export default defineComponent({
             doneNo: false,
             donePartly: false,
             doneYes: false,
-            score: '',
+            score: 0,
             comments: '',
           },
         ],
@@ -863,6 +998,64 @@ export default defineComponent({
   },
 
   methods: {
+    calculateGenderAssessment() {
+      this.submissionEvaluation.genderAssessments.forEach((assessment, index) => {
+        let score = 0
+        switch (index) {
+          case 1: // ID 2: 1.1 Participation of women and men in beneficiary groups in problem identification (possible scores: 0, 0.5, 1.0)
+          case 2: // ID 3: 1.2 Participation of women and men in beneficiary groups in project design (possible scores: 0, 0.5, 1.0)
+          case 5: // ID 6: 3.1 Analysis of gender gaps and inequalities related to gender roles, perspectives and needs, or access to and control of resources (possible scores: 0, 0.5, 1.0)
+          case 6: // ID 7: 3.2 Analysis of constraints and opportunities related to women and men’s participation in the project (possible scores: 0, 0.5, 1.0)
+          case 16: // ID 17: 9.1 Is the project’s budget allotment sufficient for gender equality promotion or integration? (possible scores: 0, 0.5, 1.0)
+          case 17: // ID 18: Does the project have the expertise in promoting gender equality and women’s empowerment? (possible scores: 0, 0.5, 1.0)
+            score = assessment.doneYes ? 1.0 : 0
+            break
+          case 3: // ID 4: 2.0 Collection of sex-disaggregated data and gender-related information (possible scores: 0, 1.0, 2.0)
+          case 7: // ID 8: 4.0 Gender equality goals, outcomes, and outputs (possible scores: 0, 1.0, 2.0)
+          case 8: // ID 9: 5.0 Matching of strategies with gender issues (possible scores: 0, 1.0, 2.0)
+          case 13: // ID 14: 7.0 Monitoring targets and indicators (possible scores: 0, 1.0, 2.0)
+          case 14: // ID 15: 8.0 Sex-disaggregated database requirement (possible scores: 0, 1.0, 2.0)
+            score = assessment.doneYes ? 2.0 : 0
+            break
+          case 10: // ID 11: 6.1 Are women and girl children among the direct or indirect beneficiaries? (possible scores: 0, 0.33, 0.67)
+          case 11: // ID 12: Has the project considered its long-term impact on women’s socioeconomic status and empowerment? (possible scores: 0, 0.33, 0.67)
+          case 12: // ID 13: Has the project included strategies for avoiding or minimizing negative impact on women’s status and welfare? (possible scores: 0, 0.33, 0.67)
+          case 19: // ID 20: Will the project build on or strengthen the agency/ NCRFW/ government’s commitment to the empowerment of women? (possible scores: 0, 0.33, 0.67)
+          case 20: // ID 21: Will the project build on the initiatives or actions of other organizations in the area? (possible scores: 0, 0.33, 0.67)
+          case 21: // ID 22: Does the project have an exit plan that will ensure the sustainability of GAD efforts and benefits? (possible scores: 0, 0.33, 0.67)
+            score = assessment.doneYes ? 0.67 : 0
+            break
+          default:
+            score = 0
+        }
+        assessment.score = score
+      })
+
+      // ID 1: 1.0 Involvement of women and men (max score: 2; 1 for each item)
+      this.submissionEvaluation.genderAssessments[0].score =
+        this.submissionEvaluation.genderAssessments[1].score + this.submissionEvaluation.genderAssessments[2].score
+
+      // ID 5: 3.0 Conduct of gender analysis and identification of gender issues (max score: 2; 1 for each item)
+      this.submissionEvaluation.genderAssessments[4].score =
+        this.submissionEvaluation.genderAssessments[5].score + this.submissionEvaluation.genderAssessments[6].score
+
+      // ID 10: 6.0 Gender analysis of likely impacts of the project (max score: 2; for each item or question, 0.67)
+      this.submissionEvaluation.genderAssessments[9].score =
+        this.submissionEvaluation.genderAssessments[10].score +
+        this.submissionEvaluation.genderAssessments[11].score +
+        this.submissionEvaluation.genderAssessments[12].score
+
+      // ID 16: 9.0 Resources (max score: 2; for each question, 1)
+      this.submissionEvaluation.genderAssessments[15].score =
+        this.submissionEvaluation.genderAssessments[16].score + this.submissionEvaluation.genderAssessments[17].score
+
+      // ID 20: Will the project build on or strengthen the agency/ NCRFW/ government’s commitment to the empowerment of women? (possible scores: 0, 0.33, 0.67)
+      this.submissionEvaluation.genderAssessments[18].score =
+        this.submissionEvaluation.genderAssessments[19].score +
+        this.submissionEvaluation.genderAssessments[20].score +
+        this.submissionEvaluation.genderAssessments[21].score
+    },
+
     updateGenderAssessment(index, value) {
       this.submissionEvaluation.genderAssessments[index].doneNo = false
       this.submissionEvaluation.genderAssessments[index].donePartly = false
@@ -876,6 +1069,7 @@ export default defineComponent({
         this.submissionEvaluation.genderAssessments[index].doneYes = true
       }
     },
+
     truncateText(text, length) {
       if (text.length > length) {
         return text.substring(0, length) + '...'
@@ -951,6 +1145,7 @@ export default defineComponent({
 
     async submitEvaluation() {
       try {
+        this.calculateGenderAssessment()
         await evaluatorsRepository.evaluateSubmission(
           this.loadedSubmission.id,
           jwtStore.getUserId,
