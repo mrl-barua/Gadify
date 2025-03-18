@@ -1008,14 +1008,14 @@ export default defineComponent({
           case 6: // ID 7: 3.2 Analysis of constraints and opportunities related to women and men’s participation in the project (possible scores: 0, 0.5, 1.0)
           case 16: // ID 17: 9.1 Is the project’s budget allotment sufficient for gender equality promotion or integration? (possible scores: 0, 0.5, 1.0)
           case 17: // ID 18: Does the project have the expertise in promoting gender equality and women’s empowerment? (possible scores: 0, 0.5, 1.0)
-            score = assessment.doneYes ? 1.0 : 0
+            score = assessment.doneYes ? 1.0 : assessment.donePartly ? 0.5 : 0
             break
           case 3: // ID 4: 2.0 Collection of sex-disaggregated data and gender-related information (possible scores: 0, 1.0, 2.0)
           case 7: // ID 8: 4.0 Gender equality goals, outcomes, and outputs (possible scores: 0, 1.0, 2.0)
           case 8: // ID 9: 5.0 Matching of strategies with gender issues (possible scores: 0, 1.0, 2.0)
           case 13: // ID 14: 7.0 Monitoring targets and indicators (possible scores: 0, 1.0, 2.0)
           case 14: // ID 15: 8.0 Sex-disaggregated database requirement (possible scores: 0, 1.0, 2.0)
-            score = assessment.doneYes ? 2.0 : 0
+            score = assessment.doneYes ? 2.0 : assessment.donePartly ? 1.0 : 0
             break
           case 10: // ID 11: 6.1 Are women and girl children among the direct or indirect beneficiaries? (possible scores: 0, 0.33, 0.67)
           case 11: // ID 12: Has the project considered its long-term impact on women’s socioeconomic status and empowerment? (possible scores: 0, 0.33, 0.67)
@@ -1023,7 +1023,7 @@ export default defineComponent({
           case 19: // ID 20: Will the project build on or strengthen the agency/ NCRFW/ government’s commitment to the empowerment of women? (possible scores: 0, 0.33, 0.67)
           case 20: // ID 21: Will the project build on the initiatives or actions of other organizations in the area? (possible scores: 0, 0.33, 0.67)
           case 21: // ID 22: Does the project have an exit plan that will ensure the sustainability of GAD efforts and benefits? (possible scores: 0, 0.33, 0.67)
-            score = assessment.doneYes ? 0.67 : 0
+            score = assessment.doneYes ? 0.67 : assessment.donePartly ? 0.33 : 0
             break
           default:
             score = 0
@@ -1031,29 +1031,28 @@ export default defineComponent({
         assessment.score = score
       })
 
-      // ID 1: 1.0 Involvement of women and men (max score: 2; 1 for each item)
       this.submissionEvaluation.genderAssessments[0].score =
         this.submissionEvaluation.genderAssessments[1].score + this.submissionEvaluation.genderAssessments[2].score
 
-      // ID 5: 3.0 Conduct of gender analysis and identification of gender issues (max score: 2; 1 for each item)
       this.submissionEvaluation.genderAssessments[4].score =
         this.submissionEvaluation.genderAssessments[5].score + this.submissionEvaluation.genderAssessments[6].score
 
-      // ID 10: 6.0 Gender analysis of likely impacts of the project (max score: 2; for each item or question, 0.67)
-      this.submissionEvaluation.genderAssessments[9].score =
+      this.submissionEvaluation.genderAssessments[9].score = Math.min(
         this.submissionEvaluation.genderAssessments[10].score +
-        this.submissionEvaluation.genderAssessments[11].score +
-        this.submissionEvaluation.genderAssessments[12].score
+          this.submissionEvaluation.genderAssessments[11].score +
+          this.submissionEvaluation.genderAssessments[12].score,
+        2,
+      )
 
-      // ID 16: 9.0 Resources (max score: 2; for each question, 1)
       this.submissionEvaluation.genderAssessments[15].score =
         this.submissionEvaluation.genderAssessments[16].score + this.submissionEvaluation.genderAssessments[17].score
 
-      // ID 20: Will the project build on or strengthen the agency/ NCRFW/ government’s commitment to the empowerment of women? (possible scores: 0, 0.33, 0.67)
-      this.submissionEvaluation.genderAssessments[18].score =
+      this.submissionEvaluation.genderAssessments[18].score = Math.min(
         this.submissionEvaluation.genderAssessments[19].score +
-        this.submissionEvaluation.genderAssessments[20].score +
-        this.submissionEvaluation.genderAssessments[21].score
+          this.submissionEvaluation.genderAssessments[20].score +
+          this.submissionEvaluation.genderAssessments[21].score,
+        2,
+      )
     },
 
     updateGenderAssessment(index, value) {
@@ -1151,8 +1150,23 @@ export default defineComponent({
           jwtStore.getUserId,
           this.submissionEvaluation.genderAssessments,
         )
+
+        toast.init({
+          message: 'Evaluation submitted successfully!',
+          color: 'success',
+        })
+
+        this.sentDocumentForEvaluationModal = false
+        this.loadSubmissionsToBeEvaluated()
       } catch (error) {
         console.error('Failed to submit evaluation:', error)
+
+        const errorMessage = error?.response?.data?.message || 'Failed to submit evaluation'
+
+        toast.init({
+          message: errorMessage,
+          color: 'danger',
+        })
       }
     },
 
