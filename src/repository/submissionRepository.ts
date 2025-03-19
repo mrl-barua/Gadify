@@ -155,7 +155,7 @@ export const submissionRepository = {
       const formData = new FormData()
       files.forEach((file) => {
         console.log(`Appending file: ${file.name}`)
-        formData.append('files', file)
+        formData.append('file', file)
       })
 
       console.log('Sending request to upload files...')
@@ -181,7 +181,7 @@ export const submissionRepository = {
   createSubmission: async (submission: Submission) => {
     try {
       console.log('Creating submission...')
-      console.log(JSON.stringify(submission))
+      alert(JSON.stringify(submission))
       const response = await apiClient.post('/api/submission', submission, {
         headers: {
           Authorization: `Bearer ${jwtStore.getToken}`,

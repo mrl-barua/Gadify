@@ -298,7 +298,7 @@
               <VaSidebarItem
                 :active="isActive"
                 active-color="#C0C0C0"
-                @click="downloadSubmission(loadedSubmission.resourcesLink, loadedSubmission.fileType)"
+                @click="downloadSubmission(loadedSubmission.submissionFiles, loadedSubmission.fileType)"
               >
                 <VaSidebarItemContent class="hover-always">
                   <VaIcon name="download" />
@@ -418,7 +418,7 @@ export default defineComponent({
         proposalTitle: '',
         proposalDescription: '',
         fileType: '',
-        resourcesLink: '',
+        submissionFiles: '',
         submissionStatus: '',
         proponent: '',
         evaluator: '',
@@ -432,7 +432,7 @@ export default defineComponent({
         fileType: '',
         proposalTitle: '',
         proposalDescription: '',
-        resourcesLink: null,
+        submissionFiles: null,
         submissionStatus: 'OnHold',
       },
 
@@ -536,14 +536,14 @@ export default defineComponent({
     async createSubmission() {
       try {
         let data
-        if (this.editedSubmission.fileType === 'file') {
+        if (this.editedSubmission.fileType === 'File') {
           console.log('File type is "file". Proceeding with file upload...')
           data = await this.uploadSubmissionFile()
           console.log('File uploaded successfully. Data received: ' + JSON.stringify(data))
-          this.editedSubmission.resourcesLink = data
+          this.editedSubmission.submissionFiles = data
         } else {
           console.log('File type is not "file". Using file link: ' + this.createdSubmission.fileLink)
-          this.editedSubmission.resourcesLink = this.editedSubmission.fileLink
+          this.editedSubmission.submissionFiles = this.editedSubmission.fileLink
         }
 
         console.log('Submitting data: ' + JSON.stringify(this.editedSubmission))
@@ -557,6 +557,7 @@ export default defineComponent({
           message: 'Submission created successfully',
           color: 'success',
         })
+        this.loadSubmissions()
       } catch (error) {
         console.error('Failed to create submission:', error)
         toast.init({
@@ -570,7 +571,7 @@ export default defineComponent({
             fileType: '',
             proposalTitle: '',
             proposalDescription: '',
-            resourcesLink: null,
+            submissionFiles: null,
             submissionStatus: 'OnHold',
           }),
         )),
@@ -582,6 +583,7 @@ export default defineComponent({
       try {
         const data = await submissionRepository.uploadSubmissionFile(this.submissionFile)
         console.log('Uploaded submission file:', data)
+        return data
       } catch (error) {
         console.error('Failed to upload submission file:', error)
       }
@@ -668,7 +670,7 @@ export default defineComponent({
           proposalTitle: data.proposalTitle,
           proposalDescription: data.proposalDescription,
           fileType: data.fileType,
-          resourcesLink: data.resourcesLink,
+          submissionFiles: data.submissionFiles,
           submissionStatus: data.submissionStatus,
           proponent: data.proponent,
           evaluator: data.evaluator,
