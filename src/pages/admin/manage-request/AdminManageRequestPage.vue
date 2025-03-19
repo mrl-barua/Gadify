@@ -238,8 +238,6 @@
             icon="view_timeline"
             @click="showSentDocumentForEvaluationModal(forCorrectionSubmissions[rowIndex])"
           />
-
-          /> -->
         </template>
       </VaDataTable>
 
@@ -558,16 +556,61 @@ export default defineComponent({
       this.processSubmissionModal = true
     },
 
-    approveSubmission() {
-      this.processSubmissionModal = false
+    async approveSubmission() {
+      try {
+        const data = await submissionRepository.approveSubmission(this.loadedSubmission.id)
+        toast.init({
+          message: data.message,
+          color: 'success',
+        })
+      } catch (error) {
+        console.error('Failed to approve submission:', error)
+        toast.init({
+          message: error.response?.data?.message || 'Failed to approve submission',
+          color: 'danger',
+        })
+      } finally {
+        this.loadSubmissions()
+        this.processSubmissionModal = false
+      }
     },
 
-    forEvaluationSubmission() {
-      this.processSubmissionModal = false
+    async forEvaluationSubmission() {
+      try {
+        const data = await submissionRepository.forEvaluationSubmission(this.loadedSubmission.id)
+        toast.init({
+          message: data.message,
+          color: 'success',
+        })
+      } catch (error) {
+        console.error('Failed to approve submission:', error)
+        toast.init({
+          message: error.response?.data?.message || 'Failed to approve submission',
+          color: 'danger',
+        })
+      } finally {
+        this.loadSubmissions()
+        this.processSubmissionModal = false
+      }
     },
 
-    forCorrectionSubmission() {
-      this.processSubmissionModal = false
+    async forCorrectionSubmission() {
+      try {
+        const data = await submissionRepository.forCorrectionSubmission(this.loadedSubmission.id)
+        toast.init({
+          message: data.message,
+          color: 'success',
+        })
+      } catch (error) {
+        console.error('Failed to approve submission:', error)
+        toast.init({
+          message: error.response?.data?.message || 'Failed to approve submission',
+          color: 'danger',
+        })
+      } finally {
+        this.loadSubmissions()
+        this.processSubmissionModal = false
+      }
     },
 
     closeProcessSubmissionmodal() {

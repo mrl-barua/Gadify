@@ -194,4 +194,61 @@ export const submissionRepository = {
       throw error
     }
   },
+
+  approveSubmission: async (submissionId: number) => {
+    try {
+      const response = await apiClient.post(
+        '/api/approveSubmission',
+        { submissionId: submissionId },
+        {
+          headers: {
+            Authorization: `Bearer ${jwtStore.getToken}`,
+          },
+        },
+      )
+      console.log('Data:', response.data)
+      return response.data
+    } catch (error) {
+      console.error('Error:', error)
+      throw error
+    }
+  },
+
+  forCorrectionSubmission: async (submissionId: number) => {
+    try {
+      const response = await apiClient.post(
+        '/api/forCorrectionSubmission',
+        { submissionId: submissionId },
+        {
+          headers: {
+            Authorization: `Bearer ${jwtStore.getToken}`,
+          },
+        },
+      )
+      console.log('Data:', response.data)
+      return response.data
+    } catch (error) {
+      console.error('Error:', error)
+      throw error
+    }
+  },
+
+  forEvaluationSubmission: async (submissionId: number) => {
+    try {
+      const response = await apiClient.post(
+        '/api/forEvaluationSubmission',
+        { submissionId: submissionId },
+        {
+          headers: {
+            Authorization: `Bearer ${jwtStore.getToken}`,
+          },
+        },
+      )
+      console.log('Data:', response.data)
+      return response.data
+    } catch (error) {
+      console.error('Error:', error)
+      throw error
+    }
+  },
 }
