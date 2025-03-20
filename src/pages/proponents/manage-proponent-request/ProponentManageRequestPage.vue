@@ -12,8 +12,8 @@
             :options="[
               { label: 'On Hold', value: 'onHold' },
               { label: 'Evaluation', value: 'evaluation' },
-              { label: 'Completed', value: 'completed' },
               { label: 'For Correction', value: 'forCorrection' },
+              { label: 'Completed', value: 'completed' },
             ]"
           />
         </div>
@@ -78,13 +78,6 @@
             icon="view_timeline"
             @click="showSentDocumentForEvaluationModal(onHoldSubmissions[rowIndex])"
           />
-          <!-- <VaButton
-            preset="plain"
-            icon="clear_all"
-            color="danger"
-            class="ml-3"
-            @click="documentRoutingLogModal = !documentRoutingLogModal"
-          /> -->
         </template>
       </VaDataTable>
 
@@ -135,13 +128,6 @@
             icon="view_timeline"
             @click="showSentDocumentForEvaluationModal(evaluationSubmissions[rowIndex])"
           />
-          <!-- <VaButton
-            preset="plain"
-            icon="clear_all"
-            color="danger"
-            class="ml-3"
-            @click="documentRoutingLogModal = !documentRoutingLogModal"
-          /> -->
         </template>
       </VaDataTable>
 
@@ -192,13 +178,6 @@
             icon="view_timeline"
             @click="showSentDocumentForEvaluationModal(completedSubmissions[rowIndex])"
           />
-          <!-- <VaButton
-            preset="plain"
-            icon="clear_all"
-            color="danger"
-            class="ml-3"
-            @click="documentRoutingLogModal = !documentRoutingLogModal"
-          /> -->
         </template>
       </VaDataTable>
 
@@ -249,13 +228,6 @@
             icon="view_timeline"
             @click="showSentDocumentForEvaluationModal(forCorrection[rowIndex])"
           />
-          <!-- <VaButton
-            preset="plain"
-            icon="clear_all"
-            color="danger"
-            class="ml-3"
-            @click="documentRoutingLogModal = !documentRoutingLogModal"
-          /> -->
         </template>
       </VaDataTable>
 
@@ -274,7 +246,9 @@
             <h3 class="text-lg font-semibold mb-2">Other Information</h3>
             <p class="mb-1"><span class="font-medium">Project Proposal:</span> {{ loadedSubmission.proposalTitle }}</p>
 
-            <p class="mb-1"><span class="font-medium">Project Description:</span> {{ loadedSubmission.description }}</p>
+            <p class="mb-1">
+              <span class="font-medium">Project Description:</span> {{ loadedSubmission.proposalDescription }}
+            </p>
             <p class="mb-1"><span class="font-medium">File Type:</span> {{ loadedSubmission.fileType }}</p>
           </div>
         </div>
@@ -295,25 +269,27 @@
         <div v-if="modalTable === 'attachments'">
           <VaCard>
             <VaCardContent>
-              <VaSidebarItem
-                :active="isActive"
-                active-color="#C0C0C0"
-                @click="downloadSubmission(loadedSubmission.submissionFiles, loadedSubmission.fileType)"
+              <div
+                v-if="loadedSubmission && loadedSubmission.submissionFiles && loadedSubmission.submissionFiles.length"
               >
-                <VaSidebarItemContent class="hover-always">
-                  <VaIcon name="download" />
-                  <VaFlex vertical class="ml-2">
+                <VaSidebarItem
+                  v-for="(attachment, index) in loadedSubmission.submissionFiles"
+                  :key="index"
+                  :active="isActive"
+                  active-color="#C0C0C0"
+                  @click="downloadSubmission(attachment.resourcesLink, loadedSubmission.fileType)"
+                >
+                  <VaSidebarItemContent>
+                    <VaIcon name="download" />
                     <VaSidebarItemTitle>
-                      {{ loadedSubmission.proposalTitle }}
+                      {{ loadedSubmission.proposalTitle }} - Attachment {{ index + 1 }}
                     </VaSidebarItemTitle>
-
-                    <VaSidebarItemSubtitle>
-                      uploaded by: {{ loadedSubmission.proponent.fullName }} uploaded on:
-                      {{ loadedSubmission.createdAt }}
-                    </VaSidebarItemSubtitle>
-                  </VaFlex>
-                </VaSidebarItemContent>
-              </VaSidebarItem>
+                  </VaSidebarItemContent>
+                </VaSidebarItem>
+              </div>
+              <div v-else>
+                <p>No attachments available</p>
+              </div>
             </VaCardContent>
           </VaCard>
         </div>

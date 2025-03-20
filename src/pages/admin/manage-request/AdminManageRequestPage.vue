@@ -12,8 +12,8 @@
             :options="[
               { label: 'On Hold', value: 'onHold' },
               { label: 'Evaluation', value: 'evaluation' },
-              { label: 'Completed', value: 'completed' },
               { label: 'For Correction', value: 'forCorrection' },
+              { label: 'Completed', value: 'completed' },
             ]"
           />
         </div>
@@ -67,13 +67,6 @@
             icon="view_timeline"
             @click="showSentDocumentForEvaluationModal(onHoldSubmissions[rowIndex])"
           />
-          <!-- <VaButton
-            preset="plain"
-            icon="clear_all"
-            color="danger"
-            class="ml-3"
-            @click="documentRoutingLogModal = !documentRoutingLogModal"
-          /> -->
         </template>
       </VaDataTable>
 
@@ -124,13 +117,6 @@
             icon="view_timeline"
             @click="showSentDocumentForEvaluationModal(evaluationSubmissions[rowIndex])"
           />
-          <!-- <VaButton
-            preset="plain"
-            icon="clear_all"
-            color="danger"
-            class="ml-3"
-            @click="documentRoutingLogModal = !documentRoutingLogModal"
-          /> -->
         </template>
       </VaDataTable>
 
@@ -181,13 +167,6 @@
             icon="view_timeline"
             @click="showSentDocumentForEvaluationModal(completedSubmissions[rowIndex])"
           />
-          <!-- <VaButton
-            preset="plain"
-            icon="clear_all"
-            color="danger"
-            class="ml-3"
-            @click="documentRoutingLogModal = !documentRoutingLogModal"
-          /> -->
         </template>
       </VaDataTable>
 
@@ -256,7 +235,9 @@
             <h3 class="text-lg font-semibold mb-2">Other Information</h3>
             <p class="mb-1"><span class="font-medium">Project Proposal:</span> {{ loadedSubmission.proposalTitle }}</p>
 
-            <p class="mb-1"><span class="font-medium">Project Description:</span> {{ loadedSubmission.description }}</p>
+            <p class="mb-1">
+              <span class="font-medium">Project Description:</span> {{ loadedSubmission.proposalDescription }}
+            </p>
             <p class="mb-1"><span class="font-medium">File Type:</span> {{ loadedSubmission.fileType }}</p>
           </div>
         </div>
@@ -360,7 +341,7 @@
                 </template>
                 <VaInput v-model="loadedSubmission.remarks" label="Remarks" placeholder="Enter remarks here" />
                 <div class="mt-4">
-                  <VaButton class="mr-2" color="success" @click="approveSubmission()">Approved</VaButton>
+                  <!-- <VaButton class="mr-2" color="success" @click="approveSubmission()">Approved</VaButton> -->
                   <VaButton class="mr-2" color="warning" @click="forEvaluationSubmission()">For Evaluation</VaButton>
                   <VaButton class="mr-2" color="danger" @click="forCorrectionSubmission()">For Correction</VaButton>
                   <VaButton class="mr-2" color="active" @click="closeProcessSubmissionmodal()">Close</VaButton>
@@ -369,38 +350,6 @@
             </VaCardContent>
           </VaCard>
         </div>
-      </VaModal>
-
-      <VaModal v-model="documentRoutingLogModal" size="large">
-        <h3 class="va-h3">Document Routing Log</h3>
-
-        <p class="va-text">Select users to go to a party.</p>
-
-        <VaDataTable
-          :items="[
-            { name: 'Marcus Claus', email: 'marcus@epicmax.co', status: 'verified', balance: '$34.15' },
-            { name: 'Moo Farah', email: 'moo@epicmax.co', status: 'pending', balance: '$199.0' },
-            { name: 'Stan Brass', email: 'stan@epicmax.co', status: 'blocked', balance: '$0.00' },
-            { name: 'Usan Jahallah', email: 'usan@epicmax.co', status: 'verified', balance: '$23 000.00' },
-          ]"
-        >
-          <template #cell(status)="{ rowData }">
-            <VaChip
-              :color="
-                {
-                  verified: 'primary',
-                  pending: 'secondary',
-                  blocked: 'danger',
-                }[rowData.status]
-              "
-              class="va-text-uppercase"
-              size="small"
-              square
-            >
-              {{ rowData.status }}
-            </VaChip>
-          </template>
-        </VaDataTable>
       </VaModal>
     </VaCardContent>
   </VaCard>

@@ -181,7 +181,6 @@ export const submissionRepository = {
   createSubmission: async (submission: Submission) => {
     try {
       console.log('Creating submission...')
-      alert(JSON.stringify(submission))
       const response = await apiClient.post('/api/submission', submission, {
         headers: {
           Authorization: `Bearer ${jwtStore.getToken}`,

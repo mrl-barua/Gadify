@@ -171,6 +171,7 @@ export default defineComponent({
           message: 'Campus updated successfully',
           color: 'success',
         })
+        loadCampuses()
       } catch (error) {
         console.log(error)
         toast.init({
@@ -178,7 +179,6 @@ export default defineComponent({
           color: 'danger',
         })
       } finally {
-        loadCampuses()
         editCampusModal.value = false
       }
     }

@@ -40,13 +40,12 @@ export const adminRepository = {
     }
   },
 
-  updateAdmin: async (id: number, adminId: string, fullName: string, email: string) => {
+  updateAdmin: async (id: number, fullName: string, email: string) => {
     try {
       const response = await apiClient.put(
         `/api/updateAdmin`,
         {
           id: id,
-          adminId: adminId,
           fullName: fullName,
           email: email,
         },

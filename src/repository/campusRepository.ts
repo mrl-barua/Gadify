@@ -59,8 +59,8 @@ export const campusRepository = {
         '/api/campus',
         {
           id: id,
-          name: campusName,
-          address: campusAddress,
+          campusName: campusName,
+          campusAddress: campusAddress,
         },
         {
           headers: {

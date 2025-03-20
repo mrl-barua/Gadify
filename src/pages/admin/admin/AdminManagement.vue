@@ -63,17 +63,12 @@
       </VaModal>
 
       <!-- Edit Admin Modal -->
-      <VaModal v-model="isEditing" class="modal-crud" title="Edit Admin" size="small">
-        <VaInput
-          v-for="key in Object.keys(editedItem)"
-          :key="key"
-          v-model="editedItem[key]"
-          class="my-6"
-          :label="key"
-        />
+      <VaModal v-model="isEditing" class="modal-crud" title="Edit Admin" size="small" hide-default-actions="true">
+        <VaInput v-model="editedAdminModel.fullName" :rules="[rules.required]" class="mb-4" label="Full Name" />
+        <VaInput v-model="editedAdminModel.email" :rules="[rules.required]" class="mb-4" label="Email Address" />
         <div class="flex justify-end gap-2 mt-4">
           <VaButton color="danger" @click="isEditing = false">Cancel</VaButton>
-          <VaButton color="primary" @click="editItem">Save</VaButton>
+          <VaButton color="primary" @click="updateAdmin">Save</VaButton>
         </div>
       </VaModal>
     </VaCardContent>
@@ -97,6 +92,11 @@ export default defineComponent({
       email: '',
       password: '',
       repeatPassword: '',
+    })
+
+    const editedAdminModel = reactive({
+      fullName: '',
+      email: '',
     })
 
     const editedItem = reactive({})
@@ -170,10 +170,34 @@ export default defineComponent({
       isEditing.value = false
     }
 
+    const updateAdmin = async () => {
+      try {
+        await adminRepository.updateAdmin(editedItemId.id, editedItem.fullName, editedItem.email)
+        toast.init({
+          message: 'Admin updated successfully',
+          color: 'success',
+        })
+        loadAdmins()
+      } catch (error) {
+        console.log(error)
+        toast.init({
+          message: error.response?.data?.message || 'Failed to update admin',
+          color: 'danger',
+        })
+      }
+    }
+
     const openModalToEditItemById = (id) => {
-      editedItemId.value = id
-      Object.assign(editedItem, admins.value[id])
-      isEditing.value = true
+      try {
+        const admin = admins.value[id]
+        editedItemId.id = admin.id
+        editedItem.fullName = admin.fullName
+        editedItem.email = admin.email
+      } catch (error) {
+        console.log(error)
+      } finally {
+        isEditing.value = true
+      }
     }
 
     const deleteItemById = (id) => {
@@ -189,7 +213,9 @@ export default defineComponent({
       isLoading,
       adminPages,
       addAdminModal,
+      editedAdminModel,
       isEditing,
+      updateAdmin,
       adminModel,
       editedItem,
       rules,
