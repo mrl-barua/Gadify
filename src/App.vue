@@ -1,6 +1,12 @@
 <template>
-  <RouterView />
+  <MobileBlocker>
+    <RouterView />
+  </MobileBlocker>
 </template>
+
+<script setup>
+import MobileBlocker from './pages/MobileBlocker.vue'
+</script>
 
 <style lang="scss">
 #app {
