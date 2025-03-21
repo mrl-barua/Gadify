@@ -110,7 +110,7 @@ const updateCurrentlyLoggedInUserData = async () => {
   try {
     const userId = jwtStore.getUserId
     const data = await adminRepository.getAdminById(userId)
-    await adminRepository.updateAdmin(data.id, data.adminId, form.fullName, form.email)
+    await adminRepository.updateAdmin(data.id, data.adminId, form.fullName)
   } catch (error) {
     console.error('Failed to update user data:', error)
     throw error
