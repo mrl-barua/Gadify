@@ -262,6 +262,8 @@ export default defineComponent({
           message: 'Department updated successfully',
           color: 'success',
         })
+        this.departments = []
+        this.loadDepartments()
       } catch (error) {
         console.log(error)
         toast.init({

@@ -28,7 +28,6 @@
         </template>
         <template #cell(actions)="{ rowIndex }">
           <VaButton preset="plain" class="ml-3" icon="edit" @click="openModalToEditItemById(rowIndex)" />
-          <!-- <VaButton preset="plain" icon="delete" class="ml-3" @click="deleteItemById(rowIndex)" /> -->
         </template>
       </VaDataTable>
 
@@ -95,12 +94,10 @@ export default defineComponent({
     })
 
     const editedAdminModel = reactive({
+      id: 0,
       fullName: '',
       email: '',
     })
-
-    const editedItem = reactive({})
-    const editedItemId = ref(null)
 
     const rules = {
       required: (value) => !!value || 'This field is required',
@@ -165,14 +162,17 @@ export default defineComponent({
       }
     }
 
-    const editItem = () => {
-      admins.value = admins.value.map((admin, index) => (index === editedItemId.value ? { ...editedItem } : admin))
-      isEditing.value = false
-    }
-
     const updateAdmin = async () => {
+      if (!editedAdminModel.fullName || !editedAdminModel.email) {
+        toast.init({
+          message: 'Please fill in all required fields',
+          color: 'danger',
+        })
+        return
+      }
+
       try {
-        await adminRepository.updateAdmin(editedItemId.id, editedItem.fullName, editedItem.email)
+        await adminRepository.updateAdmin(editedAdminModel.id, editedAdminModel.fullName, editedAdminModel.email)
         toast.init({
           message: 'Admin updated successfully',
           color: 'success',
@@ -184,15 +184,17 @@ export default defineComponent({
           message: error.response?.data?.message || 'Failed to update admin',
           color: 'danger',
         })
+      } finally {
+        isEditing.value = false
       }
     }
 
     const openModalToEditItemById = (id) => {
       try {
         const admin = admins.value[id]
-        editedItemId.id = admin.id
-        editedItem.fullName = admin.fullName
-        editedItem.email = admin.email
+        editedAdminModel.id = admin.id
+        editedAdminModel.fullName = admin.fullName
+        editedAdminModel.email = admin.email
       } catch (error) {
         console.log(error)
       } finally {
@@ -217,10 +219,8 @@ export default defineComponent({
       isEditing,
       updateAdmin,
       adminModel,
-      editedItem,
       rules,
       createAdmin,
-      editItem,
       openModalToEditItemById,
       deleteItemById,
       loadAdmins,
