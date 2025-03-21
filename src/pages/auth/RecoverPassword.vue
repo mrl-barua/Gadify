@@ -12,7 +12,7 @@
       label="Enter your email"
       type="email"
     />
-    <VaButton class="w-full mb-2" @click="submit">Send password</VaButton>
+    <VaButton class="w-full mb-2" :loading="IsLoading" @click="submit">Send password</VaButton>
     <VaButton :to="{ name: 'login' }" class="w-full" preset="secondary" @click="submit">Go back</VaButton>
   </VaForm>
 </template>
@@ -23,6 +23,7 @@ import { ref } from 'vue'
 import { useForm } from 'vuestic-ui'
 import { useRouter } from 'vue-router'
 
+const IsLoading = ref(false)
 const email = ref('')
 const form = useForm('passwordForm')
 const router = useRouter()
@@ -30,10 +31,13 @@ const router = useRouter()
 const submit = async () => {
   if (form.validate()) {
     try {
+      IsLoading.value = true
       await forgotPasswordApiService.forgotPassword(email.value)
       router.push({ name: 'recover-password-email' })
     } catch (error) {
       console.error(error)
+    } finally {
+      IsLoading.value = false
     }
   }
 }
