@@ -18,6 +18,7 @@
 </template>
 
 <script lang="ts" setup>
+import { forgotPasswordApiService } from '../../repository/authenticationRepository'
 import { ref } from 'vue'
 import { useForm } from 'vuestic-ui'
 import { useRouter } from 'vue-router'
@@ -26,9 +27,14 @@ const email = ref('')
 const form = useForm('passwordForm')
 const router = useRouter()
 
-const submit = () => {
+const submit = async () => {
   if (form.validate()) {
-    router.push({ name: 'recover-password-email' })
+    try {
+      await forgotPasswordApiService.forgotPassword(email.value)
+      router.push({ name: 'recover-password-email' })
+    } catch (error) {
+      console.error(error)
+    }
   }
 }
 </script>

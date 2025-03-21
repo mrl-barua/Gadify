@@ -67,3 +67,14 @@ export const logoutApiService = {
     }
   },
 }
+
+export const forgotPasswordApiService = {
+  async forgotPassword(email: string) {
+    try {
+      return await apiClient.post('/api/forgotpassword', { email })
+    } catch (error) {
+      console.error('Login failed:', error)
+      throw error
+    }
+  },
+}
