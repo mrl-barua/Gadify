@@ -939,7 +939,7 @@ export default defineComponent({
       },
 
       createdSubmission: { ...defaultSubmission },
-      currentTable: 'onHold',
+      currentTable: 'evaluation',
       modalTable: 'attachments',
 
       EvaluatorsValue: [],

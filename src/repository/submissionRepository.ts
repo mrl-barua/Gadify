@@ -110,6 +110,31 @@ export const submissionRepository = {
     }
   },
 
+  getSubmissionCertificates: async (submissionId: number) => {
+    try {
+      const response = await apiClient.post(
+        '/report/generate-report',
+        { submissionId },
+        {
+          headers: {
+            Authorization: `Bearer ${jwtStore.getToken}`,
+          },
+          responseType: 'blob',
+        },
+      )
+
+      if (response.status < 200 || response.status >= 300) {
+        throw new Error(`Failed to fetch report. Status: ${response.status}`)
+      }
+
+      console.log('Downloaded PDF Blob:', response.data)
+      return response.data
+    } catch (error) {
+      console.error('Error fetching submission certificates:', error)
+      throw error
+    }
+  },
+
   assignEvaluatorToSubmission: async (submissionId: number, evaluatorIds: number[]) => {
     try {
       const response = await apiClient.post(
