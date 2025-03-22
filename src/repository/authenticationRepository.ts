@@ -30,6 +30,19 @@ export const proponentLoginApiService = {
       throw error
     }
   },
+
+  async changePassword(email: string, oldPassword: string, newPassword: string) {
+    try {
+      return await apiClient.post('/api/changepassword/proponent', {
+        email: email,
+        oldPassword: oldPassword,
+        newPassword: newPassword,
+      })
+    } catch (error) {
+      console.error('Login failed:', error)
+      throw error
+    }
+  },
 }
 
 export const evaluatorLoginApiService = {
