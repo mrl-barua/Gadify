@@ -19,6 +19,19 @@ export const adminLoginApiService = {
       throw error
     }
   },
+
+  async changePassword(email: string, oldPassword: string, newPassword: string) {
+    try {
+      return await apiClient.post('/api/changepassword/admin', {
+        email: email,
+        oldPassword: oldPassword,
+        newPassword: newPassword,
+      })
+    } catch (error) {
+      console.error('Login failed:', error)
+      throw error
+    }
+  },
 }
 
 export const proponentLoginApiService = {
@@ -54,13 +67,25 @@ export const evaluatorLoginApiService = {
       throw error
     }
   },
+  async changePassword(email: string, oldPassword: string, newPassword: string) {
+    try {
+      return await apiClient.post('/api/changepassword/evaluator', {
+        email: email,
+        oldPassword: oldPassword,
+        newPassword: newPassword,
+      })
+    } catch (error) {
+      console.error('Login failed:', error)
+      throw error
+    }
+  },
 }
 
 export const logoutApiService = {
   async logout() {
     try {
-      const jwtStore = useJwtStore() // Access the store
-      const token = jwtStore.getToken // Get the current token
+      const jwtStore = useJwtStore()
+      const token = jwtStore.getToken
 
       if (token) {
         await apiClient.post(
@@ -72,7 +97,7 @@ export const logoutApiService = {
             },
           },
         )
-        jwtStore.logout() // Clear the token after logout
+        jwtStore.logout()
       }
     } catch (error) {
       console.error('Logout failed:', error)

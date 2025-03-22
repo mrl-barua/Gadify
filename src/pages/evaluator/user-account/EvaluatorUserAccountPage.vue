@@ -34,6 +34,7 @@
 
       <!-- Submit Button -->
       <div class="w-full flex justify-end mt-3">
+        <VaButton type="button" @click="showChangePasswordModal" class="mr-4">Change Pasword</VaButton>
         <VaButton type="submit" :disabled="isDisabled || isLoading">
           <template v-if="isLoading">
             <VaProgressCircle indeterminate />
@@ -43,6 +44,29 @@
       </div>
     </VaForm>
 
+    <VaModal v-model="changePasswordModal" :hide-default-actions="hideDefaultActions" size="large">
+      <VaInput v-model="password.oldPassword" :rules="[rules.required]" class="mb-4" label="Old Password"></VaInput>
+      <VaInput
+        v-model="password.newPassword"
+        :rules="[rules.required, rules.passwordStrength]"
+        class="mb-4"
+        label="New Password"
+      ></VaInput>
+      <VaInput
+        v-model="password.confirmPassword"
+        :rules="[rules.required, rules.matchPassword]"
+        class="mb-4"
+        label="Confirm Password"
+      ></VaInput>
+      <div class="flex justify-end gap-2 mt-4">
+        <VaButton preset="plainOpacity" class="mr-3" :isLoading="isButtonLoading" @click="hideChangePasswordModal"
+          >Cancel</VaButton
+        >
+        <VaButton :disabled="!isFormValid" :isLoading="isButtonLoading" @click="changePasword"
+          >Change Password</VaButton
+        >
+      </div>
+    </VaModal>
     <!-- Update Confirmation Modal -->
     <VaModal v-model="updateConfirmation" ok-text="Apply" cancel-text="Cancel" @ok="handleSubmit">
       <h3 class="va-h3">Confirm Update</h3>
@@ -52,8 +76,10 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, onMounted, ref, watch } from 'vue'
+import { reactive, onMounted, ref, watch, computed } from 'vue'
+import { evaluatorsRepository } from '../../../repository/evaluatorRepository'
 import { proponentsRepository } from '../../../repository/proponentsRepository'
+import { evaluatorLoginApiService } from '../../../repository/authenticationRepository'
 import { useToast } from 'vuestic-ui'
 import { useJwtStore } from '../../../stores/jwtHandler'
 
@@ -72,8 +98,48 @@ const form = reactive({
 
 const isDisabled = ref(false)
 const isLoading = ref(false)
+const hideDefaultActions = ref(true)
+const isButtonLoading = ref(false)
 const updateConfirmation = ref(false)
+const changePasswordModal = ref(false)
 
+const password = reactive({
+  oldPassword: '',
+  newPassword: '',
+  confirmPassword: '',
+})
+
+const rules = {
+  required: (v: string) => !!v || 'This field is required',
+  passwordStrength: (v: string) => v.length >= 8 || 'Password must be at least 8 characters long',
+  matchPassword: (v: string) => v === password.newPassword || 'Passwords do not match',
+}
+
+const isFormValid = computed(() => {
+  return (
+    rules.required(password.oldPassword) === true &&
+    rules.required(password.newPassword) === true &&
+    rules.passwordStrength(password.newPassword) === true &&
+    rules.required(password.confirmPassword) === true &&
+    rules.matchPassword(password.confirmPassword) === true
+  )
+})
+
+const changePasword = async () => {
+  try {
+    isButtonLoading.value = true
+    const userId = jwtStore.getUserId
+    const data = await evaluatorsRepository.getEvaluatorById(userId)
+    await evaluatorLoginApiService.changePassword(data.email, password.oldPassword, password.newPassword)
+    init({ message: 'Password changed successfully', color: 'success' })
+    changePasswordModal.value = false
+  } catch (error: any) {
+    console.error('Failed to change password:', error)
+    init({ message: error.response?.data?.message, color: 'danger' })
+  } finally {
+    isButtonLoading.value = false
+  }
+}
 watch(
   () => ({ ...form }),
   () => {
@@ -84,6 +150,14 @@ watch(
 
 const showUpdateConfirmation = () => {
   updateConfirmation.value = true
+}
+
+const showChangePasswordModal = () => {
+  changePasswordModal.value = true
+}
+
+const hideChangePasswordModal = () => {
+  changePasswordModal.value = false
 }
 
 const handleSubmit = async () => {

@@ -28,6 +28,24 @@ export const evaluatorsRepository = {
     }
   },
 
+  getEvaluatorById: async (id: number) => {
+    try {
+      const response = await apiClient.post(
+        `/api/getEvaluatorById`,
+        { id },
+        {
+          headers: {
+            Authorization: `Bearer ${jwtStore.getToken}`,
+          },
+        },
+      )
+      return response.data
+    } catch (error) {
+      console.error('Error:', error)
+      throw error
+    }
+  },
+
   createNewEvaluator: async (officeId: number, fullName: string, email: string, password: string) => {
     try {
       const response = await apiClient.post(
