@@ -11,7 +11,7 @@
             border-color="background-element"
             :options="[
               { label: 'On Hold', value: 'onHold' },
-              { label: 'Evaluation', value: 'evaluation' },
+              { label: 'On Evaluation', value: 'evaluation' },
               { label: 'For Correction', value: 'forCorrection' },
               { label: 'Completed', value: 'completed' },
             ]"
@@ -226,7 +226,7 @@
             class="ml-3"
             preset="plain"
             icon="view_timeline"
-            @click="showSentDocumentForEvaluationModal(forCorrection[rowIndex])"
+            @click="showSentDocumentForEvaluationModal(forCorrectionSubmissions[rowIndex])"
           />
         </template>
       </VaDataTable>
@@ -293,38 +293,6 @@
             </VaCardContent>
           </VaCard>
         </div>
-      </VaModal>
-
-      <VaModal v-model="documentRoutingLogModal" size="large">
-        <h3 class="va-h3">Document Routing Log</h3>
-
-        <p class="va-text">Select users to go to a party.</p>
-
-        <VaDataTable
-          :items="[
-            { name: 'Marcus Claus', email: 'marcus@epicmax.co', status: 'verified', balance: '$34.15' },
-            { name: 'Moo Farah', email: 'moo@epicmax.co', status: 'pending', balance: '$199.0' },
-            { name: 'Stan Brass', email: 'stan@epicmax.co', status: 'blocked', balance: '$0.00' },
-            { name: 'Usan Jahallah', email: 'usan@epicmax.co', status: 'verified', balance: '$23 000.00' },
-          ]"
-        >
-          <template #cell(status)="{ rowData }">
-            <VaChip
-              :color="
-                {
-                  verified: 'primary',
-                  pending: 'secondary',
-                  blocked: 'danger',
-                }[rowData.status]
-              "
-              class="va-text-uppercase"
-              size="small"
-              square
-            >
-              {{ rowData.status }}
-            </VaChip>
-          </template>
-        </VaDataTable>
       </VaModal>
     </VaCardContent>
   </VaCard>
@@ -513,29 +481,21 @@ export default defineComponent({
       try {
         let data
         if (this.editedSubmission.fileType === 'File') {
-          console.log('File type is "file". Proceeding with file upload...')
           data = await this.uploadSubmissionFile()
-          console.log('File uploaded successfully. Data received: ' + JSON.stringify(data))
           this.editedSubmission.submissionFiles = data
-        } else {
-          console.log('File type is not "file". Using file link: ' + this.createdSubmission.fileLink)
-          this.editedSubmission.submissionFiles = this.editedSubmission.fileLink
+        } else if (this.editedSubmission.fileType === 'Link') {
+          alert('This is a link ' + this.editedSubmission.fileLink)
+          this.editedSubmission.submissionFiles = [this.editedSubmission.fileLink]
         }
-
-        console.log('Submitting data: ' + JSON.stringify(this.editedSubmission))
-
         this.editedSubmission.proponentId = jwtStore.getDecodedToken ? jwtStore.getDecodedToken.id : null
-        console.log('Proponent ID: ' + this.editedSubmission.proponentId)
 
-        const response = await submissionRepository.createSubmission(this.editedSubmission)
-        console.log('Created submission:', response)
+        await submissionRepository.createSubmission(this.editedSubmission)
         toast.init({
           message: 'Submission created successfully',
           color: 'success',
         })
         this.loadSubmissions()
       } catch (error) {
-        console.error('Failed to create submission:', error)
         toast.init({
           message: error.response?.data?.message || 'Failed to create submission',
           color: 'danger',
@@ -616,8 +576,13 @@ export default defineComponent({
 
     async downloadSubmission(link, fileType) {
       try {
-        const data = await submissionRepository.getSubmissionFiles(link, fileType)
-        console.log('Downloaded submission:', data)
+        if (fileType === 'Link') {
+          window.open(link, '_blank')
+          return
+        } else if (fileType === 'File') {
+          const data = await submissionRepository.getSubmissionFiles(link, fileType)
+          console.log('Downloaded submission:', data)
+        }
       } catch (error) {
         console.error('Failed to download submission:', error)
       }

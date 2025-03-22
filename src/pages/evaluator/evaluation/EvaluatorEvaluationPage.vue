@@ -10,10 +10,8 @@
             color="background-element"
             border-color="background-element"
             :options="[
-              { label: 'On Hold', value: 'onHold' },
-              { label: 'Evaluation', value: 'evaluation' },
+              { label: 'For Evaluation', value: 'evaluation' },
               { label: 'Completed', value: 'completed' },
-              { label: 'For Correction', value: 'forCorrection' },
             ]"
           />
         </div>
@@ -247,10 +245,7 @@
                 v-model="modalTable"
                 color="background-element"
                 border-color="background-element"
-                :options="[
-                  { label: 'Attachments', value: 'attachments' },
-                  { label: 'Evaluation Form', value: 'submissionEvaluation' },
-                ]"
+                :options="filteredOptions"
               />
             </div>
           </div>
@@ -968,6 +963,17 @@ export default defineComponent({
   },
 
   computed: {
+    filteredOptions() {
+      const options = [
+        { value: 'attachments', label: 'Attachments' },
+        { value: 'submissionEvaluation', label: 'Submission Evaluation' },
+      ]
+
+      return this.loadedSubmission.submissionStatus === 'Completed'
+        ? options.filter((option) => option.value !== 'submissionEvaluation')
+        : options
+    },
+
     isNewData() {
       return Object.keys(this.createdSubmission).every((key) => !!this.createdSubmission[key])
     },
@@ -1187,8 +1193,13 @@ export default defineComponent({
 
     async downloadSubmission(link, fileType) {
       try {
-        const data = await submissionRepository.getSubmissionFiles(link, fileType)
-        console.log('Downloaded submission:', data)
+        if (fileType === 'Link') {
+          window.open(link, '_blank')
+          return
+        } else if (fileType === 'File') {
+          const data = await submissionRepository.getSubmissionFiles(link, fileType)
+          console.log('Downloaded submission:', data)
+        }
       } catch (error) {
         console.error('Failed to download submission:', error)
       }

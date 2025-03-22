@@ -612,6 +612,20 @@ export default defineComponent({
 
     async downloadSubmission(link, fileType) {
       try {
+        if (fileType === 'Link') {
+          window.open(link, '_blank')
+          return
+        } else if (fileType === 'File') {
+          const data = await submissionRepository.getSubmissionFiles(link, fileType)
+          console.log('Downloaded submission:', data)
+        }
+      } catch (error) {
+        console.error('Failed to download submission:', error)
+      }
+    },
+
+    async fetchSubmissionFile(link, fileType) {
+      try {
         const data = await submissionRepository.getSubmissionFiles(link, fileType)
         console.log('Downloaded submission:', data)
       } catch (error) {
