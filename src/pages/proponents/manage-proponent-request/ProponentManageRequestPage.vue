@@ -484,7 +484,6 @@ export default defineComponent({
           data = await this.uploadSubmissionFile()
           this.editedSubmission.submissionFiles = data
         } else if (this.editedSubmission.fileType === 'Link') {
-          alert('This is a link ' + this.editedSubmission.fileLink)
           this.editedSubmission.submissionFiles = [this.editedSubmission.fileLink]
         }
         this.editedSubmission.proponentId = jwtStore.getDecodedToken ? jwtStore.getDecodedToken.id : null
