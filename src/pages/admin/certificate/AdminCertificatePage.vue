@@ -289,31 +289,33 @@
                 <VaDataTable class="mb-3" :items="AssignedEvaluator"></VaDataTable>
               </section>
 
-              <VaCard>
-                <VaCardContent>
-                  <div
-                    v-if="
-                      loadedSubmission && loadedSubmission.submissionFiles && loadedSubmission.submissionFiles.length
-                    "
-                  >
-                    <VaSidebarItem
-                      v-for="(attachment, index) in loadedSubmission.submissionFiles"
-                      :key="index"
-                      :active="isActive"
-                      active-color="#C0C0C0"
-                      @click="previewCertificate(attachment.url)"
+              <VaInnerLoading :loading="isInnerLoading">
+                <VaCard>
+                  <VaCardContent>
+                    <div
+                      v-if="
+                        loadedSubmission && loadedSubmission.submissionFiles && loadedSubmission.submissionFiles.length
+                      "
                     >
-                      <VaSidebarItemContent>
-                        <VaIcon name="download" />
-                        <VaSidebarItemTitle> {{ loadedSubmission.proposalTitle }} - Certificate </VaSidebarItemTitle>
-                      </VaSidebarItemContent>
-                    </VaSidebarItem>
-                  </div>
-                  <div v-else>
-                    <p>No attachments available</p>
-                  </div>
-                </VaCardContent>
-              </VaCard>
+                      <VaSidebarItem
+                        v-for="(attachment, index) in loadedSubmission.submissionFiles"
+                        :key="index"
+                        :loading="true"
+                        active-color="#C0C0C0"
+                        @click="previewCertificate(attachment.url)"
+                      >
+                        <VaSidebarItemContent>
+                          <VaIcon name="download" />
+                          <VaSidebarItemTitle> {{ loadedSubmission.proposalTitle }} - Certificate </VaSidebarItemTitle>
+                        </VaSidebarItemContent>
+                      </VaSidebarItem>
+                    </div>
+                    <div v-else>
+                      <p>No attachments available</p>
+                    </div>
+                  </VaCardContent>
+                </VaCard>
+              </VaInnerLoading>
 
               <!-- PDF Preview Modal -->
               <VaModal v-model="isModalOpen">
@@ -339,7 +341,7 @@ import { useToast } from 'vuestic-ui'
 
 const toast = useToast()
 
-const isVaSelectLoading = ref(false)
+const isInnerLoading = ref(false)
 
 const defaultSubmission = {
   fileType: '',
@@ -406,7 +408,7 @@ export default defineComponent({
       EvaluatorOptions: [],
       AssignedEvaluator: [],
       isLoading: true,
-      isVaSelectLoading,
+      isInnerLoading,
 
       perPage: 10,
       onHoldCurrentPage: 1,
@@ -458,6 +460,7 @@ export default defineComponent({
   methods: {
     async previewCertificate() {
       try {
+        isInnerLoading.value = true
         const data = await submissionRepository.getSubmissionCertificates(this.loadedSubmission.id)
 
         const blob = new Blob([data], { type: 'application/pdf' })
@@ -465,6 +468,8 @@ export default defineComponent({
         this.isModalOpen = true
       } catch (error) {
         console.error('Failed to download submission:', error)
+      } finally {
+        isInnerLoading.value = false
       }
     },
 
@@ -587,7 +592,6 @@ export default defineComponent({
     },
 
     async getEvaluators() {
-      isVaSelectLoading.value = true
       try {
         const data = await evaluatorsRepository.getEvaluators()
         this.EvaluatorOptions = data.map((evaluator) => ({
@@ -597,7 +601,6 @@ export default defineComponent({
       } catch (error) {
         console.error('Failed to load evaluators:', error)
       } finally {
-        isVaSelectLoading.value = false
       }
     },
 
