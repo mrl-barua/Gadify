@@ -625,7 +625,8 @@ export default defineComponent({
     async loadSubmissions() {
       this.isLoading = true
       try {
-        const data = await submissionRepository.getSubmissionByUserId(1)
+        const userId = jwtStore.getUserId
+        const data = await submissionRepository.getSubmissionByUserId(userId)
         this.submissions = data
         this.onHoldSubmissions = data.filter((submission) => submission.submissionStatus === 'OnHold')
         this.evaluationSubmissions = data.filter((submission) => submission.submissionStatus === 'Evaluation')

@@ -540,6 +540,7 @@ export default defineComponent({
       } finally {
         this.loadSubmissions()
         this.processSubmissionModal = false
+        this.sentDocumentForEvaluationModal = false
       }
     },
 
@@ -559,6 +560,7 @@ export default defineComponent({
       } finally {
         this.loadSubmissions()
         this.processSubmissionModal = false
+        this.sentDocumentForEvaluationModal = false
       }
     },
 

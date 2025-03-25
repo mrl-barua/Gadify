@@ -74,7 +74,7 @@ onMounted(() => {
 const submit = () => {
   if (validate()) {
     try {
-      proponentStore.setProponentFullName(formData.firstName + '' + formData.middleName + '' + formData.lastName)
+      proponentStore.setProponentFullName(formData.firstName + ' ' + formData.middleName + ' ' + formData.lastName)
       proponentStore.setProponentDepartment(Number(formData.department))
     } catch {
       init({

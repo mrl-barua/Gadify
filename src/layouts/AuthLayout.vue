@@ -10,8 +10,9 @@
         <div
           class="absolute inset-0 bg-cover bg-center bg-no-repeat backdrop-blur-lg"
           style="background-image: url('/Gadify_Background.webp')"
-        ></div>
+        />
 
+        <div class="image-background"></div>
         <VaImage
           fit="contain"
           class="relative z-10 w-full max-w-[600px] md:max-w-[400px] lg:max-w-[600px] sharpened-image"
@@ -52,6 +53,12 @@ const breakpoint = useBreakpoint()
 
 <style scoped>
 .sharpened-image {
-  filter: brightness(1.1) contrast(1.2) saturate(2.1);
+  filter: brightness(1.1) contrast(1.4) saturate(2.1);
+}
+
+.image-background {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(360deg, white 0%, rgba(34, 2, 34, 0.5) 100%);
 }
 </style>
