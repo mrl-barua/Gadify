@@ -34,7 +34,7 @@
 
       <!-- Submit Button -->
       <div class="w-full flex justify-end mt-3">
-        <VaButton type="button" @click="showChangePasswordModal" class="mr-4">Change Pasword</VaButton>
+        <VaButton type="button" class="mr-4" @click="showChangePasswordModal">Change Pasword</VaButton>
         <VaButton type="submit" :disabled="isDisabled || isLoading">
           <template v-if="isLoading">
             <VaProgressCircle indeterminate />
@@ -59,10 +59,10 @@
         label="Confirm Password"
       ></VaInput>
       <div class="flex justify-end gap-2 mt-4">
-        <VaButton preset="plainOpacity" class="mr-3" :isLoading="isButtonLoading" @click="hideChangePasswordModal"
+        <VaButton preset="plainOpacity" class="mr-3" :is-loading="isButtonLoading" @click="hideChangePasswordModal"
           >Cancel</VaButton
         >
-        <VaButton :disabled="!isFormValid" :isLoading="isButtonLoading" @click="changePasword"
+        <VaButton :disabled="!isFormValid" :is-loading="isButtonLoading" @click="changePasword"
           >Change Password</VaButton
         >
       </div>
