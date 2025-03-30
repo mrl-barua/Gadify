@@ -1,6 +1,6 @@
 export enum ProponentType {
-  Inside = 'Inside',
-  Outside = 'Outside',
+  Insider = 'Insider',
+  Outsider = 'Outsider',
 }
 
 export enum ProponentStatus {

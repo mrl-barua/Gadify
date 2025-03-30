@@ -322,6 +322,7 @@
 
                 <div class="flex justify-between">
                   <VaButton
+                    :loading="isButtonLoading"
                     :disabled="EvaluatorsValue.length === 0"
                     class="mt-4 mb-2"
                     @click="assignEvaluatorToSubmission()"
@@ -364,6 +365,7 @@ import { useToast } from 'vuestic-ui'
 const toast = useToast()
 
 const isVaSelectLoading = ref(false)
+const isButtonLoading = ref(false)
 
 const defaultSubmission = {
   fileType: '',
@@ -431,6 +433,7 @@ export default defineComponent({
       AssignedEvaluator: [],
       isLoading: true,
       isVaSelectLoading,
+      isButtonLoading,
 
       perPage: 10,
       onHoldCurrentPage: 1,
@@ -525,12 +528,22 @@ export default defineComponent({
     },
 
     async forEvaluationSubmission() {
+      isButtonLoading.value = true
+      if (this.AssignedEvaluator.length === 0) {
+        toast.init({
+          message: 'Cannot Evaluate Submission without Evaluator',
+          color: 'warning',
+        })
+        return
+      }
+
       try {
         const data = await submissionRepository.forEvaluationSubmission(this.loadedSubmission.id)
         toast.init({
           message: data.message,
           color: 'success',
         })
+        isButtonLoading.value = false
       } catch (error) {
         console.error('Failed to approve submission:', error)
         toast.init({
@@ -569,8 +582,17 @@ export default defineComponent({
     },
 
     async assignEvaluatorToSubmission() {
+      isButtonLoading.value = true
+      if (this.EvaluatorsValue.length === 0) {
+        toast.init({
+          message: 'Please select at least one evaluator',
+          color: 'warning',
+        })
+        return
+      }
       try {
         await submissionRepository.assignEvaluatorToSubmission(this.loadedSubmission.id, this.EvaluatorsValue)
+        isButtonLoading.value = false
       } catch (error) {
         toast.init({
           message: error.response?.data?.message || 'Failed to assign evaluator',
