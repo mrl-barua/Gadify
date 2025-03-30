@@ -320,16 +320,25 @@
                   </template>
                 </VaSelect>
 
-                <div class="flex justify-between">
-                  <VaButton
-                    :loading="isButtonLoading"
-                    :disabled="EvaluatorsValue.length === 0"
-                    class="mt-4 mb-2"
-                    @click="assignEvaluatorToSubmission()"
-                  >
-                    Assign Evaluator
-                  </VaButton>
-                  <VaButton class="mt-4 mb-2" @click="processSubmission()">Process Submission</VaButton>
+                <div class="flex justify-between mt-4 mb-2">
+                  <div class="flex gap-2">
+                    <VaButton
+                      :loading="isButtonLoading"
+                      :disabled="EvaluatorsValue.length === 0"
+                      @click="assignEvaluatorToSubmission()"
+                    >
+                      Assign Evaluator
+                    </VaButton>
+                    <VaButton
+                      :loading="isButtonLoading"
+                      :disabled="AssignedEvaluator.length === 0"
+                      @click="clearEvaluator()"
+                    >
+                      Clear Evaluator
+                    </VaButton>
+                  </div>
+
+                  <VaButton @click="processSubmission()">Process Submission</VaButton>
                 </div>
               </section>
 
@@ -528,7 +537,6 @@ export default defineComponent({
     },
 
     async forEvaluationSubmission() {
-      isButtonLoading.value = true
       if (this.AssignedEvaluator.length === 0) {
         toast.init({
           message: 'Cannot Evaluate Submission without Evaluator',
@@ -536,14 +544,13 @@ export default defineComponent({
         })
         return
       }
-
+      isButtonLoading.value = true
       try {
         const data = await submissionRepository.forEvaluationSubmission(this.loadedSubmission.id)
         toast.init({
           message: data.message,
           color: 'success',
         })
-        isButtonLoading.value = false
       } catch (error) {
         console.error('Failed to approve submission:', error)
         toast.init({
@@ -551,6 +558,7 @@ export default defineComponent({
           color: 'danger',
         })
       } finally {
+        isButtonLoading.value = false
         this.loadSubmissions()
         this.processSubmissionModal = false
         this.sentDocumentForEvaluationModal = false
@@ -558,6 +566,15 @@ export default defineComponent({
     },
 
     async forCorrectionSubmission() {
+      if (this.AssignedEvaluator.length !== 0) {
+        toast.init({
+          message: 'Please clear the evaluator before sending for correction',
+          color: 'warning',
+        })
+        return
+      }
+
+      isButtonLoading.value = true
       try {
         const data = await submissionRepository.forCorrectionSubmission(this.loadedSubmission.id)
         toast.init({
@@ -571,6 +588,7 @@ export default defineComponent({
           color: 'danger',
         })
       } finally {
+        isButtonLoading.value = false
         this.loadSubmissions()
         this.processSubmissionModal = false
         this.sentDocumentForEvaluationModal = false
@@ -579,6 +597,26 @@ export default defineComponent({
 
     closeProcessSubmissionmodal() {
       this.processSubmissionModal = false
+    },
+
+    async clearEvaluator() {
+      try {
+        this.EvaluatorsValue = []
+        this.AssignedEvaluator = []
+        await submissionRepository.assignEvaluatorToSubmission(this.loadedSubmission.id, this.EvaluatorsValue)
+        toast.init({
+          message: 'Evaluators cleared successfully',
+          color: 'success',
+        })
+      } catch (error) {
+        toast.init({
+          message: error.response?.data?.message || 'Failed to clear evaluators',
+          color: 'danger',
+        })
+      } finally {
+        isButtonLoading.value = false
+        this.getAssignedEvaluator(this.loadedSubmission.id)
+      }
     },
 
     async assignEvaluatorToSubmission() {
@@ -592,13 +630,13 @@ export default defineComponent({
       }
       try {
         await submissionRepository.assignEvaluatorToSubmission(this.loadedSubmission.id, this.EvaluatorsValue)
-        isButtonLoading.value = false
       } catch (error) {
         toast.init({
           message: error.response?.data?.message || 'Failed to assign evaluator',
           color: 'danger',
         })
       } finally {
+        isButtonLoading.value = false
         this.AssignedEvaluator = []
         this.EvaluatorsValue = []
         this.getAssignedEvaluator(this.loadedSubmission.id)
@@ -698,10 +736,20 @@ export default defineComponent({
       try {
         const data = await submissionRepository.getSubmissions()
         this.submissions = data
-        this.onHoldSubmissions = data.filter((submission) => submission.submissionStatus === 'OnHold')
+        this.onHoldSubmissions = data
+          .filter((submission) => submission.submissionStatus === 'OnHold')
+          .map((submission) => ({
+            ...submission,
+            submissionStatus: 'On Hold',
+          }))
         this.evaluationSubmissions = data.filter((submission) => submission.submissionStatus === 'Evaluation')
         this.completedSubmissions = data.filter((submission) => submission.submissionStatus === 'Completed')
-        this.forCorrectionSubmissions = data.filter((submission) => submission.submissionStatus === 'ForCorrection')
+        this.forCorrectionSubmissions = data
+          .filter((submission) => submission.submissionStatus === 'ForCorrection')
+          .map((submission) => ({
+            ...submission,
+            submissionStatus: 'For Correction',
+          }))
       } catch (error) {
         console.error('Failed to load submissions:', error)
       } finally {

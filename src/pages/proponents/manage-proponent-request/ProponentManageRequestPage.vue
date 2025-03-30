@@ -628,10 +628,20 @@ export default defineComponent({
         const userId = jwtStore.getUserId
         const data = await submissionRepository.getSubmissionByUserId(userId)
         this.submissions = data
-        this.onHoldSubmissions = data.filter((submission) => submission.submissionStatus === 'OnHold')
+        this.onHoldSubmissions = data
+          .filter((submission) => submission.submissionStatus === 'OnHold')
+          .map((submission) => ({
+            ...submission,
+            submissionStatus: 'On Hold',
+          }))
         this.evaluationSubmissions = data.filter((submission) => submission.submissionStatus === 'Evaluation')
         this.completedSubmissions = data.filter((submission) => submission.submissionStatus === 'Completed')
-        this.forCorrectionSubmissions = data.filter((submission) => submission.submissionStatus === 'ForCorrection')
+        this.forCorrectionSubmissions = data
+          .filter((submission) => submission.submissionStatus === 'ForCorrection')
+          .map((submission) => ({
+            ...submission,
+            submissionStatus: 'For Correction',
+          }))
       } catch (error) {
         console.error('Failed to load submissions:', error)
       } finally {
