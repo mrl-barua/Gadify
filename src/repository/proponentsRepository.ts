@@ -1,6 +1,5 @@
 import axios from 'axios'
 import { useJwtStore } from '../stores/jwtHandler'
-import { mailRepository } from './mailRepository'
 
 const BASE_URL = import.meta.env.VITE_API_URL
 console.log('API URL:', BASE_URL)
@@ -56,7 +55,6 @@ export const proponentsRepository = {
     proponentType: string,
     proponentStatus: string,
     fullName: string,
-    userName: string,
     email: string,
   ) => {
     try {
@@ -68,7 +66,6 @@ export const proponentsRepository = {
           proponentType: proponentType,
           proponentStatus: proponentStatus,
           fullName: fullName,
-          userName: userName,
           email: email,
         },
         {
@@ -110,11 +107,6 @@ export const proponentsRepository = {
         },
       )
       console.log('Reject response:', response)
-      try {
-        await mailRepository.sendApproveAccountMail(response.data.email, response.data.username)
-      } catch (err) {
-        console.log(err)
-      }
       return response.data
     } catch (error) {
       console.error('Error:', error)
@@ -133,11 +125,7 @@ export const proponentsRepository = {
         },
       )
       console.log('Reject response:', response)
-      try {
-        await mailRepository.sendRejectAccountMail(response.data.email, response.data.username)
-      } catch (err) {
-        console.log(err)
-      }
+
       return response.data
     } catch (error) {
       console.error('Error:', error)
@@ -145,23 +133,16 @@ export const proponentsRepository = {
     }
   },
 
-  registerProponent: async (
-    departmentId: number,
-    fullName: string,
-    userName: string,
-    email: string,
-    password: string,
-  ) => {
+  registerProponent: async (departmentId: number, fullName: string, email: string, password: string) => {
     try {
       const response = await apiClient.post(
         `/api/register/proponent`,
         {
           id: 0,
           departmentId: departmentId,
-          proponentType: 'Inside',
+          proponentType: 'Insider',
           proponentStatus: 'Pending',
           fullName: fullName,
-          userName: userName,
           email: email,
           password: password,
         },
@@ -174,6 +155,7 @@ export const proponentsRepository = {
       return response.data
     } catch (error) {
       console.error('Error:', error)
+
       throw error
     }
   },

@@ -26,7 +26,6 @@
           </template>
           <template v-else>
             <VaInput v-model="form.fullName" label="Full Name" class="mb-4" />
-            <VaInput v-model="form.userName" label="Username" class="mb-4" />
             <VaInput v-model="form.email" label="Email" class="mb-4" />
           </template>
         </div>
@@ -92,7 +91,6 @@ const form = reactive({
   proponentStatus: '',
   department: '',
   fullName: '',
-  userName: '',
   email: '',
 })
 
@@ -171,7 +169,6 @@ const loadCurrentlyLoggedinUser = async () => {
       proponentStatus: data.proponentStatus,
       department: data.department?.departmentName || '',
       fullName: data.fullName,
-      userName: data.userName,
       email: data.email,
     })
   } catch (error) {
@@ -192,14 +189,13 @@ const updateCurrentlyLoggedInUserData = async () => {
       form.proponentType,
       form.proponentStatus,
       form.fullName,
-      form.userName,
       form.email,
     )
   } catch (error) {
     console.error('Failed to update user data:', error)
     throw error
   } finally {
-    jwtStore.updateUserame(form.userName)
+    jwtStore.updateUserame(form.fullName)
   }
 }
 

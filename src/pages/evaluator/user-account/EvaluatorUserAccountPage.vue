@@ -204,7 +204,6 @@ const updateCurrentlyLoggedInUserData = async () => {
       form.proponentType,
       form.proponentStatus,
       form.fullName,
-      form.userName,
       form.email,
     )
   } catch (error) {

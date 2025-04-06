@@ -127,7 +127,6 @@ const defaultProponent = {
   proponentType: '',
   proponentStatus: '',
   fullName: '',
-  userName: '',
   email: '',
   createdAt: '',
 }
@@ -143,7 +142,6 @@ export default defineComponent({
       { key: 'proponentType', label: 'Proponent Type', sortable: true },
       { key: 'proponentStatus', label: 'Proponent Status', sortable: true },
       { key: 'fullName', label: 'Full Name', sortable: true },
-      { key: 'userName', label: 'User Name', sortable: true },
       { key: 'email', label: 'Email', sortable: true },
       { key: 'createdAt', label: 'Created At', sortable: true },
       // { key: 'department.departmentName', label: 'Department Name', sortable: true },

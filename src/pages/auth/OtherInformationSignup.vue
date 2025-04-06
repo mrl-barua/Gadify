@@ -17,9 +17,6 @@
     <VaInput v-model="formData.contactNo" class="mb-4" label="Contact No" type="text"
       ><template #label> Contact No. <span style="color: red">*</span> </template></VaInput
     >
-    <!-- <VaInput v-model="formData.userName" class="mb-4" label="Username" type="text">
-      <template #label> Username <span style="color: red">*</span> </template>
-    </VaInput> -->
     <VaValue v-slot="isPasswordVisible" :default-value="false">
       <VaInput
         ref="password1"
@@ -61,17 +58,18 @@
       </VaInput>
     </VaValue>
     <div class="flex justify-center mt-4">
-      <VaButton class="w-full" @click="submit"> Create account</VaButton>
+      <VaButton :loading="isButtonLoading" class="w-full" @click="submit"> Create account</VaButton>
     </div>
   </VaForm>
 </template>
 
 <script lang="ts" setup>
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useForm, useToast } from 'vuestic-ui'
 
 const { validate } = useForm('form')
+const isButtonLoading = ref(false)
 const { push } = useRouter()
 const { init } = useToast()
 import { useProponentStore } from '../../stores/proponent-store'
@@ -89,6 +87,7 @@ const formData = reactive({
 
 const submit = () => {
   if (validate()) {
+    isButtonLoading.value = true
     try {
       proponentStore.setProponentEmail(formData.email)
       proponentStore.setProponentUsername(formData.userName)
@@ -98,21 +97,21 @@ const submit = () => {
       proponentsRepository.registerProponent(
         proponentData.department,
         proponentData.fullname,
-        proponentData.username,
         proponentData.email,
         proponentData.password,
       )
+      init({
+        message: 'Success: You have signed up successfully',
+        color: 'success',
+      })
+      push({ name: 'login' })
     } catch (error: any) {
       init({
         message: 'An error occurred' + error,
         color: 'error',
       })
     } finally {
-      init({
-        message: 'Success: You have signed up successfully',
-        color: 'success',
-      })
-      push({ name: 'login' })
+      isButtonLoading.value = false
     }
   }
 }
