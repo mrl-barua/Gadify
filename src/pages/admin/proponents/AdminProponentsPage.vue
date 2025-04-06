@@ -16,15 +16,20 @@
             ]"
           />
         </div>
+        <div class="flex flex-col md:flex-row gap-2 justify-end">
+          <VaInput v-model="input" placeholder="Filter..." class="w-full" />
+        </div>
       </div>
-
       <VaDataTable
         v-if="currentTable === 'pending'"
         class="table-crud"
         :items="pendingProponents"
         :columns="columns"
-        striped
         :loading="isLoading"
+        :filter="filter"
+        :filter-method="customFilteringFn"
+        @filtered="filteredCount = $event.items.length"
+        striped
       >
         <template #cell(createdAt)="{ value }">
           {{ formatDate(value) }}
@@ -61,6 +66,9 @@
         :columns="columns"
         striped
         :loading="isLoading"
+        :filter="filter"
+        :filter-method="customFilteringFn"
+        @filtered="filteredCount = $event.items.length"
       >
         <template #cell(createdAt)="{ value }">
           {{ formatDate(value) }}
@@ -93,6 +101,9 @@
         :columns="columns"
         striped
         :loading="isLoading"
+        :filter="filter"
+        :filter-method="customFilteringFn"
+        @filtered="filteredCount = $event.items.length"
       >
         <template #cell(createdAt)="{ value }">
           {{ formatDate(value) }}
@@ -116,6 +127,7 @@
 
 <script>
 import { defineComponent } from 'vue'
+import debounce from 'lodash/debounce.js'
 import { proponentsRepository } from '../../../repository/proponentsRepository'
 import { sleep } from '../../../services/utils'
 import { useToast } from 'vuestic-ui'
@@ -134,20 +146,21 @@ const defaultProponent = {
 export default defineComponent({
   data() {
     const proponents = []
+    const pendingProponents = []
+    const approvedProponents = []
+    const disapprovedProponents = []
 
     const columns = [
       { key: 'actions', label: 'Actions', width: 80 },
       { key: 'proponentId', label: 'Proponent ID', sortable: true },
-      // { key: 'department.departmentId', label: 'Department ID', sortable: true },
       { key: 'proponentType', label: 'Proponent Type', sortable: true },
       { key: 'proponentStatus', label: 'Proponent Status', sortable: true },
       { key: 'fullName', label: 'Full Name', sortable: true },
       { key: 'email', label: 'Email', sortable: true },
       { key: 'createdAt', label: 'Created At', sortable: true },
-      // { key: 'department.departmentName', label: 'Department Name', sortable: true },
-      // { key: 'department.campus.campusName', label: 'Campus Name', sortable: true },
-      // { key: 'department.campus.campusAddress', label: 'Campus Address', sortable: true },
     ]
+
+    const input = ''
 
     return {
       proponents,
@@ -159,16 +172,26 @@ export default defineComponent({
       editedProponent: null,
       createdProponent: { ...defaultProponent },
       currentTable: 'pending',
-      pendingProponents: [],
-      approvedProponents: [],
-      disapprovedProponents: [],
+      pendingProponents,
+      approvedProponents,
+      disapprovedProponents,
       isLoading: true,
+
+      input,
+      filter: input,
+      isDebounceInput: true,
+      isCustomFilteringFn: false,
+      filteredCount: proponents.length,
     }
   },
 
   computed: {
     isNewData() {
       return Object.keys(this.createdProponent).every((key) => !!this.createdProponent[key])
+    },
+
+    customFilteringFn() {
+      return this.isCustomFilteringFn ? this.filterExact : undefined
     },
   },
 
@@ -177,6 +200,21 @@ export default defineComponent({
   },
 
   methods: {
+    filterExact(source) {
+      if (this.filter === '') {
+        return true
+      }
+      return source?.toString?.() === this.filter
+    },
+
+    updateFilter(filter) {
+      this.filter = filter
+    },
+
+    debouncedUpdateFilter: debounce(function (filter) {
+      this.updateFilter(filter)
+    }, 600),
+
     formatDate(date) {
       if (!date) return 'N/A'
       return new Date(date).toLocaleString('en-US', {
@@ -202,7 +240,6 @@ export default defineComponent({
         this.disapprovedProponents = data.filter((proponent) => proponent.proponentStatus === 'Rejected')
       } catch (error) {
         console.error('Failed to load proponents:', error)
-        alert(error.message)
       } finally {
         this.isLoading = false
       }
@@ -267,6 +304,16 @@ export default defineComponent({
     openModalToEditItemById(id) {
       this.editedProponentId = id
       this.editedProponent = { ...this.proponents[id] }
+    },
+  },
+
+  watch: {
+    input(newValue) {
+      if (this.isDebounceInput) {
+        this.debouncedUpdateFilter(newValue)
+      } else {
+        this.updateFilter(newValue)
+      }
     },
   },
 })
