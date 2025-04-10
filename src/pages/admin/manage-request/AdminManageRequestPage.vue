@@ -17,18 +17,22 @@
             ]"
           />
         </div>
+        <div class="flex flex-col md:flex-row gap-2 justify-end">
+          <VaInput v-model="input" placeholder="Filter..." class="w-full" />
+        </div>
       </div>
 
       <VaDataTable
         v-if="currentTable === 'onHold'"
+        striped
         class="table-crud"
         :items="onHoldSubmissions"
         :columns="columns"
-        striped
         :loading="isLoading"
         :per-page="perPage"
         :current-page="onHoldCurrentPage"
         :filter="filter"
+        :filter-method="customFilteringFn"
         @filtered="filteredOnHold = $event.items"
       >
         <template #bodyAppend>
@@ -72,15 +76,16 @@
 
       <VaDataTable
         v-if="currentTable === 'evaluation'"
+        striped
         class="table-crud"
         :items="evaluationSubmissions"
         :columns="columns"
-        striped
         :loading="isLoading"
         :per-page="perPage"
         :current-page="evaluationCurrentPage"
-        :filter="filteredEvaluation"
-        @filtered="filtered = $event.items"
+        :filter="filter"
+        :filter-method="customFilteringFn"
+        @filtered="filteredEvaluation = $event.items"
       >
         <template #bodyAppend>
           <tr>
@@ -122,14 +127,15 @@
 
       <VaDataTable
         v-if="currentTable === 'completed'"
+        striped
         class="table-crud"
         :items="completedSubmissions"
         :columns="columns"
-        striped
         :loading="isLoading"
         :per-page="perPage"
         :current-page="completedCurrentPage"
         :filter="filter"
+        :filter-method="customFilteringFn"
         @filtered="filteredCompleted = $event.items"
       >
         <template #bodyAppend>
@@ -172,14 +178,15 @@
 
       <VaDataTable
         v-if="currentTable === 'forCorrection'"
+        striped
         class="table-crud"
         :items="forCorrectionSubmissions"
         :columns="columns"
-        striped
         :loading="isLoading"
         :per-page="perPage"
         :current-page="forCorrectionCurrentPage"
         :filter="filter"
+        :filter-method="customFilteringFn"
         @filtered="filteredForCorrection = $event.items"
       >
         <template #bodyAppend>
@@ -297,14 +304,14 @@
                   v-model="EvaluatorsValue"
                   placeholder=""
                   label="Select Evaluator"
-                  :options="EvaluatorOptions"
                   outer-label
                   selected-top-shown
                   multiple
-                  :loading="isVaSelectLoading"
                   track-by="value"
                   text-by="text"
                   value-by="value"
+                  :options="EvaluatorOptions"
+                  :loading="isVaSelectLoading"
                 >
                   <template #content="{ value }">
                     <VaChip
@@ -351,7 +358,6 @@
                 </template>
                 <VaInput v-model="loadedSubmission.remarks" label="Remarks" placeholder="Enter remarks here" />
                 <div class="mt-4">
-                  <!-- <VaButton class="mr-2" color="success" @click="approveSubmission()">Approved</VaButton> -->
                   <VaButton class="mr-2" color="warning" @click="forEvaluationSubmission()">For Evaluation</VaButton>
                   <VaButton class="mr-2" color="danger" @click="forCorrectionSubmission()">For Correction</VaButton>
                   <VaButton class="mr-2" color="active" @click="closeProcessSubmissionmodal()">Close</VaButton>
@@ -367,6 +373,7 @@
 
 <script>
 import { defineComponent, ref } from 'vue'
+import debounce from 'lodash/debounce.js'
 import { submissionRepository } from '../../../repository/submissionRepository'
 import { evaluatorsRepository } from '../../../repository/evaluatorRepository'
 import { useToast } from 'vuestic-ui'
@@ -405,6 +412,7 @@ export default defineComponent({
       { key: 'submissionStatus', label: 'Status', sortable: true },
       { key: 'actions', label: 'Actions', width: 80 },
     ]
+    const input = ''
 
     return {
       submissions,
@@ -450,6 +458,11 @@ export default defineComponent({
       completedCurrentPage: 1,
       forCorrectionCurrentPage: 1,
       filter: '',
+      input,
+      filter: input,
+      isDebounceInput: true,
+      isCustomFilteringFn: false,
+      filteredCount: submissions.length,
 
       filteredOnHold: onHoldSubmissions,
       filteredEvaluation: evaluationSubmissions,
@@ -482,6 +495,9 @@ export default defineComponent({
         ? Math.ceil(this.filteredForCorrection.length / this.perPage)
         : this.filteredForCorrection.length
     },
+    customFilteringFn() {
+      return this.isCustomFilteringFn ? this.filterExact : undefined
+    },
   },
 
   mounted() {
@@ -489,6 +505,20 @@ export default defineComponent({
   },
 
   methods: {
+    filterExact(source) {
+      if (this.filter === '') {
+        return true
+      }
+      return source?.toString?.() === this.filter
+    },
+
+    updateFilter(filter) {
+      this.filter = filter
+    },
+
+    debouncedUpdateFilter: debounce(function (filter) {
+      this.updateFilter(filter)
+    }, 600),
     truncateText(text, length) {
       if (text.length > length) {
         return text.substring(0, length) + '...'
@@ -754,6 +784,15 @@ export default defineComponent({
         console.error('Failed to load submissions:', error)
       } finally {
         this.isLoading = false
+      }
+    },
+  },
+  watch: {
+    input(newValue) {
+      if (this.isDebounceInput) {
+        this.debouncedUpdateFilter(newValue)
+      } else {
+        this.updateFilter(newValue)
       }
     },
   },
