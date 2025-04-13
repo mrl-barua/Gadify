@@ -131,7 +131,7 @@ export default defineComponent({
     const resetOfficeModel = () => {
       OfficeModel.id = 0
       OfficeModel.officeId = null
-      OfficeModel.fuldepartmentIdlName = null
+      OfficeModel.departmentId = null
       OfficeModel.officeName = ''
     }
 
