@@ -3,18 +3,22 @@
   <VaCard>
     <VaCardContent>
       <div class="flex flex-col md:flex-row gap-2 mb-2 justify-end">
+        <div class="flex flex-col md:flex-row gap-2 justify-end">
+          <VaInput v-model="input" placeholder="Filter..." class="w-full" />
+        </div>
         <VaButton @click="addOfficeModal = !addOfficeModal">Add Office</VaButton>
       </div>
 
       <VaDataTable
+        striped
         class="table-crud"
         :items="offices"
         :columns="columns"
-        striped
         :loading="isLoading"
         :per-page="perPage"
         :current-page="currentPage"
         :filter="filter"
+        :filter-method="customFilteringFn"
         @filtered="filtered = $event.items"
       >
         <template #bodyAppend>
@@ -97,7 +101,8 @@
 </template>
 
 <script>
-import { defineComponent, ref, reactive, computed } from 'vue'
+import { defineComponent, ref, reactive, computed, watch } from 'vue'
+import debounce from 'lodash/debounce.js'
 import { useToast } from 'vuestic-ui'
 import { officeRepository } from '../../../repository/officeRepository'
 import { departmentRepository } from '../../../repository/departmentRepository'
@@ -137,6 +142,39 @@ export default defineComponent({
     }
 
     const offices = ref([])
+
+    const input = ref('')
+    const filter = input
+    const isDebounceInput = ref(true)
+    const isCustomFilteringFn = ref(false)
+    const filteredCount = computed(() => offices.value.length)
+    const filteredCompleted = computed(() => offices.value)
+    const customFilteringFn = computed(() => {
+      return isCustomFilteringFn.value ? filterExact.value : undefined
+    })
+    function filterExact(source) {
+      if (filter.value === '') {
+        return true
+      }
+      return source?.toString?.() === filter.value
+    }
+
+    function updateFilter(newFilter) {
+      filter.value = newFilter
+    }
+
+    const debouncedUpdateFilter = debounce((newFilter) => {
+      updateFilter(newFilter)
+    }, 600)
+
+    watch(input, (newValue) => {
+      if (isDebounceInput.value) {
+        debouncedUpdateFilter(newValue)
+      } else {
+        updateFilter(newValue)
+      }
+    })
+
     const departmentOptions = ref([])
     const columns = [
       { key: 'officeId', label: 'Office Id', sortable: true },
@@ -294,6 +332,12 @@ export default defineComponent({
       deleteItemById,
       loadOffices,
       loadDepartments,
+
+      input,
+      filter,
+      isDebounceInput,
+      updateFilter,
+      debouncedUpdateFilter,
     }
   },
   mounted() {
