@@ -221,7 +221,7 @@ export default defineComponent({
       { key: 'submissionStatus', label: 'Status', sortable: true },
       { key: 'actions', label: 'Actions', width: 80 },
     ]
-    
+
     const input = ''
 
     return {
@@ -290,6 +290,16 @@ export default defineComponent({
     },
   },
 
+  watch: {
+    input(newValue) {
+      if (this.isDebounceInput) {
+        this.debouncedUpdateFilter(newValue)
+      } else {
+        this.updateFilter(newValue)
+      }
+    },
+  },
+
   mounted() {
     this.loadSubmissions()
   },
@@ -309,25 +319,6 @@ export default defineComponent({
     debouncedUpdateFilter: debounce(function (filter) {
       this.updateFilter(filter)
     }, 600),
-    truncateText(text, length) {
-      if (text.length > length) {
-        return text.substring(0, length) + '...'
-      }
-      return text
-    },
-
-    formatDate(date) {
-      if (!date) return 'N/A'
-      return new Date(date).toLocaleString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: true,
-      })
-    },
 
     async previewCertificate() {
       try {
@@ -463,15 +454,6 @@ export default defineComponent({
         console.error('Failed to load submissions:', error)
       } finally {
         this.isLoading = false
-      }
-    },
-  },
-  watch: {
-    input(newValue) {
-      if (this.isDebounceInput) {
-        this.debouncedUpdateFilter(newValue)
-      } else {
-        this.updateFilter(newValue)
       }
     },
   },

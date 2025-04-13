@@ -129,6 +129,14 @@ export default defineComponent({
       updateFilter(newFilter)
     }, 600)
 
+    watch(input, (newValue) => {
+      if (isDebounceInput.value) {
+        debouncedUpdateFilter(newValue)
+      } else {
+        updateFilter(newValue)
+      }
+    })
+
     const officeOptions = ref([])
     const columns = [
       { key: 'campusId', label: 'Campus Id', sortable: true },
@@ -250,6 +258,9 @@ export default defineComponent({
       deleteItemById,
       loadCampuses,
 
+      filteredCount,
+      filteredCompleted,
+      customFilteringFn,
       input,
       filter,
       isDebounceInput,

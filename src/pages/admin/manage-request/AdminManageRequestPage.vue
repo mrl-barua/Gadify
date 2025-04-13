@@ -457,7 +457,7 @@ export default defineComponent({
       evaluationCurrentPage: 1,
       completedCurrentPage: 1,
       forCorrectionCurrentPage: 1,
-      filter: '',
+
       input,
       filter: input,
       isDebounceInput: true,
@@ -500,6 +500,16 @@ export default defineComponent({
     },
   },
 
+  watch: {
+    input(newValue) {
+      if (this.isDebounceInput) {
+        this.debouncedUpdateFilter(newValue)
+      } else {
+        this.updateFilter(newValue)
+      }
+    },
+  },
+
   mounted() {
     this.loadSubmissions()
   },
@@ -519,7 +529,7 @@ export default defineComponent({
     debouncedUpdateFilter: debounce(function (filter) {
       this.updateFilter(filter)
     }, 600),
-    
+
     truncateText(text, length) {
       if (text.length > length) {
         return text.substring(0, length) + '...'
@@ -785,15 +795,6 @@ export default defineComponent({
         console.error('Failed to load submissions:', error)
       } finally {
         this.isLoading = false
-      }
-    },
-  },
-  watch: {
-    input(newValue) {
-      if (this.isDebounceInput) {
-        this.debouncedUpdateFilter(newValue)
-      } else {
-        this.updateFilter(newValue)
       }
     },
   },

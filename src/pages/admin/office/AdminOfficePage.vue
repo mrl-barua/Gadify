@@ -333,6 +333,9 @@ export default defineComponent({
       loadOffices,
       loadDepartments,
 
+      filteredCount,
+      filteredCompleted,
+      customFilteringFn,
       input,
       filter,
       isDebounceInput,

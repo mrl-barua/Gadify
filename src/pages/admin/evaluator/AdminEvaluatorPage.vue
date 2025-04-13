@@ -348,6 +348,9 @@ export default defineComponent({
       loadevaluators,
       loadoffices,
 
+      filteredCount,
+      filteredCompleted,
+      customFilteringFn,
       input,
       filter,
       isDebounceInput,

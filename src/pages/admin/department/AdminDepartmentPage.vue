@@ -148,7 +148,7 @@ export default defineComponent({
       filtered: departments,
       perPage: 10,
       currentPage: 1,
-      filter: '',
+
       input,
       filter: input,
       isDebounceInput: true,
@@ -169,6 +169,16 @@ export default defineComponent({
     },
     customFilteringFn() {
       return this.isCustomFilteringFn ? this.filterExact : undefined
+    },
+  },
+
+  watch: {
+    input(newValue) {
+      if (this.isDebounceInput) {
+        this.debouncedUpdateFilter(newValue)
+      } else {
+        this.updateFilter(newValue)
+      }
     },
   },
 
@@ -307,15 +317,6 @@ export default defineComponent({
     openModalToEditItemById(id) {
       this.editedItemId = id
       this.editedDepartment = { ...this.departments[id] }
-    },
-  },
-  watch: {
-    input(newValue) {
-      if (this.isDebounceInput) {
-        this.debouncedUpdateFilter(newValue)
-      } else {
-        this.updateFilter(newValue)
-      }
     },
   },
 })

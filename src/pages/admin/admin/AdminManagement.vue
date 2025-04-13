@@ -262,6 +262,9 @@ export default defineComponent({
       deleteItemById,
       loadAdmins,
 
+      filteredCount,
+      filteredCompleted,
+      customFilteringFn,
       input,
       filter,
       isDebounceInput,
