@@ -3,46 +3,49 @@
   <VaCard>
     <VaCardContent>
       <div class="flex flex-col md:flex-row gap-2 mb-2 justify-end">
-        <VaButton @click="addEvaluatorModal = !addEvaluatorModal">Add Evaluator</VaButton>
+        <div class="flex flex-col md:flex-row gap-2 justify-end">
+          <VaInput v-model="input" placeholder="Filter..." class="w-full" />
+        </div>
+        <VaButton @click="addOfficeModal = !addOfficeModal">Add Office</VaButton>
       </div>
 
       <VaDataTable
-        class="table-crud"
-        :items="evaluators"
-        :columns="columns"
         striped
+        class="table-crud"
+        :items="offices"
+        :columns="columns"
         :loading="isLoading"
         :per-page="perPage"
         :current-page="currentPage"
         :filter="filter"
+        :filter-method="customFilteringFn"
         @filtered="filtered = $event.items"
       >
         <template #bodyAppend>
           <tr>
             <td colspan="12">
               <div class="flex justify-center mt-4">
-                <VaPagination v-model="currentPage" :pages="evaluatorPages" />
+                <VaPagination v-model="currentPage" :pages="officePages" />
               </div>
             </td>
           </tr>
         </template>
         <template #cell(actions)="{ rowIndex }">
           <VaButton preset="plain" class="ml-3" icon="edit" @click="openModalToEditItemById(rowIndex)" />
-          <!-- <VaButton preset="plain" icon="delete" class="ml-3" @click="deleteItemById(rowIndex)" /> -->
         </template>
       </VaDataTable>
 
-      <!-- Add Evaluator Modal -->
-      <VaModal v-model="addEvaluatorModal" size="large" hide-default-actions>
-        <h3 class="va-h3">Add New Evaluator</h3>
-        <VaForm ref="formRef" @submit.prevent="createEvaluator">
-          <VaInput v-model="evaluatorModel.fullName" :rules="[rules.required]" class="mb-4" label="Full Name" />
-          <VaInput v-model="evaluatorModel.email" :rules="[rules.required, rules.email]" class="mb-4" label="Email" />
+      <!-- Add Office Modal -->
+      <VaModal v-model="addOfficeModal" size="large" hide-default-actions>
+        <h3 class="va-h3">Add New Office</h3>
+        <VaForm ref="formRef" @submit.prevent="createOffice">
+          <VaInput v-model="OfficeModel.fullName" :rules="[rules.required]" class="mb-4" label="Full Name" />
+          <VaInput v-model="OfficeModel.email" :rules="[rules.required, rules.email]" class="mb-4" label="Email" />
 
           <VaSelect
-            v-model="evaluatorModel.officeId"
+            v-model="OfficeModel.officeId"
             label="Select Office"
-            :options="officeOptions"
+            :options="departmentOptions"
             outer-label
             :loading="isVaSelectLoading"
             track-by="value"
@@ -51,7 +54,7 @@
           />
 
           <VaInput
-            v-model="evaluatorModel.password"
+            v-model="OfficeModel.password"
             :rules="[rules.required, rules.passwordStrength]"
             class="mb-4"
             label="Password"
@@ -59,7 +62,7 @@
           />
 
           <VaInput
-            v-model="evaluatorModel.repeatPassword"
+            v-model="OfficeModel.repeatPassword"
             :rules="[rules.required, rules.matchPassword]"
             class="mb-4"
             label="Repeat Password"
@@ -67,26 +70,21 @@
           />
 
           <div class="flex justify-end gap-2 mt-4">
-            <VaButton color="danger" @click="addEvaluatorModal = false">Cancel</VaButton>
+            <VaButton color="danger" @click="addOfficeModal = false">Cancel</VaButton>
             <VaButton color="primary" type="submit">Save</VaButton>
           </div>
         </VaForm>
       </VaModal>
 
-      <!-- Edit Evaluator Modal -->
-      <VaModal v-model="editEvaluatorModal" class="modal-crud" size="small" hide-default-actions="true">
-        <VaInput v-model="editedEvaluatorModel.fullName" :rules="[rules.required]" class="mb-4" label="Full Name" />
-        <VaInput
-          v-model="editedEvaluatorModel.email"
-          :rules="[rules.required, rules.email]"
-          class="mb-4"
-          label="Email"
-        />
+      <!-- Edit Office Modal -->
+      <VaModal v-model="editOfficeModal" class="modal-crud" size="small" hide-default-actions="true">
+        <VaInput v-model="editedOfficeModel.fullName" :rules="[rules.required]" class="mb-4" label="Full Name" />
+        <VaInput v-model="editedOfficeModel.email" :rules="[rules.required, rules.email]" class="mb-4" label="Email" />
 
         <VaSelect
-          v-model="editedEvaluatorModel.officeId"
+          v-model="editedOfficeModel.officeId"
           label="Select Office"
-          :options="officeOptions"
+          :options="departmentOptions"
           outer-label
           :loading="isVaSelectLoading"
           track-by="value"
@@ -94,8 +92,8 @@
           value-by="value"
         />
         <div class="flex justify-end gap-2 mt-4">
-          <VaButton color="danger" @click="editEvaluatorModal = false">Cancel</VaButton>
-          <VaButton color="primary" @click="editEvaluator">Save</VaButton>
+          <VaButton color="danger" @click="editOfficeModal = false">Cancel</VaButton>
+          <VaButton color="primary" @click="editOffice">Save</VaButton>
         </div>
       </VaModal>
     </VaCardContent>
@@ -103,61 +101,86 @@
 </template>
 
 <script>
-import { defineComponent, ref, reactive, computed } from 'vue'
+import { defineComponent, ref, reactive, computed, watch } from 'vue'
+import debounce from 'lodash/debounce.js'
 import { useToast } from 'vuestic-ui'
-import { evaluatorsRepository } from '../../../repository/evaluatorRepository'
 import { officeRepository } from '../../../repository/officeRepository'
+import { departmentRepository } from '../../../repository/departmentRepository'
 
 export default defineComponent({
   setup() {
     const toast = useToast()
 
-    const addEvaluatorModal = ref(false)
-    const editEvaluatorModal = ref(false)
+    const addOfficeModal = ref(false)
+    const editOfficeModal = ref(false)
 
-    const evaluatorModel = reactive({
+    const OfficeModel = reactive({
       id: 0,
       officeId: null,
-      fullName: '',
-      email: '',
-      password: '',
-      repeatPassword: '',
+      departmentId: null,
+      officeName: '',
     })
 
-    const editedEvaluatorModel = reactive({
+    const editedOfficeModel = reactive({
       id: 0,
       officeId: null,
-      fullName: '',
-      email: '',
+      departmentId: null,
+      officeName: '',
     })
 
-    const resetEvaluatorModel = () => {
-      evaluatorModel.id = 0
-      evaluatorModel.departmentId = 0
-      evaluatorModel.officeId = null
-      evaluatorModel.fullName = ''
-      evaluatorModel.email = ''
-      evaluatorModel.password = ''
+    const resetOfficeModel = () => {
+      OfficeModel.id = 0
+      OfficeModel.officeId = null
+      OfficeModel.departmentId = null
+      OfficeModel.officeName = ''
     }
 
     const editedItem = reactive({})
 
     const rules = {
       required: (value) => !!value || 'This field is required',
-      email: (value) => /\S+@\S+\.\S+/.test(value) || 'Please enter a valid email',
-      passwordStrength: (value) => value.length >= 6 || 'Password must be at least 6 characters',
-      matchPassword: (value) => value === evaluatorModel.password || 'Passwords do not match',
     }
 
-    const evaluators = ref([])
-    const officeOptions = ref([])
+    const offices = ref([])
+
+    const input = ref('')
+    const filter = input
+    const isDebounceInput = ref(true)
+    const isCustomFilteringFn = ref(false)
+    const filteredCount = computed(() => offices.value.length)
+    const filteredCompleted = computed(() => offices.value)
+    const customFilteringFn = computed(() => {
+      return isCustomFilteringFn.value ? filterExact.value : undefined
+    })
+    function filterExact(source) {
+      if (filter.value === '') {
+        return true
+      }
+      return source?.toString?.() === filter.value
+    }
+
+    function updateFilter(newFilter) {
+      filter.value = newFilter
+    }
+
+    const debouncedUpdateFilter = debounce((newFilter) => {
+      updateFilter(newFilter)
+    }, 600)
+
+    watch(input, (newValue) => {
+      if (isDebounceInput.value) {
+        debouncedUpdateFilter(newValue)
+      } else {
+        updateFilter(newValue)
+      }
+    })
+
+    const departmentOptions = ref([])
     const columns = [
-      { key: 'evaluatorId', label: 'Evaluator Id', sortable: true },
-      { key: 'fullName', label: 'Fullname', sortable: true },
-      { key: 'email', label: 'Email', sortable: true },
-      { key: 'office.officeName', label: 'Office', sortable: true },
-      { key: 'office.department.departmentName', label: 'Department Name', sortable: true },
-      { key: 'office.department.campus.campusName', label: 'Campus Name', sortable: true },
+      { key: 'officeId', label: 'Office Id', sortable: true },
+      { key: 'department.departmentName', label: 'Department', sortable: true },
+      { key: 'department.campus.campusName', label: 'Campus', sortable: true },
+      { key: 'officeName', label: 'Office Name', sortable: true },
       { key: 'actions', width: 80 },
     ]
 
@@ -166,28 +189,28 @@ export default defineComponent({
     const currentPage = ref(1)
     const isLoading = ref(false)
 
-    const evaluatorPages = computed(() =>
+    const officePages = computed(() =>
       perPage.value && perPage.value !== 0 ? Math.ceil(filtered.value.length / perPage.value) : 1,
     )
 
-    const loadoffices = async () => {
+    const loadDepartments = async () => {
       try {
-        const data = await officeRepository.getOffices()
-        officeOptions.value = data.map((office) => ({
-          text: office.officeName,
-          value: office.id,
+        const data = await departmentRepository.getDepartments()
+        departmentOptions.value = data.map((department) => ({
+          text: department.departmentName,
+          value: department.id,
         }))
       } catch (error) {
         console.log(error)
       } finally {
-        console.log('Office loaded')
+        console.log('Department loaded')
       }
     }
 
-    const loadevaluators = async () => {
+    const loadOffices = async () => {
       try {
         isLoading.value = true
-        evaluators.value = await evaluatorsRepository.getEvaluators()
+        offices.value = await officeRepository.getOffices()
       } catch (error) {
         console.log(error)
       } finally {
@@ -195,13 +218,13 @@ export default defineComponent({
       }
     }
 
-    const createEvaluator = async () => {
+    const createOffice = async () => {
       if (
-        !evaluatorModel.fullName ||
-        !evaluatorModel.email ||
-        !evaluatorModel.password ||
-        !evaluatorModel.repeatPassword ||
-        !evaluatorModel.officeId
+        !OfficeModel.fullName ||
+        !OfficeModel.email ||
+        !OfficeModel.password ||
+        !OfficeModel.repeatPassword ||
+        !OfficeModel.officeId
       ) {
         toast.init({
           message: 'Please fill in all required fields',
@@ -210,7 +233,7 @@ export default defineComponent({
         return
       }
 
-      if (evaluatorModel.password !== evaluatorModel.repeatPassword) {
+      if (OfficeModel.password !== OfficeModel.repeatPassword) {
         toast.init({
           message: 'Passwords do not match',
           color: 'danger',
@@ -220,13 +243,13 @@ export default defineComponent({
 
       try {
         await evaluatorsRepository.createNewEvaluator(
-          evaluatorModel.officeId,
-          evaluatorModel.fullName,
-          evaluatorModel.email,
-          evaluatorModel.password,
+          OfficeModel.officeId,
+          OfficeModel.fullName,
+          OfficeModel.email,
+          OfficeModel.password,
         )
         toast.init({
-          message: 'Evaluator created successfully',
+          message: 'Office created successfully',
           color: 'success',
         })
 
@@ -234,86 +257,94 @@ export default defineComponent({
       } catch (error) {
         console.log(error)
         toast.init({
-          message: error.response?.data?.message || 'Failed to create evaluator',
+          message: error.response?.data?.message || 'Failed to create office',
           color: 'danger',
         })
         isLoading.value = false
       } finally {
-        addEvaluatorModal.value = false
-        loadevaluators()
+        addOfficeModal.value = false
+        loadOffices()
         isLoading.value = false
-        resetEvaluatorModel()
+        resetOfficeModel()
       }
     }
 
-    const editEvaluator = async () => {
+    const editOffice = async () => {
       try {
         await evaluatorsRepository.updateEvaluator(
-          editedEvaluatorModel.id,
-          editedEvaluatorModel.officeId,
-          editedEvaluatorModel.fullName,
-          editedEvaluatorModel.email,
+          editedOfficeModel.id,
+          editedOfficeModel.officeId,
+          editedOfficeModel.fullName,
+          editedOfficeModel.email,
         )
         toast.init({
-          message: 'Evaluator updated successfully',
+          message: 'Office updated successfully',
           color: 'success',
         })
       } catch (error) {
         console.log(error)
         toast.init({
-          message: error.response?.data?.message || 'Failed to update evaluator',
+          message: error.response?.data?.message || 'Failed to update office',
           color: 'danger',
         })
       } finally {
-        loadevaluators()
-        editEvaluatorModal.value = false
+        loadOffices()
+        editOfficeModal.value = false
       }
     }
 
     const openModalToEditItemById = (id) => {
       try {
-        const evaluator = evaluators.value[id]
-        editedEvaluatorModel.id = evaluator.id
-        editedEvaluatorModel.officeId = evaluator.officeId
-        editedEvaluatorModel.fullName = evaluator.fullName
-        editedEvaluatorModel.email = evaluator.email
+        const office = offices.value[id]
+        editedOfficeModel.id = office.id
+        editedOfficeModel.officeId = office.officeId
+        editedOfficeModel.fullName = office.fullName
+        editedOfficeModel.email = office.email
       } catch (error) {
         console.log(error)
       } finally {
-        editEvaluatorModal.value = true
+        editOfficeModal.value = true
       }
     }
 
     const deleteItemById = (id) => {
-      evaluators.value.splice(id, 1)
+      offices.value.splice(id, 1)
     }
 
     return {
-      officeOptions,
-      evaluators,
+      departmentOptions,
+      offices,
       columns,
       filtered,
       perPage,
       currentPage,
       isLoading,
-      evaluatorPages,
-      addEvaluatorModal,
-      editEvaluatorModal,
-      evaluatorModel,
-      editedEvaluatorModel,
+      officePages,
+      addOfficeModal,
+      editOfficeModal,
+      OfficeModel,
+      editedOfficeModel,
       editedItem,
       rules,
-      createEvaluator,
-      editEvaluator,
+      createOffice,
+      editOffice,
       openModalToEditItemById,
       deleteItemById,
-      loadevaluators,
-      loadoffices,
+      loadOffices,
+      loadDepartments,
+
+      filteredCount,
+      filteredCompleted,
+      customFilteringFn,
+      input,
+      filter,
+      isDebounceInput,
+      updateFilter,
+      debouncedUpdateFilter,
     }
   },
   mounted() {
-    this.loadevaluators()
-    this.loadoffices()
+    this.loadOffices()
   },
 })
 </script>

@@ -33,10 +33,10 @@
 
       <VaDataTable
         v-if="currentTable === 'onHold'"
+        striped
         class="table-crud"
         :items="onHoldSubmissions"
         :columns="columns"
-        striped
         :loading="isLoading"
         :per-page="perPage"
         :current-page="onHoldCurrentPage"
@@ -83,15 +83,15 @@
 
       <VaDataTable
         v-if="currentTable === 'evaluation'"
+        striped
         class="table-crud"
         :items="evaluationSubmissions"
         :columns="columns"
-        striped
         :loading="isLoading"
         :per-page="perPage"
         :current-page="evaluationCurrentPage"
-        :filter="filteredEvaluation"
-        @filtered="filtered = $event.items"
+        :filter="filter"
+        @filtered="filteredEvaluation = $event.items"
       >
         <template #bodyAppend>
           <tr>
@@ -133,10 +133,10 @@
 
       <VaDataTable
         v-if="currentTable === 'completed'"
+        striped
         class="table-crud"
         :items="completedSubmissions"
         :columns="columns"
-        striped
         :loading="isLoading"
         :per-page="perPage"
         :current-page="completedCurrentPage"
@@ -183,10 +183,10 @@
 
       <VaDataTable
         v-if="currentTable === 'forCorrection'"
+        striped
         class="table-crud"
         :items="forCorrectionSubmissions"
         :columns="columns"
-        striped
         :loading="isLoading"
         :per-page="perPage"
         :current-page="forCorrectionCurrentPage"
@@ -312,7 +312,7 @@ const toast = useToast()
 const isVaSelectLoading = ref(false)
 
 const defaultSubmission = {
-  fileType: '',
+  fileType: 'File',
   date: '',
   docNo: '',
   submission: '',
@@ -479,38 +479,49 @@ export default defineComponent({
 
     async createSubmission() {
       try {
-        let data
-        if (this.editedSubmission.fileType === 'File') {
-          data = await this.uploadSubmissionFile()
-          this.editedSubmission.submissionFiles = data
-        } else if (this.editedSubmission.fileType === 'Link') {
-          this.editedSubmission.submissionFiles = [this.editedSubmission.fileLink]
+        const { fileType, fileLink } = this.editedSubmission
+
+        if (fileType === 'File') {
+          const uploadedFiles = await this.uploadSubmissionFile()
+          this.editedSubmission.submissionFiles = uploadedFiles
+        } else if (fileType === 'Link') {
+          this.editedSubmission.submissionFiles = [fileLink]
         }
-        this.editedSubmission.proponentId = jwtStore.getDecodedToken ? jwtStore.getDecodedToken.id : null
+
+        const token = jwtStore.getDecodedToken
+        this.editedSubmission.proponentId = token ? token.id : null
 
         await submissionRepository.createSubmission(this.editedSubmission)
+
         toast.init({
           message: 'Submission created successfully',
           color: 'success',
         })
+
         this.loadSubmissions()
       } catch (error) {
+        const message = error.response?.data?.message || 'Failed to create submission'
+
         toast.init({
-          message: error.response?.data?.message || 'Failed to create submission',
+          message,
           color: 'danger',
         })
-        console.log('Error creating submission: ' + (error.response?.data?.message || error.message))
+
+        console.error('Error creating submission:', message)
       } finally {
-        ;(this.addSubmissionModal = false(
-          (this.editedSubmission = {
-            fileType: '',
-            proposalTitle: '',
-            proposalDescription: '',
-            submissionFiles: null,
-            submissionStatus: 'OnHold',
-          }),
-        )),
-          console.log('Reset the submission form and closed modal.')
+        this.resetSubmissionForm()
+        console.log('Reset the submission form and closed modal.')
+      }
+    },
+
+    resetSubmissionForm() {
+      this.addSubmissionModal = false
+      this.editedSubmission = {
+        fileType: 'File',
+        proposalTitle: '',
+        proposalDescription: '',
+        submissionFiles: null,
+        submissionStatus: 'OnHold',
       }
     },
 
@@ -627,6 +638,7 @@ export default defineComponent({
       try {
         const userId = jwtStore.getUserId
         const data = await submissionRepository.getSubmissionByUserId(userId)
+        console.log('Loaded submissions:', data)
         this.submissions = data
         this.onHoldSubmissions = data
           .filter((submission) => submission.submissionStatus === 'OnHold')

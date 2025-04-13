@@ -42,6 +42,21 @@ export const submissionRepository = {
     }
   },
 
+  getCompletedSubmissions: async () => {
+    try {
+      const response = await apiClient.get('/api/completedSubmissions', {
+        headers: {
+          Authorization: `Bearer ${jwtStore.getToken}`,
+        },
+      })
+      console.log('Data:', response.data)
+      return response.data
+    } catch (error) {
+      console.error('Error:', error)
+      throw error
+    }
+  },
+
   getSubmissionById: async (id: number) => {
     try {
       const response = await apiClient.post(

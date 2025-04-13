@@ -28,8 +28,8 @@
         :loading="isLoading"
         :filter="filter"
         :filter-method="customFilteringFn"
-        @filtered="filteredCount = $event.items.length"
         striped
+        @filtered="filteredCount = $event.items.length"
       >
         <template #cell(createdAt)="{ value }">
           {{ formatDate(value) }}
@@ -195,6 +195,16 @@ export default defineComponent({
     },
   },
 
+  watch: {
+    input(newValue) {
+      if (this.isDebounceInput) {
+        this.debouncedUpdateFilter(newValue)
+      } else {
+        this.updateFilter(newValue)
+      }
+    },
+  },
+
   mounted() {
     this.loadProponents()
   },
@@ -304,16 +314,6 @@ export default defineComponent({
     openModalToEditItemById(id) {
       this.editedProponentId = id
       this.editedProponent = { ...this.proponents[id] }
-    },
-  },
-
-  watch: {
-    input(newValue) {
-      if (this.isDebounceInput) {
-        this.debouncedUpdateFilter(newValue)
-      } else {
-        this.updateFilter(newValue)
-      }
     },
   },
 })

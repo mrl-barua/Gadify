@@ -3,18 +3,22 @@
   <VaCard>
     <VaCardContent>
       <div class="flex flex-col md:flex-row gap-2 mb-2 justify-end">
+        <div class="flex flex-col md:flex-row gap-2 justify-end">
+          <VaInput v-model="input" placeholder="Filter..." class="w-full" />
+        </div>
         <VaButton @click="addDepartmentModal = !addDepartmentModal">Add Department</VaButton>
       </div>
 
       <VaDataTable
         class="table-crud"
+        striped
         :items="departments"
         :columns="columns"
-        striped
         :loading="isLoading"
         :per-page="perPage"
         :current-page="currentPage"
         :filter="filter"
+        :filter-method="customFilteringFn"
         @filtered="filtered = $event.items"
       >
         <template #bodyAppend>
@@ -94,6 +98,7 @@
 
 <script>
 import { defineComponent, ref } from 'vue'
+import debounce from 'lodash/debounce.js'
 import { departmentRepository } from '../../../repository/departmentRepository'
 import { campusRepository } from '../../../repository/campusRepository'
 import { useToast } from 'vuestic-ui'
@@ -111,6 +116,8 @@ const defaultItem = {
   departmentName: '',
   campusName: '',
 }
+
+const input = ''
 
 export default defineComponent({
   data() {
@@ -141,7 +148,12 @@ export default defineComponent({
       filtered: departments,
       perPage: 10,
       currentPage: 1,
-      filter: '',
+
+      input,
+      filter: input,
+      isDebounceInput: true,
+      isCustomFilteringFn: false,
+      filteredCount: departments.length,
 
       isLoading: false,
       isVaSelectLoading,
@@ -155,6 +167,19 @@ export default defineComponent({
     departmentPages() {
       return this.perPage && this.perPage !== 0 ? Math.ceil(this.filtered.length / this.perPage) : this.filtered.length
     },
+    customFilteringFn() {
+      return this.isCustomFilteringFn ? this.filterExact : undefined
+    },
+  },
+
+  watch: {
+    input(newValue) {
+      if (this.isDebounceInput) {
+        this.debouncedUpdateFilter(newValue)
+      } else {
+        this.updateFilter(newValue)
+      }
+    },
   },
 
   mounted() {
@@ -163,6 +188,21 @@ export default defineComponent({
   },
 
   methods: {
+    filterExact(source) {
+      if (this.filter === '') {
+        return true
+      }
+      return source?.toString?.() === this.filter
+    },
+
+    updateFilter(filter) {
+      this.filter = filter
+    },
+
+    debouncedUpdateFilter: debounce(function (filter) {
+      this.updateFilter(filter)
+    }, 600),
+
     async loadDepartments() {
       try {
         this.isLoading = true

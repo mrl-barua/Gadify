@@ -3,18 +3,22 @@
   <VaCard>
     <VaCardContent>
       <div class="flex flex-col md:flex-row gap-2 mb-2 justify-end">
+        <div class="flex flex-col md:flex-row gap-2 justify-end">
+          <VaInput v-model="input" placeholder="Filter..." class="w-full" />
+        </div>
         <VaButton @click="addEvaluatorModal = !addEvaluatorModal">Add Evaluator</VaButton>
       </div>
 
       <VaDataTable
+        striped
         class="table-crud"
         :items="evaluators"
         :columns="columns"
-        striped
         :loading="isLoading"
         :per-page="perPage"
         :current-page="currentPage"
         :filter="filter"
+        :filter-method="customFilteringFn"
         @filtered="filtered = $event.items"
       >
         <template #bodyAppend>
@@ -103,7 +107,8 @@
 </template>
 
 <script>
-import { defineComponent, ref, reactive, computed } from 'vue'
+import { defineComponent, ref, reactive, computed, watch } from 'vue'
+import debounce from 'lodash/debounce.js'
 import { useToast } from 'vuestic-ui'
 import { evaluatorsRepository } from '../../../repository/evaluatorRepository'
 import { officeRepository } from '../../../repository/officeRepository'
@@ -140,6 +145,40 @@ export default defineComponent({
       evaluatorModel.password = ''
     }
 
+    const evaluators = ref([])
+
+    const input = ref('')
+    const filter = input
+    const isDebounceInput = ref(true)
+    const isCustomFilteringFn = ref(false)
+    const filteredCount = computed(() => evaluators.value.length)
+    const filteredCompleted = computed(() => evaluators.value)
+    const customFilteringFn = computed(() => {
+      return isCustomFilteringFn.value ? filterExact.value : undefined
+    })
+    function filterExact(source) {
+      if (filter.value === '') {
+        return true
+      }
+      return source?.toString?.() === filter.value
+    }
+
+    function updateFilter(newFilter) {
+      filter.value = newFilter
+    }
+
+    const debouncedUpdateFilter = debounce((newFilter) => {
+      updateFilter(newFilter)
+    }, 600)
+
+    watch(input, (newValue) => {
+      if (isDebounceInput.value) {
+        debouncedUpdateFilter(newValue)
+      } else {
+        updateFilter(newValue)
+      }
+    })
+
     const editedItem = reactive({})
 
     const rules = {
@@ -149,7 +188,6 @@ export default defineComponent({
       matchPassword: (value) => value === evaluatorModel.password || 'Passwords do not match',
     }
 
-    const evaluators = ref([])
     const officeOptions = ref([])
     const columns = [
       { key: 'evaluatorId', label: 'Evaluator Id', sortable: true },
@@ -309,6 +347,15 @@ export default defineComponent({
       deleteItemById,
       loadevaluators,
       loadoffices,
+
+      filteredCount,
+      filteredCompleted,
+      customFilteringFn,
+      input,
+      filter,
+      isDebounceInput,
+      updateFilter,
+      debouncedUpdateFilter,
     }
   },
   mounted() {

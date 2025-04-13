@@ -3,18 +3,22 @@
   <VaCard>
     <VaCardContent>
       <div class="flex flex-col md:flex-row gap-2 mb-2 justify-end">
+        <div class="flex flex-col md:flex-row gap-2 justify-end">
+          <VaInput v-model="input" placeholder="Filter..." class="w-full" />
+        </div>
         <VaButton @click="addCampusModal = !addCampusModal">Add Campus</VaButton>
       </div>
 
       <VaDataTable
+        striped
         class="table-crud"
         :items="campuses"
         :columns="columns"
-        striped
         :loading="isLoading"
         :per-page="perPage"
         :current-page="currentPage"
         :filter="filter"
+        :filter-method="customFilteringFn"
         @filtered="filtered = $event.items"
       >
         <template #bodyAppend>
@@ -28,7 +32,6 @@
         </template>
         <template #cell(actions)="{ rowIndex }">
           <VaButton preset="plain" class="ml-3" icon="edit" @click="openModalToEditItemById(rowIndex)" />
-          <!-- <VaButton preset="plain" icon="delete" class="ml-3" @click="deleteItemById(rowIndex)" /> -->
         </template>
       </VaDataTable>
 
@@ -66,7 +69,8 @@
 </template>
 
 <script>
-import { defineComponent, ref, reactive, computed } from 'vue'
+import { defineComponent, ref, reactive, computed, watch } from 'vue'
+import debounce from 'lodash/debounce.js'
 import { useToast } from 'vuestic-ui'
 import { campusRepository } from '../../../repository/campusRepository'
 
@@ -100,6 +104,39 @@ export default defineComponent({
     }
 
     const campuses = ref([])
+
+    const input = ref('')
+    const filter = input
+    const isDebounceInput = ref(true)
+    const isCustomFilteringFn = ref(false)
+    const filteredCount = computed(() => campuses.value.length)
+    const filteredCompleted = computed(() => campuses.value)
+    const customFilteringFn = computed(() => {
+      return isCustomFilteringFn.value ? filterExact.value : undefined
+    })
+    function filterExact(source) {
+      if (filter.value === '') {
+        return true
+      }
+      return source?.toString?.() === filter.value
+    }
+
+    function updateFilter(newFilter) {
+      filter.value = newFilter
+    }
+
+    const debouncedUpdateFilter = debounce((newFilter) => {
+      updateFilter(newFilter)
+    }, 600)
+
+    watch(input, (newValue) => {
+      if (isDebounceInput.value) {
+        debouncedUpdateFilter(newValue)
+      } else {
+        updateFilter(newValue)
+      }
+    })
+
     const officeOptions = ref([])
     const columns = [
       { key: 'campusId', label: 'Campus Id', sortable: true },
@@ -220,6 +257,15 @@ export default defineComponent({
       openModalToEditItemById,
       deleteItemById,
       loadCampuses,
+
+      filteredCount,
+      filteredCompleted,
+      customFilteringFn,
+      input,
+      filter,
+      isDebounceInput,
+      updateFilter,
+      debouncedUpdateFilter,
     }
   },
   mounted() {

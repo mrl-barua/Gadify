@@ -12,119 +12,22 @@
             :options="[{ label: 'Completed', value: 'completed' }]"
           />
         </div>
+        <div class="flex flex-col md:flex-row gap-2 justify-end">
+          <VaInput v-model="input" placeholder="Filter..." class="w-full" />
+        </div>
       </div>
 
       <VaDataTable
-        v-if="currentTable === 'onHold'"
-        class="table-crud"
-        :items="onHoldSubmissions"
-        :columns="columns"
-        striped
-        :loading="isLoading"
-        :per-page="perPage"
-        :current-page="onHoldCurrentPage"
-        :filter="filter"
-        @filtered="filteredOnHold = $event.items"
-      >
-        <template #bodyAppend>
-          <tr>
-            <td colspan="12">
-              <div class="flex justify-center mt-4">
-                <VaPagination v-model="onHoldCurrentPage" :pages="onHoldPages" />
-              </div>
-            </td>
-          </tr>
-        </template>
-        <template #cell(proposalTitle)="{ value }">
-          {{ truncateText(value, 25) }}
-        </template>
-        <template #cell(createdAt)="{ value }">
-          {{ formatDate(value) }}
-        </template>
-        <template #cell(fileType)="{ value }">
-          <VaChip v-if="value === 'File'" size="small" color="primary">
-            {{ value }}
-          </VaChip>
-          <VaChip v-if="value === 'Link'" size="small" color="success">
-            {{ value }}
-          </VaChip>
-        </template>
-
-        <template #cell(submissionStatus)="{ value }">
-          <VaChip size="small" color="warning">
-            {{ value }}
-          </VaChip>
-        </template>
-        <template #cell(actions)="{ rowIndex }">
-          <VaButton
-            class="ml-3"
-            preset="plain"
-            icon="view_timeline"
-            @click="showSentDocumentForEvaluationModal(onHoldSubmissions[rowIndex])"
-          />
-        </template>
-      </VaDataTable>
-
-      <VaDataTable
-        v-if="currentTable === 'evaluation'"
-        class="table-crud"
-        :items="evaluationSubmissions"
-        :columns="columns"
-        striped
-        :loading="isLoading"
-        :per-page="perPage"
-        :current-page="evaluationCurrentPage"
-        :filter="filteredEvaluation"
-        @filtered="filtered = $event.items"
-      >
-        <template #bodyAppend>
-          <tr>
-            <td colspan="12">
-              <div class="flex justify-center mt-4">
-                <VaPagination v-model="evaluationCurrentPage" :pages="evaluationPages" />
-              </div>
-            </td>
-          </tr>
-        </template>
-        <template #cell(proposalTitle)="{ value }">
-          {{ truncateText(value, 25) }}
-        </template>
-        <template #cell(createdAt)="{ value }">
-          {{ formatDate(value) }}
-        </template>
-        <template #cell(fileType)="{ value }">
-          <VaChip v-if="value === 'File'" size="small" color="primary">
-            {{ value }}
-          </VaChip>
-          <VaChip v-if="value === 'Link'" size="small" color="success">
-            {{ value }}
-          </VaChip>
-        </template>
-        <template #cell(submissionStatus)="{ value }">
-          <VaChip size="small" color="warning">
-            {{ value }}
-          </VaChip>
-        </template>
-        <template #cell(actions)="{ rowIndex }">
-          <VaButton
-            class="ml-3"
-            preset="plain"
-            icon="view_timeline"
-            @click="showSentDocumentForEvaluationModal(evaluationSubmissions[rowIndex])"
-          />
-        </template>
-      </VaDataTable>
-
-      <VaDataTable
         v-if="currentTable === 'completed'"
+        striped
         class="table-crud"
         :items="completedSubmissions"
         :columns="columns"
-        striped
         :loading="isLoading"
         :per-page="perPage"
         :current-page="completedCurrentPage"
         :filter="filter"
+        :filter-method="customFilteringFn"
         @filtered="filteredCompleted = $event.items"
       >
         <template #bodyAppend>
@@ -161,56 +64,6 @@
             preset="plain"
             icon="view_timeline"
             @click="showSentDocumentForEvaluationModal(completedSubmissions[rowIndex])"
-          />
-        </template>
-      </VaDataTable>
-
-      <VaDataTable
-        v-if="currentTable === 'forCorrection'"
-        class="table-crud"
-        :items="forCorrectionSubmissions"
-        :columns="columns"
-        striped
-        :loading="isLoading"
-        :per-page="perPage"
-        :current-page="forCorrectionCurrentPage"
-        :filter="filter"
-        @filtered="filteredForCorrection = $event.items"
-      >
-        <template #bodyAppend>
-          <tr>
-            <td colspan="12">
-              <div class="flex justify-center mt-4">
-                <VaPagination v-model="forCorrectionCurrentPage" :pages="forCorrectionpages" />
-              </div>
-            </td>
-          </tr>
-        </template>
-        <template #cell(proposalTitle)="{ value }">
-          {{ truncateText(value, 25) }}
-        </template>
-        <template #cell(createdAt)="{ value }">
-          {{ formatDate(value) }}
-        </template>
-        <template #cell(fileType)="{ value }">
-          <VaChip v-if="value === 'File'" size="small" color="primary">
-            {{ value }}
-          </VaChip>
-          <VaChip v-if="value === 'Link'" size="small" color="success">
-            {{ value }}
-          </VaChip>
-        </template>
-        <template #cell(submissionStatus)="{ value }">
-          <VaChip size="small" color="danger">
-            {{ value }}
-          </VaChip>
-        </template>
-        <template #cell(actions)="{ rowIndex }">
-          <VaButton
-            class="ml-3"
-            preset="plain"
-            icon="view_timeline"
-            @click="showSentDocumentForEvaluationModal(forCorrectionSubmissions[rowIndex])"
           />
         </template>
       </VaDataTable>
@@ -335,11 +188,9 @@
 
 <script>
 import { defineComponent, ref } from 'vue'
+import debounce from 'lodash/debounce.js'
 import { submissionRepository } from '../../../repository/submissionRepository'
 import { evaluatorsRepository } from '../../../repository/evaluatorRepository'
-import { useToast } from 'vuestic-ui'
-
-const toast = useToast()
 
 const isInnerLoading = ref(false)
 
@@ -357,10 +208,8 @@ const defaultSubmission = {
 export default defineComponent({
   data() {
     const submissions = []
-    const onHoldSubmissions = []
-    const evaluationSubmissions = []
+
     const completedSubmissions = []
-    const forCorrectionSubmissions = []
 
     const columns = [
       { key: 'fileType', label: 'File Type', sortable: true },
@@ -373,12 +222,13 @@ export default defineComponent({
       { key: 'actions', label: 'Actions', width: 80 },
     ]
 
+    const input = ''
+
     return {
       submissions,
-      onHoldSubmissions,
-      evaluationSubmissions,
+
       completedSubmissions,
-      forCorrectionSubmissions,
+
       columns,
 
       sentDocumentForEvaluationModal: false,
@@ -411,16 +261,15 @@ export default defineComponent({
       isInnerLoading,
 
       perPage: 10,
-      onHoldCurrentPage: 1,
-      evaluationCurrentPage: 1,
-      completedCurrentPage: 1,
-      forCorrectionCurrentPage: 1,
-      filter: '',
 
-      filteredOnHold: onHoldSubmissions,
-      filteredEvaluation: evaluationSubmissions,
+      completedCurrentPage: 1,
+
+      input,
+      filter: input,
+      isDebounceInput: true,
+      isCustomFilteringFn: false,
+      filteredCount: submissions.length,
       filteredCompleted: completedSubmissions,
-      filteredForCorrection: forCorrectionSubmissions,
 
       isModalOpen: false,
       pdfUrl: null,
@@ -431,25 +280,23 @@ export default defineComponent({
     isNewData() {
       return Object.keys(this.createdSubmission).every((key) => !!this.createdSubmission[key])
     },
-    onHoldPages() {
-      return this.perPage && this.perPage !== 0
-        ? Math.ceil(this.filteredOnHold.length / this.perPage)
-        : this.filteredOnHold.length
-    },
-    evaluationPages() {
-      return this.perPage && this.perPage !== 0
-        ? Math.ceil(this.filteredEvaluation.length / this.perPage)
-        : this.filteredEvaluation.length
-    },
     completedPages() {
       return this.perPage && this.perPage !== 0
         ? Math.ceil(this.filteredCompleted.length / this.perPage)
         : this.filteredCompleted.length
     },
-    forCorrectionpages() {
-      return this.perPage && this.perPage !== 0
-        ? Math.ceil(this.filteredForCorrection.length / this.perPage)
-        : this.filteredForCorrection.length
+    customFilteringFn() {
+      return this.isCustomFilteringFn ? this.filterExact : undefined
+    },
+  },
+
+  watch: {
+    input(newValue) {
+      if (this.isDebounceInput) {
+        this.debouncedUpdateFilter(newValue)
+      } else {
+        this.updateFilter(newValue)
+      }
     },
   },
 
@@ -458,6 +305,21 @@ export default defineComponent({
   },
 
   methods: {
+    filterExact(source) {
+      if (this.filter === '') {
+        return true
+      }
+      return source?.toString?.() === this.filter
+    },
+
+    updateFilter(filter) {
+      this.filter = filter
+    },
+
+    debouncedUpdateFilter: debounce(function (filter) {
+      this.updateFilter(filter)
+    }, 600),
+
     async previewCertificate() {
       try {
         isInnerLoading.value = true
@@ -497,88 +359,8 @@ export default defineComponent({
       this.EvaluatorsValue = this.EvaluatorsValue.filter((v) => v !== chipId)
     },
 
-    async processSubmission() {
-      this.processSubmissionModal = true
-    },
-
-    async approveSubmission() {
-      try {
-        const data = await submissionRepository.approveSubmission(this.loadedSubmission.id)
-        toast.init({
-          message: data.message,
-          color: 'success',
-        })
-      } catch (error) {
-        console.error('Failed to approve submission:', error)
-        toast.init({
-          message: error.response?.data?.message || 'Failed to approve submission',
-          color: 'danger',
-        })
-      } finally {
-        this.loadSubmissions()
-        this.processSubmissionModal = false
-      }
-    },
-
-    async forEvaluationSubmission() {
-      try {
-        const data = await submissionRepository.forEvaluationSubmission(this.loadedSubmission.id)
-        toast.init({
-          message: data.message,
-          color: 'success',
-        })
-      } catch (error) {
-        console.error('Failed to approve submission:', error)
-        toast.init({
-          message: error.response?.data?.message || 'Failed to approve submission',
-          color: 'danger',
-        })
-      } finally {
-        this.loadSubmissions()
-        this.processSubmissionModal = false
-      }
-    },
-
-    async forCorrectionSubmission() {
-      try {
-        const data = await submissionRepository.forCorrectionSubmission(this.loadedSubmission.id)
-        toast.init({
-          message: data.message,
-          color: 'success',
-        })
-      } catch (error) {
-        console.error('Failed to approve submission:', error)
-        toast.init({
-          message: error.response?.data?.message || 'Failed to approve submission',
-          color: 'danger',
-        })
-      } finally {
-        this.loadSubmissions()
-        this.processSubmissionModal = false
-      }
-    },
-
     closeProcessSubmissionmodal() {
       this.processSubmissionModal = false
-    },
-
-    async assignEvaluatorToSubmission() {
-      try {
-        await submissionRepository.assignEvaluatorToSubmission(this.loadedSubmission.id, this.EvaluatorsValue)
-      } catch (error) {
-        toast.init({
-          message: error.response?.data?.message || 'Failed to assign evaluator',
-          color: 'danger',
-        })
-      } finally {
-        this.AssignedEvaluator = []
-        this.EvaluatorsValue = []
-        this.getAssignedEvaluator(this.loadedSubmission.id)
-        toast.init({
-          message: 'Evaluator assigned successfully',
-          color: 'success',
-        })
-      }
     },
 
     async getAssignedEvaluator(id) {
@@ -663,14 +445,11 @@ export default defineComponent({
     },
 
     async loadSubmissions() {
-      this.isLoading = true
       try {
-        const data = await submissionRepository.getSubmissions()
+        this.isLoading = true
+        const data = await submissionRepository.getCompletedSubmissions()
         this.submissions = data
-        this.onHoldSubmissions = data.filter((submission) => submission.submissionStatus === 'OnHold')
-        this.evaluationSubmissions = data.filter((submission) => submission.submissionStatus === 'Evaluation')
         this.completedSubmissions = data.filter((submission) => submission.submissionStatus === 'Completed')
-        this.forCorrectionSubmissions = data.filter((submission) => submission.submissionStatus === 'ForCorrection')
       } catch (error) {
         console.error('Failed to load submissions:', error)
       } finally {
