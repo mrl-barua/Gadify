@@ -285,23 +285,24 @@
               <section>
                 <h4 class="va-h6 mb-3">Evaluation</h4>
                 <VaDivider />
-                <VaForm ref="myForm" immediate hide-error-messages class="flex flex-col gap-2 mb-2">
+                <VaForm ref="form" class="flex flex-col gap-2 mb-2" @submit.prevent="submitEvaluation">
                   <section class="1.0 mb-3">
                     <div class="mb-3 va-text-bold">1.0 Involvement of women and men(max score: 2; 1 for each item)</div>
                   </section>
                   <section class="1.1 mb-3">
                     <div class="mb-3">
                       1.1 Participation of women and men in beneficiary groups in problem identification (possible
-                      scores: 0, 0.5, 1.0)
+                      scores: 0, 0.5, 1.0)<span style="color: red"> *</span>
                     </div>
-                    <div>Done</div>
 
                     <VaRadio
                       v-model="submissionEvaluation.genderAssessments[1].selectedOption"
                       class="mb-3"
+                      :rules="[rules.required]"
                       :options="['No', 'Partly', 'Yes']"
                       @update:modelValue="updateGenderAssessment(1, $event)"
-                    />
+                    >
+                    </VaRadio>
 
                     <div class="mb-3">Score</div>
 
@@ -315,12 +316,13 @@
                   <section class="1.2 mb-3">
                     <div class="mb-3">
                       1.2 Participation of women and men in beneficiary groups in project design (possible scores: 0,
-                      0.5, 1.0)
+                      0.5, 1.0)<span style="color: red"> *</span>
                     </div>
 
                     <VaRadio
                       v-model="submissionEvaluation.genderAssessments[2].selectedOption"
                       class="mb-3"
+                      :rules="[rules.required]"
                       :options="['No', 'Partly', 'Yes']"
                       @update:modelValue="updateGenderAssessment(2, $event)"
                     />
@@ -335,12 +337,13 @@
                   <section class="2.0 mb-3">
                     <div class="mb-3 va-text-bold">
                       2.0 Collection of sex-disaggregated data and gender-related information (possible scores: 0, 1.0,
-                      2.0)
+                      2.0)<span style="color: red"> *</span>
                     </div>
 
                     <VaRadio
                       v-model="submissionEvaluation.genderAssessments[3].selectedOption"
                       class="mb-3"
+                      :rules="[rules.required]"
                       :options="['No', 'Partly', 'Yes']"
                       @update:modelValue="updateGenderAssessment(3, $event)"
                     />
@@ -360,12 +363,15 @@
                   <section class="3.1 mb-3">
                     <div class="mb-3">
                       3.1 Analysis of gender gaps and inequalities related to gender roles, perspectives and needs, or
-                      access to and control of resources (possible scores: 0, 0.5, 1.0)
+                      access to and control of resources (possible scores: 0, 0.5, 1.0)<span style="color: red">
+                        *</span
+                      >
                     </div>
 
                     <VaRadio
                       v-model="submissionEvaluation.genderAssessments[5].selectedOption"
                       class="mb-3"
+                      :rules="[rules.required]"
                       :options="['No', 'Partly', 'Yes']"
                       @update:modelValue="updateGenderAssessment(5, $event)"
                     />
@@ -380,12 +386,13 @@
                   <section class="3.2 mb-3">
                     <div class="mb-3">
                       3.2 Analysis of constraints and opportunities related to women and men’s participation in the
-                      project (possible scores: 0, 0.5, 1.0)
+                      project (possible scores: 0, 0.5, 1.0)<span style="color: red"> *</span>
                     </div>
 
                     <VaRadio
                       v-model="submissionEvaluation.genderAssessments[6].selectedOption"
                       class="mb-3"
+                      :rules="[rules.required]"
                       :options="['No', 'Partly', 'Yes']"
                       @update:modelValue="updateGenderAssessment(6, $event)"
                     />
@@ -400,12 +407,17 @@
                   <section class="4.0 mb-3">
                     <div class="mb-3 va-text-bold">
                       4.0 Gender equality goals, outcomes, and outputs (possible scores: 0, 1.0, 2.0) - Does the project
-                      have clearly stated gender equality goals, objectives, outcomes, or outputs?
+                      have clearly stated gender equality goals, objectives, outcomes, or outputs?<span
+                        style="color: red"
+                      >
+                        *</span
+                      >
                     </div>
 
                     <VaRadio
                       v-model="submissionEvaluation.genderAssessments[7].selectedOption"
                       class="mb-3"
+                      :rules="[rules.required]"
                       :options="['No', 'Partly', 'Yes']"
                       @update:modelValue="updateGenderAssessment(7, $event)"
                     />
@@ -420,12 +432,17 @@
                   <section class="1.0 mb-3">
                     <div class="mb-3 va-text-bold">
                       5.0 Matching of strategies with gender issues (possible scores: 0, 1.0, 2.0) - Do the strategies
-                      and activities match the gender issues and gender equality goals identified?
+                      and activities match the gender issues and gender equality goals identified?<span
+                        style="color: red"
+                      >
+                        *</span
+                      >
                     </div>
 
                     <VaRadio
                       v-model="submissionEvaluation.genderAssessments[8].selectedOption"
                       class="mb-3"
+                      :rules="[rules.required]"
                       :options="['No', 'Partly', 'Yes']"
                       @update:modelValue="updateGenderAssessment(8, $event)"
                     />
@@ -447,12 +464,13 @@
                   <section class="6.1 mb-3">
                     <div class="mb-3">
                       6.1 Are women and girl children among the direct or indirect beneficiaries? (Possible scores: 0,
-                      0.33, 0.67)
+                      0.33, 0.67)<span style="color: red"> *</span>
                     </div>
 
                     <VaRadio
                       v-model="submissionEvaluation.genderAssessments[10].selectedOption"
                       class="mb-3"
+                      :rules="[rules.required]"
                       :options="['No', 'Partly', 'Yes']"
                       @update:modelValue="updateGenderAssessment(10, $event)"
                     />
@@ -467,12 +485,13 @@
                   <section class="6.2 mb-3">
                     <div class="mb-3">
                       6.2 Has the project considered its long-term impact on women’s socioeconomic status and
-                      empowerment? (Possible scores: 0, 0.33, 0.67)
+                      empowerment? (Possible scores: 0, 0.33, 0.67)<span style="color: red"> *</span>
                     </div>
 
                     <VaRadio
                       v-model="submissionEvaluation.genderAssessments[11].selectedOption"
                       class="mb-3"
+                      :rules="[rules.required]"
                       :options="['No', 'Partly', 'Yes']"
                       @update:modelValue="updateGenderAssessment(11, $event)"
                     />
@@ -487,12 +506,13 @@
                   <section class="6.3 mb-3">
                     <div class="mb-3">
                       6.3 Has the project included strategies for avoiding or minimizing negative impact on women’s
-                      status and welfare? (Possible scores: 0, 0.33, 0.67)
+                      status and welfare? (Possible scores: 0, 0.33, 0.67)<span style="color: red"> *</span>
                     </div>
 
                     <VaRadio
                       v-model="submissionEvaluation.genderAssessments[12].selectedOption"
                       class="mb-3"
+                      :rules="[rules.required]"
                       :options="['No', 'Partly', 'Yes']"
                       @update:modelValue="updateGenderAssessment(12, $event)"
                     />
@@ -506,12 +526,15 @@
                   <VaDivider />
                   <section class="7.0 mb-3">
                     <div class="mb-3 va-text-bold">
-                      7.0 Monitoring targets and indicators (possible scores: 0, 1.0, 2.0)
+                      7.0 Monitoring targets and indicators (possible scores: 0, 1.0, 2.0)<span style="color: red">
+                        *</span
+                      >
                     </div>
 
                     <VaRadio
                       v-model="submissionEvaluation.genderAssessments[13].selectedOption"
                       class="mb-3"
+                      :rules="[rules.required]"
                       :options="['No', 'Partly', 'Yes']"
                       @update:modelValue="updateGenderAssessment(13, $event)"
                     />
@@ -525,12 +548,15 @@
                   <VaDivider />
                   <section class="8.0 mb-3">
                     <div class="mb-3 va-text-bold">
-                      8.0 Sex-disaggregated database requirement (possible scores: 0, 1.0, 2.0)
+                      8.0 Sex-disaggregated database requirement (possible scores: 0, 1.0, 2.0)<span style="color: red">
+                        *</span
+                      >
                     </div>
 
                     <VaRadio
                       v-model="submissionEvaluation.genderAssessments[14].selectedOption"
                       class="mb-3"
+                      :rules="[rules.required]"
                       :options="['No', 'Partly', 'Yes']"
                       @update:modelValue="updateGenderAssessment(14, $event)"
                     />
@@ -550,12 +576,13 @@
                     <div class="mb-3">
                       9.1 Is the project’s budget allotment sufficient for gender equality promotion or integration? OR
                       will the project tap counterpart funds from LGUs/partners for its GAD efforts? (Possible scores:
-                      0, 0.5, 1.0)
+                      0, 0.5, 1.0)<span style="color: red"> *</span>
                     </div>
 
                     <VaRadio
                       v-model="submissionEvaluation.genderAssessments[16].selectedOption"
                       class="mb-3"
+                      :rules="[rules.required]"
                       :options="['No', 'Partly', 'Yes']"
                       @update:modelValue="updateGenderAssessment(16, $event)"
                     />
@@ -571,12 +598,17 @@
                     <div class="mb-3">
                       9.2 Does the project have the expertise in promoting gender equality and women’s empowerment? OR
                       does the project commit itself to investing project staff time in building capacities within the
-                      project to integrate GAD or promote gender equality? (Possible scores: 0, 0.5, 1.0)
+                      project to integrate GAD or promote gender equality? (Possible scores: 0, 0.5, 1.0)<span
+                        style="color: red"
+                      >
+                        *</span
+                      >
                     </div>
 
                     <VaRadio
                       v-model="submissionEvaluation.genderAssessments[17].selectedOption"
                       class="mb-3"
+                      :rules="[rules.required]"
                       :options="['No', 'Partly', 'Yes']"
                       @update:modelValue="updateGenderAssessment(17, $event)"
                     />
@@ -597,12 +629,15 @@
                     <div class="mb-3">
                       10.1 Will the project build on or strengthen the agency/ NCRFW/ government’s commitment to the
                       empowerment of women? (Possible scores: 0, 0.33, 0.67) IF THE AGENCY HAS NO GAD PLAN: Will the
-                      project help in the formulation of the implementing agency’s GAD plan?
+                      project help in the formulation of the implementing agency’s GAD plan?<span style="color: red">
+                        *</span
+                      >
                     </div>
 
                     <VaRadio
                       v-model="submissionEvaluation.genderAssessments[19].selectedOption"
                       class="mb-3"
+                      :rules="[rules.required]"
                       :options="['No', 'Partly', 'Yes']"
                       @update:modelValue="updateGenderAssessment(19, $event)"
                     />
@@ -617,12 +652,13 @@
                   <section class="10.2 mb-3">
                     <div class="mb-3">
                       10.2 Will the project build on the initiatives or actions of other organizations in the area?
-                      (Possible scores: 0, 0.33, 0.67)
+                      (Possible scores: 0, 0.33, 0.67)<span style="color: red"> *</span>
                     </div>
 
                     <VaRadio
                       v-model="submissionEvaluation.genderAssessments[20].selectedOption"
                       class="mb-3"
+                      :rules="[rules.required]"
                       :options="['No', 'Partly', 'Yes']"
                       @update:modelValue="updateGenderAssessment(20, $event)"
                     />
@@ -637,12 +673,13 @@
                   <section class="10.3 mb-3">
                     <div class="mb-3">
                       10.3 Does the project have an exit plan that will ensure the sustainability of GAD efforts and
-                      benefits? (Possible scores: 0, 0.33, 0.67)
+                      benefits? (Possible scores: 0, 0.33, 0.67)<span style="color: red"> *</span>
                     </div>
 
                     <VaRadio
                       v-model="submissionEvaluation.genderAssessments[21].selectedOption"
                       class="mb-3"
+                      :rules="[rules.required]"
                       :options="['No', 'Partly', 'Yes']"
                       @update:modelValue="updateGenderAssessment(21, $event)"
                     />
@@ -665,35 +702,40 @@
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue'
-import { submissionRepository } from '../../../repository/submissionRepository'
+import { ref, reactive, computed, onMounted } from 'vue'
+import { useForm } from 'vuestic-ui'
 import { evaluatorsRepository } from '../../../repository/evaluatorRepository'
+import { submissionRepository } from '../../../repository/submissionRepository'
 import { useToast } from 'vuestic-ui'
 import { useJwtStore } from '../../../stores/jwtHandler'
 
 const toast = useToast()
 const jwtStore = useJwtStore()
 
-const isVaSelectLoading = ref(false)
+export default {
+  setup() {
+    const { validate } = useForm('form')
+    const submissions = ref([])
+    const onHoldSubmissions = ref([])
+    const evaluationSubmissions = ref([])
+    const completedSubmissions = ref([])
+    const forCorrectionSubmissions = ref([])
 
-const defaultSubmission = {
-  fileType: '',
-  date: '',
-  docNo: '',
-  submission: '',
-  office: '',
-  proposal: '',
-  fileLink: '',
-  status: '',
-}
+    const EvaluatorsValue = ref([])
+    const EvaluatorOptions = ref([])
+    const AssignedEvaluator = ref([])
 
-export default defineComponent({
-  data() {
-    const submissions = []
-    const onHoldSubmissions = []
-    const evaluationSubmissions = []
-    const completedSubmissions = []
-    const forCorrectionSubmissions = []
+    const perPage = ref(10)
+    const onHoldCurrentPage = ref(1)
+    const evaluationCurrentPage = ref(1)
+    const completedCurrentPage = ref(1)
+    const forCorrectionCurrentPage = ref(1)
+    const filter = ref('')
+
+    const filteredOnHold = computed(() => onHoldSubmissions.value)
+    const filteredEvaluation = computed(() => evaluationSubmissions.value)
+    const filteredCompleted = computed(() => completedSubmissions.value)
+    const filteredForCorrection = computed(() => forCorrectionSubmissions.value)
 
     const columns = [
       { key: 'submission.fileType', label: 'File Type', sortable: true },
@@ -705,307 +747,415 @@ export default defineComponent({
       { key: 'submission.submissionStatus', label: 'Status', sortable: true },
       { key: 'actions', label: 'Actions', width: 80 },
     ]
-
-    return {
-      submissions,
-      onHoldSubmissions,
-      evaluationSubmissions,
-      completedSubmissions,
-      forCorrectionSubmissions,
-      columns,
-
-      sentDocumentForEvaluationModal: false,
-      documentRoutingLogModal: false,
-      processSubmissionModal: false,
-      selectedRowIndex: null,
-
-      loadedSubmission: {
-        id: '',
-        submissionId: '',
-        createdAt: '',
-        proposalTitle: '',
-        proposalDescription: '',
-        fileType: '',
-        submissionStatus: '',
-        proponent: '',
-        evaluator: '',
-        remarks: '',
-        submissionFiles: [],
-      },
-
-      submissionEvaluation: {
-        submissionId: 0,
-        evaluatorId: 0,
-        genderAssessments: [
-          {
-            // 1.0 Involvement of women and men (max score: 2; 1 for each item)
-            sectionId: 1,
-            doneNo: false,
-            donePartly: false,
-            doneYes: false,
-            score: 0,
-            comments: '',
-          },
-          {
-            // 1.1 Participation of women and men in beneficiary groups in problem identification (possible scores: 0, 0.5, 1.0)
-            sectionId: 2,
-            doneNo: false,
-            donePartly: false,
-            doneYes: false,
-            score: 0,
-            comments: '',
-          },
-          {
-            // 1.2 Participation of women and men in beneficiary groups in project design (possible scores: 0, 0.5, 1.0)
-            sectionId: 3,
-            doneNo: false,
-            donePartly: false,
-            doneYes: false,
-            score: 0,
-            comments: '',
-          },
-          {
-            // 2.0 Collection of sex-disaggregated data and gender-related information (possible scores: 0, 1.0, 2.0)
-            sectionId: 4,
-            doneNo: false,
-            donePartly: false,
-            doneYes: false,
-            score: 0,
-            comments: '',
-          },
-          {
-            // 3.0 Conduct of gender analysis and identification of gender issues (max score: 2; 1 for each item)
-            sectionId: 5,
-            doneNo: false,
-            donePartly: false,
-            doneYes: false,
-            score: 0,
-            comments: '',
-          },
-          {
-            // 3.1 Analysis of gender gaps and inequalities related to gender roles, perspectives and needs, or access to and control of resources (possible scores: 0, 0.5, 1.0)
-            sectionId: 6,
-            doneNo: false,
-            donePartly: false,
-            doneYes: false,
-            score: 0,
-            comments: '',
-          },
-          {
-            // 3.2 Analysis of constraints and opportunities related to women and men’s participation in the project (possible scores: 0, 0.5, 1.0)
-            sectionId: 7,
-            doneNo: false,
-            donePartly: false,
-            doneYes: false,
-            score: 0,
-            comments: '',
-          },
-          {
-            // 4.0 Gender equality goals, outcomes, and outputs (possible scores: 0, 1.0, 2.0)
-            sectionId: 8,
-            doneNo: false,
-            donePartly: false,
-            doneYes: false,
-            score: 0,
-            comments: '',
-          },
-          {
-            // 5.0 Matching of strategies with gender issues (possible scores: 0, 1.0, 2.0)
-            sectionId: 9,
-            doneNo: false,
-            donePartly: false,
-            doneYes: false,
-            score: 0,
-            comments: '',
-          },
-          {
-            // 6.0 Gender analysis of likely impacts of the project (max score: 2; for each item or question, 0.67)
-            sectionId: 10,
-            doneNo: false,
-            donePartly: false,
-            doneYes: false,
-            score: 0,
-            comments: '',
-          },
-          {
-            // 6.1 Are women and girl children among the direct or indirect beneficiaries? (Possible scores: 0, 0.33, 0.67)
-            sectionId: 11,
-            doneNo: false,
-            donePartly: false,
-            doneYes: false,
-            score: 0,
-            comments: '',
-          },
-          {
-            // 6.2 Has the project considered its long-term impact on women’s socioeconomic status and empowerment? (Possible scores: 0, 0.33, 0.67)
-            sectionId: 12,
-            doneNo: false,
-            donePartly: false,
-            doneYes: false,
-            score: 0,
-            comments: '',
-          },
-          {
-            // 6.3 Has the project included strategies for avoiding or minimizing negative impact on women’s status and welfare? (Possible scores: 0, 0.33, 0.67)
-            sectionId: 13,
-            doneNo: false,
-            donePartly: false,
-            doneYes: false,
-            score: 0,
-            comments: '',
-          },
-          {
-            // 7.0 Monitoring targets and indicators (possible scores: 0, 1.0, 2.0)
-            sectionId: 14,
-            doneNo: false,
-            donePartly: false,
-            doneYes: false,
-            score: 0,
-            comments: '',
-          },
-          {
-            // 8.0 Sex-disaggregated database requirement (possible scores: 0, 1.0, 2.0)
-            sectionId: 15,
-            doneNo: false,
-            donePartly: false,
-            doneYes: false,
-            score: 0,
-            comments: '',
-          },
-          {
-            // 9.0 Resources (max score: 2; for each question, 1)
-            sectionId: 16,
-            doneNo: false,
-            donePartly: false,
-            doneYes: false,
-            score: 0,
-            comments: '',
-          },
-          {
-            // 9.1 Is the project’s budget allotment sufficient for gender equality promotion or integration? (Possible scores: 0, 0.5, 1.0)
-            sectionId: 17,
-            doneNo: false,
-            donePartly: false,
-            doneYes: false,
-            score: 0,
-            comments: '',
-          },
-          {
-            // 9.2 Does the project have the expertise in promoting gender equality and women’s empowerment? (Possible scores: 0, 0.5, 1.0)
-            sectionId: 18,
-            doneNo: false,
-            donePartly: false,
-            doneYes: false,
-            score: 0,
-            comments: '',
-          },
-          {
-            // 10.0 Relationship with the agency’s GAD efforts (max score: 2; for each question or item, 0.67)
-            sectionId: 19,
-            doneNo: false,
-            donePartly: false,
-            doneYes: false,
-            score: 0,
-            comments: '',
-          },
-          {
-            // 10.1 Will the project build on or strengthen the agency/ NCRFW/ government’s commitment to the empowerment of women? (Possible scores: 0, 0.33, 0.67)
-            sectionId: 20,
-            doneNo: false,
-            donePartly: false,
-            doneYes: false,
-            score: 0,
-            comments: '',
-          },
-          {
-            // 10.2 Will the project build on the initiatives or actions of other organizations in the area? (Possible scores: 0, 0.33, 0.67)
-            sectionId: 21,
-            doneNo: false,
-            donePartly: false,
-            doneYes: false,
-            score: 0,
-            comments: '',
-          },
-          {
-            // 10.3 Does the project have an exit plan that will ensure the sustainability of GAD efforts and benefits? (Possible scores: 0, 0.33, 0.67)
-            sectionId: 22,
-            doneNo: false,
-            donePartly: false,
-            doneYes: false,
-            score: 0,
-            comments: '',
-          },
-        ],
-      },
-
-      createdSubmission: { ...defaultSubmission },
-      currentTable: 'evaluation',
-      modalTable: 'attachments',
-
-      EvaluatorsValue: [],
-      EvaluatorOptions: [],
-      AssignedEvaluator: [],
-      isLoading: true,
-      isVaSelectLoading,
-
-      perPage: 10,
-      onHoldCurrentPage: 1,
-      evaluationCurrentPage: 1,
-      completedCurrentPage: 1,
-      forCorrectionCurrentPage: 1,
-      filter: '',
-
-      filteredOnHold: onHoldSubmissions,
-      filteredEvaluation: evaluationSubmissions,
-      filteredCompleted: completedSubmissions,
-      filteredForCorrection: forCorrectionSubmissions,
+    const rules = {
+      required: (value) => !!value || 'This field is required',
     }
-  },
 
-  computed: {
-    filteredOptions() {
+    const sentDocumentForEvaluationModal = ref(false)
+    const documentRoutingLogModal = ref(false)
+    const processSubmissionModal = ref(false)
+    const selectedRowIndex = ref(null)
+    const isLoading = ref(true)
+    const isVaSelectLoading = ref(false)
+
+    const submissionEvaluation = reactive({
+      submissionId: 0,
+      evaluatorId: 0,
+      genderAssessments: [
+        {
+          sectionId: 1,
+          doneNo: false,
+          donePartly: false,
+          doneYes: false,
+          score: 0,
+          comments: '',
+        },
+        {
+          sectionId: 2,
+          doneNo: false,
+          donePartly: false,
+          doneYes: false,
+          score: 0,
+          comments: '',
+        },
+        {
+          sectionId: 3,
+          doneNo: false,
+          donePartly: false,
+          doneYes: false,
+          score: 0,
+          comments: '',
+        },
+        {
+          sectionId: 4,
+          doneNo: false,
+          donePartly: false,
+          doneYes: false,
+          score: 0,
+          comments: '',
+        },
+        {
+          sectionId: 5,
+          doneNo: false,
+          donePartly: false,
+          doneYes: false,
+          score: 0,
+          comments: '',
+        },
+        {
+          sectionId: 6,
+          doneNo: false,
+          donePartly: false,
+          doneYes: false,
+          score: 0,
+          comments: '',
+        },
+        {
+          sectionId: 7,
+          doneNo: false,
+          donePartly: false,
+          doneYes: false,
+          score: 0,
+          comments: '',
+        },
+        {
+          sectionId: 8,
+          doneNo: false,
+          donePartly: false,
+          doneYes: false,
+          score: 0,
+          comments: '',
+        },
+        {
+          sectionId: 9,
+          doneNo: false,
+          donePartly: false,
+          doneYes: false,
+          score: 0,
+          comments: '',
+        },
+        {
+          sectionId: 10,
+          doneNo: false,
+          donePartly: false,
+          doneYes: false,
+          score: 0,
+          comments: '',
+        },
+        {
+          sectionId: 11,
+          doneNo: false,
+          donePartly: false,
+          doneYes: false,
+          score: 0,
+          comments: '',
+        },
+        {
+          sectionId: 12,
+          doneNo: false,
+          donePartly: false,
+          doneYes: false,
+          score: 0,
+          comments: '',
+        },
+        {
+          sectionId: 13,
+          doneNo: false,
+          donePartly: false,
+          doneYes: false,
+          score: 0,
+          comments: '',
+        },
+        {
+          sectionId: 14,
+          doneNo: false,
+          donePartly: false,
+          doneYes: false,
+          score: 0,
+          comments: '',
+        },
+        {
+          sectionId: 15,
+          doneNo: false,
+          donePartly: false,
+          doneYes: false,
+          score: 0,
+          comments: '',
+        },
+        {
+          sectionId: 16,
+          doneNo: false,
+          donePartly: false,
+          doneYes: false,
+          score: 0,
+          comments: '',
+        },
+        {
+          sectionId: 17,
+          doneNo: false,
+          donePartly: false,
+          doneYes: false,
+          score: 0,
+          comments: '',
+        },
+        {
+          sectionId: 18,
+          doneNo: false,
+          donePartly: false,
+          doneYes: false,
+          score: 0,
+          comments: '',
+        },
+        {
+          sectionId: 19,
+          doneNo: false,
+          donePartly: false,
+          doneYes: false,
+          score: 0,
+          comments: '',
+        },
+        {
+          sectionId: 20,
+          doneNo: false,
+          donePartly: false,
+          doneYes: false,
+          score: 0,
+          comments: '',
+        },
+        {
+          sectionId: 21,
+          doneNo: false,
+          donePartly: false,
+          doneYes: false,
+          score: 0,
+          comments: '',
+        },
+        {
+          sectionId: 22,
+          doneNo: false,
+          donePartly: false,
+          doneYes: false,
+          score: 0,
+          comments: '',
+        },
+      ],
+    })
+
+    const loadedSubmission = reactive({
+      id: '',
+      submissionId: '',
+      createdAt: '',
+      proposalTitle: '',
+      proposalDescription: '',
+      fileType: '',
+      submissionStatus: '',
+      proponent: '',
+      evaluator: '',
+      remarks: '',
+      submissionFiles: [],
+    })
+
+    const defaultSubmission = {
+      id: '',
+      submissionId: '',
+      createdAt: '',
+      proposalTitle: '',
+      proposalDescription: '',
+      fileType: '',
+      submissionStatus: '',
+      proponent: '',
+      evaluator: '',
+      remarks: '',
+      submissionFiles: [],
+    }
+
+    const createdSubmission = reactive({ ...defaultSubmission })
+    const currentTable = ref('evaluation')
+    const modalTable = ref('attachments')
+
+    const filteredOptions = computed(() => {
       const options = [
         { value: 'attachments', label: 'Attachments' },
         { value: 'submissionEvaluation', label: 'Submission Evaluation' },
       ]
-
-      return this.loadedSubmission.submissionStatus === 'Completed'
+      return loadedSubmission.submissionStatus === 'Completed'
         ? options.filter((option) => option.value !== 'submissionEvaluation')
         : options
-    },
+    })
 
-    isNewData() {
-      return Object.keys(this.createdSubmission).every((key) => !!this.createdSubmission[key])
-    },
-    onHoldPages() {
-      return this.perPage && this.perPage !== 0
-        ? Math.ceil(this.filteredOnHold.length / this.perPage)
-        : this.filteredOnHold.length
-    },
-    evaluationPages() {
-      return this.perPage && this.perPage !== 0
-        ? Math.ceil(this.filteredEvaluation.length / this.perPage)
-        : this.filteredEvaluation.length
-    },
-    completedPages() {
-      return this.perPage && this.perPage !== 0
-        ? Math.ceil(this.filteredCompleted.length / this.perPage)
-        : this.filteredCompleted.length
-    },
-    forCorrectionpages() {
-      return this.perPage && this.perPage !== 0
-        ? Math.ceil(this.filteredForCorrection.length / this.perPage)
-        : this.filteredForCorrection.length
-    },
-  },
+    const isNewData = computed(() => Object.keys(createdSubmission).every((key) => !!createdSubmission[key]))
 
-  mounted() {
-    this.loadSubmissionsToBeEvaluated()
-  },
+    const evaluationPages = computed(() => {
+      return perPage.value && perPage.value !== 0
+        ? Math.ceil(filteredEvaluation.value.length / perPage.value)
+        : filteredEvaluation.value.length
+    })
 
-  methods: {
-    calculateGenderAssessment() {
-      this.submissionEvaluation.genderAssessments.forEach((assessment, index) => {
+    const completedPages = computed(() => {
+      return perPage.value && perPage.value !== 0
+        ? Math.ceil(filteredCompleted.value.length / perPage.value)
+        : filteredCompleted.value.length
+    })
+
+    const updateGenderAssessment = (index, value) => {
+      const section = submissionEvaluation.genderAssessments[index]
+      section.doneNo = section.donePartly = section.doneYes = false
+
+      if (value === 'No') section.doneNo = true
+      else if (value === 'Partly') section.donePartly = true
+      else if (value === 'Yes') section.doneYes = true
+    }
+
+    const truncateText = (text, length) => (text.length > length ? text.substring(0, length) + '...' : text)
+
+    const formatDate = (date) => {
+      if (!date) return 'N/A'
+      return new Date(date).toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true,
+      })
+    }
+
+    const deleteChip = (chipId) => {
+      EvaluatorsValue.value = EvaluatorsValue.value.filter((v) => v !== chipId)
+    }
+
+    const processSubmission = async () => {
+      processSubmissionModal.value = true
+    }
+
+    const getAssignedEvaluator = async (id) => {
+      try {
+        const data = await submissionRepository.getSubmissionEvaluatorsById(id)
+        AssignedEvaluator.value = data.evaluators.map((evaluator) => ({
+          fullName: evaluator.fullName,
+        }))
+      } catch (error) {
+        AssignedEvaluator.value = []
+        console.error('Failed to load assigned evaluator:', error)
+      }
+    }
+
+    const getEvaluators = async () => {
+      isVaSelectLoading.value = true
+      try {
+        const data = await evaluatorsRepository.getEvaluators()
+        EvaluatorOptions.value = data.map((evaluator) => ({
+          text: evaluator.fullName,
+          value: evaluator.id,
+        }))
+      } catch (error) {
+        console.error('Failed to load evaluators:', error)
+      } finally {
+        isVaSelectLoading.value = false
+      }
+    }
+
+    const downloadSubmission = async (link, fileType) => {
+      try {
+        if (fileType === 'Link') {
+          window.open(link, '_blank')
+        } else if (fileType === 'File') {
+          await submissionRepository.getSubmissionFiles(link, fileType)
+        }
+      } catch (error) {
+        console.error('Failed to download submission:', error)
+      }
+    }
+
+    const showSentDocumentForEvaluationModal = (item) => {
+      if (item) {
+        getAssignedEvaluator(item.submissionId)
+        selectedRowIndex.value = submissions.value.findIndex(
+          (submission) => submission.submissionId === item.submissionId,
+        )
+        Object.assign(loadedSubmission, item)
+        sentDocumentForEvaluationModal.value = true
+        loadSubmissionById(item.submissionId)
+      }
+    }
+
+    const loadSubmissionById = async (id) => {
+      try {
+        const data = await submissionRepository.getSubmissionById(id)
+        Object.assign(loadedSubmission, {
+          id: data.id,
+          submissionId: data.submissionId,
+          createdAt: new Date(data.createdAt).toLocaleString(),
+          proposalTitle: data.proposalTitle,
+          proposalDescription: data.proposalDescription,
+          fileType: data.fileType,
+          resourcesLink: data.resourcesLink,
+          submissionStatus: data.submissionStatus,
+          proponent: data.proponent,
+          evaluator: data.evaluator,
+          remarks: data.remarks,
+          submissionFiles: data.submissionFiles,
+        })
+        sentDocumentForEvaluationModal.value = true
+      } catch (error) {
+        console.error('Failed to load submission:', error)
+      }
+    }
+
+    const loadSubmissionsToBeEvaluated = async () => {
+      isLoading.value = true
+      try {
+        const evaluatorId = jwtStore.getUserId
+        const data = await evaluatorsRepository.getSubmissionToBeEvaluatedByEvaluatorId(evaluatorId)
+        submissions.value = data
+        onHoldSubmissions.value = data.filter((item) => item.submission.submissionStatus === 'OnHold')
+        evaluationSubmissions.value = data.filter((item) => item.submission.submissionStatus === 'Evaluation')
+        completedSubmissions.value = data.filter((item) => item.submission.submissionStatus === 'Completed')
+        forCorrectionSubmissions.value = data.filter((item) => item.submission.submissionStatus === 'ForCorrection')
+      } catch (error) {
+        console.error('Failed to load submissions:', error)
+      } finally {
+        isLoading.value = false
+      }
+    }
+
+    const submitEvaluation = async () => {
+      const isValid = await validate()
+      if (!isValid) {
+        toast.init({
+          message: 'Please fill in all required fields.',
+          color: 'danger',
+        })
+        return
+      }
+      if (isValid) {
+        try {
+          calculateGenderAssessment()
+          await evaluatorsRepository.evaluateSubmission(
+            loadedSubmission.id,
+            jwtStore.getUserId,
+            submissionEvaluation.genderAssessments,
+          )
+          toast.init({
+            message: 'Evaluation submitted successfully!',
+            color: 'success',
+          })
+
+          sentDocumentForEvaluationModal.value = false
+          loadSubmissionsToBeEvaluated()
+        } catch (error) {
+          console.error('Failed to submit evaluation:', error)
+          toast.init({
+            message: error?.response?.data?.message || 'Failed to submit evaluation',
+            color: 'danger',
+          })
+        }
+      }
+    }
+
+    const calculateGenderAssessment = async () => {
+      submissionEvaluation.genderAssessments.forEach((assessment, index) => {
         let score = 0
         switch (index) {
           case 1: // ID 2: 1.1 Participation of women and men in beneficiary groups in problem identification (possible scores: 0, 0.5, 1.0)
@@ -1037,231 +1187,86 @@ export default defineComponent({
         assessment.score = score
       })
 
-      this.submissionEvaluation.genderAssessments[0].score =
-        this.submissionEvaluation.genderAssessments[1].score + this.submissionEvaluation.genderAssessments[2].score
+      submissionEvaluation.genderAssessments[0].score =
+        submissionEvaluation.genderAssessments[1].score + submissionEvaluation.genderAssessments[2].score
 
-      this.submissionEvaluation.genderAssessments[4].score =
-        this.submissionEvaluation.genderAssessments[5].score + this.submissionEvaluation.genderAssessments[6].score
+      submissionEvaluation.genderAssessments[4].score =
+        submissionEvaluation.genderAssessments[5].score + submissionEvaluation.genderAssessments[6].score
 
-      this.submissionEvaluation.genderAssessments[9].score = Math.min(
-        this.submissionEvaluation.genderAssessments[10].score +
-          this.submissionEvaluation.genderAssessments[11].score +
-          this.submissionEvaluation.genderAssessments[12].score,
+      submissionEvaluation.genderAssessments[9].score = Math.min(
+        submissionEvaluation.genderAssessments[10].score +
+          submissionEvaluation.genderAssessments[11].score +
+          submissionEvaluation.genderAssessments[12].score,
         2,
       )
 
-      this.submissionEvaluation.genderAssessments[15].score =
-        this.submissionEvaluation.genderAssessments[16].score + this.submissionEvaluation.genderAssessments[17].score
+      submissionEvaluation.genderAssessments[15].score =
+        submissionEvaluation.genderAssessments[16].score + submissionEvaluation.genderAssessments[17].score
 
-      this.submissionEvaluation.genderAssessments[18].score = Math.min(
-        this.submissionEvaluation.genderAssessments[19].score +
-          this.submissionEvaluation.genderAssessments[20].score +
-          this.submissionEvaluation.genderAssessments[21].score,
+      submissionEvaluation.genderAssessments[18].score = Math.min(
+        submissionEvaluation.genderAssessments[19].score +
+          submissionEvaluation.genderAssessments[20].score +
+          submissionEvaluation.genderAssessments[21].score,
         2,
       )
-    },
+    }
 
-    updateGenderAssessment(index, value) {
-      this.submissionEvaluation.genderAssessments[index].doneNo = false
-      this.submissionEvaluation.genderAssessments[index].donePartly = false
-      this.submissionEvaluation.genderAssessments[index].doneYes = false
+    onMounted(() => {
+      loadSubmissionsToBeEvaluated()
+    })
 
-      if (value === 'No') {
-        this.submissionEvaluation.genderAssessments[index].doneNo = true
-      } else if (value === 'Partly') {
-        this.submissionEvaluation.genderAssessments[index].donePartly = true
-      } else if (value === 'Yes') {
-        this.submissionEvaluation.genderAssessments[index].doneYes = true
-      }
-    },
-
-    truncateText(text, length) {
-      if (text.length > length) {
-        return text.substring(0, length) + '...'
-      }
-      return text
-    },
-
-    formatDate(date) {
-      if (!date) return 'N/A'
-      return new Date(date).toLocaleString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: true,
-      })
-    },
-
-    deleteChip(chipId) {
-      this.EvaluatorsValue = this.EvaluatorsValue.filter((v) => v !== chipId)
-    },
-
-    async processSubmission() {
-      this.processSubmissionModal = true
-    },
-
-    approveSubmission() {
-      this.processSubmissionModal = false
-    },
-
-    forEvaluationSubmission() {
-      this.processSubmissionModal = false
-    },
-
-    forCorrectionSubmission() {
-      this.processSubmissionModal = false
-    },
-
-    closeProcessSubmissionmodal() {
-      this.processSubmissionModal = false
-    },
-
-    async assignEvaluatorToSubmission() {
-      try {
-        await submissionRepository.assignEvaluatorToSubmission(this.loadedSubmission.id, this.EvaluatorsValue)
-      } catch (error) {
-        toast.init({
-          message: error.response?.data?.message || 'Failed to assign evaluator',
-          color: 'danger',
-        })
-      } finally {
-        this.AssignedEvaluator = []
-        this.EvaluatorsValue = []
-        this.getAssignedEvaluator(this.loadedSubmission.id)
-        toast.init({
-          message: 'Evaluator assigned successfully',
-          color: 'success',
-        })
-      }
-    },
-
-    async getAssignedEvaluator(id) {
-      try {
-        const data = await submissionRepository.getSubmissionEvaluatorsById(id)
-        this.AssignedEvaluator = data.evaluators.map((evaluator) => ({ fullName: evaluator.fullName }))
-      } catch (error) {
-        this.AssignedEvaluator = []
-        console.error('Failed to load assigned evaluator:', error)
-      }
-    },
-
-    async submitEvaluation() {
-      try {
-        this.calculateGenderAssessment()
-        await evaluatorsRepository.evaluateSubmission(
-          this.loadedSubmission.id,
-          jwtStore.getUserId,
-          this.submissionEvaluation.genderAssessments,
-        )
-
-        toast.init({
-          message: 'Evaluation submitted successfully!',
-          color: 'success',
-        })
-
-        this.sentDocumentForEvaluationModal = false
-        this.loadSubmissionsToBeEvaluated()
-      } catch (error) {
-        console.error('Failed to submit evaluation:', error)
-
-        const errorMessage = error?.response?.data?.message || 'Failed to submit evaluation'
-
-        toast.init({
-          message: errorMessage,
-          color: 'danger',
-        })
-      }
-    },
-
-    async getEvaluators() {
-      isVaSelectLoading.value = true
-      try {
-        const data = await evaluatorsRepository.getEvaluators()
-        this.EvaluatorOptions = data.map((evaluator) => ({
-          text: evaluator.fullName,
-          value: evaluator.id,
-        }))
-      } catch (error) {
-        console.error('Failed to load evaluators:', error)
-      } finally {
-        isVaSelectLoading.value = false
-      }
-    },
-
-    async downloadSubmission(link, fileType) {
-      try {
-        if (fileType === 'Link') {
-          window.open(link, '_blank')
-          return
-        } else if (fileType === 'File') {
-          const data = await submissionRepository.getSubmissionFiles(link, fileType)
-          console.log('Downloaded submission:', data)
-        }
-      } catch (error) {
-        console.error('Failed to download submission:', error)
-      }
-    },
-
-    showSentDocumentForEvaluationModal(item) {
-      if (item) {
-        this.getAssignedEvaluator(item.submissionId)
-        this.selectedRowIndex = this.submissions.findIndex(
-          (submission) => submission.submissionId === item.submissionId,
-        )
-        this.loadedSubmission = item
-        this.sentDocumentForEvaluationModal = true
-
-        this.loadSubmissionById(item.submissionId)
-      } else {
-        console.error('Item is undefined or null')
-      }
-    },
-
-    async loadSubmissionById(Id) {
-      try {
-        const data = await submissionRepository.getSubmissionById(Id)
-        this.loadedSubmission = {
-          id: data.id,
-          submissionId: data.submissionId,
-          createdAt: new Date(data.createdAt).toLocaleString(),
-          proposalTitle: data.proposalTitle,
-          proposalDescription: data.proposalDescription,
-          fileType: data.fileType,
-          resourcesLink: data.resourcesLink,
-          submissionStatus: data.submissionStatus,
-          proponent: data.proponent,
-          evaluator: data.evaluator,
-          remarks: data.remarks,
-          submissionFiles: data.submissionFiles,
-        }
-        this.sentDocumentForEvaluationModal = true
-      } catch (error) {
-        console.error('Failed to load submission:', error)
-      }
-    },
-
-    async loadSubmissionsToBeEvaluated() {
-      this.isLoading = true
-      try {
-        const evaluatorId = jwtStore.getUserId
-        const data = await evaluatorsRepository.getSubmissionToBeEvaluatedByEvaluatorId(evaluatorId)
-
-        this.submission = data
-        this.onHoldSubmissions = data.filter((item) => item.submission.submissionStatus === 'OnHold')
-        this.evaluationSubmissions = data.filter((item) => item.submission.submissionStatus === 'Evaluation')
-        this.completedSubmissions = data.filter((item) => item.submission.submissionStatus === 'Completed')
-        this.forCorrectionSubmissions = data.filter((item) => item.submission.submissionStatus === 'ForCorrection')
-      } catch (error) {
-        console.error('Failed to load submissions:', error)
-      } finally {
-        this.isLoading = false
-      }
-    },
+    return {
+      calculateGenderAssessment,
+      validate,
+      submissions,
+      onHoldSubmissions,
+      evaluationSubmissions,
+      completedSubmissions,
+      forCorrectionSubmissions,
+      submissionEvaluation,
+      columns,
+      rules,
+      sentDocumentForEvaluationModal,
+      documentRoutingLogModal,
+      processSubmissionModal,
+      selectedRowIndex,
+      loadedSubmission,
+      createdSubmission,
+      currentTable,
+      modalTable,
+      EvaluatorsValue,
+      EvaluatorOptions,
+      AssignedEvaluator,
+      isLoading,
+      isVaSelectLoading,
+      perPage,
+      onHoldCurrentPage,
+      evaluationCurrentPage,
+      completedCurrentPage,
+      forCorrectionCurrentPage,
+      filter,
+      filteredOnHold,
+      filteredEvaluation,
+      filteredCompleted,
+      filteredForCorrection,
+      filteredOptions,
+      isNewData,
+      evaluationPages,
+      completedPages,
+      updateGenderAssessment,
+      truncateText,
+      formatDate,
+      deleteChip,
+      processSubmission,
+      getAssignedEvaluator,
+      getEvaluators,
+      downloadSubmission,
+      showSentDocumentForEvaluationModal,
+      loadSubmissionById,
+      submitEvaluation,
+    }
   },
-})
+}
 </script>
 
 <style lang="scss" scoped>
