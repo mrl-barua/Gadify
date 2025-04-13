@@ -519,6 +519,7 @@ export default defineComponent({
     debouncedUpdateFilter: debounce(function (filter) {
       this.updateFilter(filter)
     }, 600),
+    
     truncateText(text, length) {
       if (text.length > length) {
         return text.substring(0, length) + '...'
