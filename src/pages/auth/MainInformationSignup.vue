@@ -35,20 +35,17 @@
 import { reactive, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useForm, useToast } from 'vuestic-ui'
+import { departmentRepository } from '../../repository/departmentRepository'
+import { useProponentStore } from '../../stores/proponent-store'
 
 const { validate } = useForm('form')
 const { push } = useRouter()
 const { init } = useToast()
-import { useProponentStore } from '../../stores/proponent-store'
-
-import { departmentRepository } from '../../repository/departmentRepository'
-
 const proponentStore = useProponentStore()
 
 const rules = {
   required: (value: string) => !!value || 'This field is required',
 }
-
 const formData = reactive({
   lastName: '',
   firstName: '',
