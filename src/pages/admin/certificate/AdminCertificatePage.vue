@@ -221,6 +221,7 @@ export default defineComponent({
       { key: 'submissionStatus', label: 'Status', sortable: true },
       { key: 'actions', label: 'Actions', width: 80 },
     ]
+    
     const input = ''
 
     return {
