@@ -3,18 +3,22 @@
   <VaCard>
     <VaCardContent>
       <div class="flex flex-col md:flex-row gap-2 mb-2 justify-end">
+        <div class="flex flex-col md:flex-row gap-2 justify-end">
+          <VaInput v-model="input" placeholder="Filter..." class="w-full" />
+        </div>
         <VaButton @click="addAdminModal = !addAdminModal">Add Admin</VaButton>
       </div>
 
       <VaDataTable
+        striped
         class="table-crud"
         :items="admins"
         :columns="columns"
-        striped
         :loading="isLoading"
         :per-page="perPage"
         :current-page="currentPage"
         :filter="filter"
+        :filter-method="customFilteringFn"
         @filtered="filtered = $event.items"
       >
         <template #bodyAppend>
@@ -75,7 +79,8 @@
 </template>
 
 <script>
-import { defineComponent, ref, reactive, computed } from 'vue'
+import { defineComponent, ref, reactive, computed, watch } from 'vue'
+import debounce from 'lodash/debounce.js'
 import { useToast } from 'vuestic-ui'
 import { adminRepository } from '../../../repository/adminRepository'
 
@@ -107,6 +112,38 @@ export default defineComponent({
     }
 
     const admins = ref([])
+    const input = ref('')
+    const filter = input
+    const isDebounceInput = ref(true)
+    const isCustomFilteringFn = ref(false)
+    const filteredCount = computed(() => admins.value.length)
+    const filteredCompleted = computed(() => admins.value)
+    const customFilteringFn = computed(() => {
+      return isCustomFilteringFn.value ? filterExact.value : undefined
+    })
+    function filterExact(source) {
+      if (filter.value === '') {
+        return true
+      }
+      return source?.toString?.() === filter.value
+    }
+
+    function updateFilter(newFilter) {
+      filter.value = newFilter
+    }
+
+    const debouncedUpdateFilter = debounce((newFilter) => {
+      updateFilter(newFilter)
+    }, 600)
+
+    watch(input, (newValue) => {
+      if (isDebounceInput.value) {
+        debouncedUpdateFilter(newValue)
+      } else {
+        updateFilter(newValue)
+      }
+    })
+
     const columns = [
       { key: 'adminId', label: 'Admin Id', sortable: true },
       { key: 'fullName', label: 'Fullname', sortable: true },
@@ -224,6 +261,12 @@ export default defineComponent({
       openModalToEditItemById,
       deleteItemById,
       loadAdmins,
+
+      input,
+      filter,
+      isDebounceInput,
+      updateFilter,
+      debouncedUpdateFilter,
     }
   },
   mounted() {
