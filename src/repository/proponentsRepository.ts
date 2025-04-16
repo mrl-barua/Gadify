@@ -50,13 +50,17 @@ export const proponentsRepository = {
     }
   },
 
-  getApprovedProponents: async () => {
+  getApprovedProponents: async (page: number, searchFilter: string) => {
     try {
-      const response = await apiClient.get('/api/approvedProponents/', {
-        headers: {
-          Authorization: `Bearer ${jwtStore.getToken}`,
+      const response = await apiClient.post(
+        `/api/approvedProponents`,
+        { page: page, limit: 10, searchFilter: searchFilter },
+        {
+          headers: {
+            Authorization: `Bearer ${jwtStore.getToken}`,
+          },
         },
-      })
+      )
       console.log('Data:', response.data)
       return response.data
     } catch (error) {
@@ -65,13 +69,17 @@ export const proponentsRepository = {
     }
   },
 
-  getRejectedProponents: async () => {
+  getRejectedProponents: async (page: number, searchFilter: string) => {
     try {
-      const response = await apiClient.get('/api/rejectedProponents/', {
-        headers: {
-          Authorization: `Bearer ${jwtStore.getToken}`,
+      const response = await apiClient.post(
+        `/api/rejectedProponents`,
+        { page: page, limit: 10, searchFilter: searchFilter },
+        {
+          headers: {
+            Authorization: `Bearer ${jwtStore.getToken}`,
+          },
         },
-      })
+      )
       console.log('Data:', response.data)
       return response.data
     } catch (error) {
