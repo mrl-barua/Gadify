@@ -85,7 +85,21 @@
         :filter="filter"
         :filter-method="customFilteringFn"
         @filtered="filteredCount = $event.items.length"
-      >
+        ><template #bodyAppend>
+          <tr>
+            <td colspan="12">
+              <div class="flex justify-center mt-4">
+                <VaPagination
+                  v-model="approvedCurrentPage"
+                  :pages="approvedProponentTotalPages"
+                  :visible-pages="7"
+                  boundary-numbers
+                  direction-links
+                />
+              </div>
+            </td>
+          </tr>
+        </template>
         <template #cell(createdAt)="{ value }">
           {{ formatDate(value) }}
         </template>
@@ -120,7 +134,21 @@
         :filter="filter"
         :filter-method="customFilteringFn"
         @filtered="filteredCount = $event.items.length"
-      >
+        ><template #bodyAppend>
+          <tr>
+            <td colspan="12">
+              <div class="flex justify-center mt-4">
+                <VaPagination
+                  v-model="disapprovedCurrentPage"
+                  :pages="disapprovedProponentTotalPages"
+                  :visible-pages="7"
+                  boundary-numbers
+                  direction-links
+                />
+              </div>
+            </td>
+          </tr>
+        </template>
         <template #cell(createdAt)="{ value }">
           {{ formatDate(value) }}
         </template>
@@ -196,6 +224,12 @@ export default defineComponent({
       pendingCurrentPage: 1,
       pendingProponentTotalPages: 1,
 
+      approvedCurrentPage: 1,
+      approvedProponentTotalPages: 1,
+
+      disapprovedCurrentPage: 1,
+      disapprovedProponentTotalPages: 1,
+
       input,
       filter: input,
       isDebounceInput: true,
@@ -236,6 +270,18 @@ export default defineComponent({
     pendingCurrentPage(newPage, oldPage) {
       if (this.currentTable === 'pending' && newPage !== oldPage) {
         this.loadPendingProponents()
+      }
+    },
+
+    approvedCurrentPage(newPage, oldPage) {
+      if (this.currentTable === 'pending' && newPage !== oldPage) {
+        this.loadApprovedProponents()
+      }
+    },
+
+    dissaprovedCurrentPage(newPage, oldPage) {
+      if (this.currentTable === 'pending' && newPage !== oldPage) {
+        this.loadRejectedProponents()
       }
     },
   },
@@ -304,12 +350,14 @@ export default defineComponent({
 
     async loadApprovedProponents() {
       this.isLoading = true
-      this.proponents = []
-
       try {
-        this.approvedProponents = await proponentsRepository.getApprovedProponents()
+        const currentPage = this.approvedCurrentPage || 1
+        const data = await proponentsRepository.getApprovedProponents(currentPage, this.filter)
+        this.approvedProponents = data.Proponents
+        this.approvedCurrentPage = data.CurrentPage
+        this.approvedProponentTotalPages = data.TotalPages
       } catch (error) {
-        console.error('Failed to load proponents:', error)
+        console.error('Failed t o load proponents:', error)
       } finally {
         this.isLoading = false
       }
@@ -317,12 +365,14 @@ export default defineComponent({
 
     async loadRejectedProponents() {
       this.isLoading = true
-      this.proponents = []
-
       try {
-        this.disapprovedProponents = await proponentsRepository.getRejectedProponents()
+        const currentPage = this.approvedCurrentPage || 1
+        const data = await proponentsRepository.getRejectedProponents(currentPage, this.filter)
+        this.disapprovedProponents = data.Proponents
+        this.dissaprovedCurrentPage = data.CurrentPage
+        this.disapprovedProponentTotalPages = data.TotalPages
       } catch (error) {
-        console.error('Failed to load proponents:', error)
+        console.error('Failed t o load proponents:', error)
       } finally {
         this.isLoading = false
       }
