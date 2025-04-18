@@ -358,14 +358,51 @@
                 </template>
                 <VaInput v-model="loadedSubmission.remarks" label="Remarks" placeholder="Enter remarks here" />
                 <div class="mt-4">
-                  <VaButton class="mr-2" color="warning" @click="forEvaluationSubmission()">For Evaluation</VaButton>
-                  <VaButton class="mr-2" color="danger" @click="forCorrectionSubmission()">For Correction</VaButton>
+                  <VaButton class="mr-2" color="warning" @click="confirmForEvaluationModal = !confirmForEvaluationModal"
+                    >For Evaluation</VaButton
+                  >
+                  <VaButton class="mr-2" color="danger" @click="confirmForCorrectionModal = !confirmForCorrectionModal"
+                    >For Correction</VaButton
+                  >
                   <VaButton class="mr-2" color="active" @click="closeProcessSubmissionmodal()">Close</VaButton>
                 </div>
               </VaModal>
             </VaCardContent>
           </VaCard>
         </div>
+        <section class="mt-4 modal-confirmation">
+          <VaModal
+            v-model="confirmForEvaluationModal"
+            size="small"
+            ok-text="Apply"
+            cancel-text="Cancel"
+            @ok="forEvaluationSubmission()"
+          >
+            <h3 class="va-h3">Confirm For Evaluation</h3>
+            <p>
+              Are you sure you want evaluate submission titled <strong>{{ loadedSubmission.proposalTitle }}</strong>
+            </p>
+            <blockquote class="va-blockquote">
+              <p>Note: Please clear the evaluators before sending for correction</p>
+            </blockquote>
+          </VaModal>
+          <VaModal
+            v-model="confirmForCorrectionModal"
+            size="small"
+            ok-text="Apply"
+            cancel-text="Cancel"
+            @ok="forCorrectionSubmission()"
+          >
+            <h3 class="va-h3">Confirm For Correction</h3>
+            <p>
+              Are you sure you want submit for correction the submission titled
+              <strong>{{ loadedSubmission.proposalTitle }}</strong>
+            </p>
+            <blockquote class="va-blockquote">
+              <p>Note: Please clear the evaluators before sending for correction</p>
+            </blockquote>
+          </VaModal>
+        </section>
       </VaModal>
     </VaCardContent>
   </VaCard>
@@ -425,6 +462,9 @@ export default defineComponent({
       sentDocumentForEvaluationModal: false,
       documentRoutingLogModal: false,
       processSubmissionModal: false,
+      confirmForEvaluationModal: false,
+      confirmForCorrectionModal: false,
+
       selectedRowIndex: null,
 
       loadedSubmission: {
