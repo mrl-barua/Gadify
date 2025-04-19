@@ -317,7 +317,18 @@ export default defineComponent({
 
     debouncedUpdateFilter: debounce(function (filter) {
       this.updateFilter(filter)
-      this.loadPendingProponents()
+      const shouldResetPage = filter !== this.lastUsedFilter
+      if (this.currentTable === 'pending') {
+        if (shouldResetPage) this.pendingCurrentPage = 1
+        this.loadPendingProponents()
+      } else if (this.currentTable === 'approved') {
+        if (shouldResetPage) this.approvedCurrentPage = 1
+        this.loadApprovedProponents()
+      } else if (this.currentTable === 'disapproved') {
+        if (shouldResetPage) this.disapprovedCurrentPage = 1
+        this.loadRejectedProponents()
+      }
+      this.lastUsedFilter = filter
     }, 600),
 
     formatDate(date) {
