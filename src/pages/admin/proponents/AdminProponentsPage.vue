@@ -26,11 +26,27 @@
         :items="pendingProponents"
         :columns="columns"
         :loading="isLoading"
+        :current-page="pendingCurrentPage"
         :filter="filter"
         :filter-method="customFilteringFn"
         striped
         @filtered="filteredCount = $event.items.length"
       >
+        <template #bodyAppend>
+          <tr>
+            <td colspan="12">
+              <div class="flex justify-center mt-4">
+                <VaPagination
+                  v-model="pendingCurrentPage"
+                  :pages="pendingProponentTotalPages"
+                  :visible-pages="7"
+                  boundary-numbers
+                  direction-links
+                />
+              </div>
+            </td>
+          </tr>
+        </template>
         <template #cell(createdAt)="{ value }">
           {{ formatDate(value) }}
         </template>
@@ -48,7 +64,7 @@
             class="ml-3"
             @click="showRejectModal(pendingProponents[rowIndex])"
           />
-          <VaModal v-model="approveModal" ok-text="Approve" @ok="approveProponent(selectedRowIndex)">
+          <VaModal v-model="approveModal" ok-text="Approve" @ok="approvedProponent(selectedRowIndex)">
             <h3 class="va-h3">Approve Proponent</h3>
             <p>Are you sure you want to approve this proponent?</p>
           </VaModal>
@@ -60,16 +76,30 @@
       </VaDataTable>
 
       <VaDataTable
+        striped
         v-if="currentTable === 'approved'"
         class="table-crud"
         :items="approvedProponents"
         :columns="columns"
-        striped
         :loading="isLoading"
         :filter="filter"
         :filter-method="customFilteringFn"
         @filtered="filteredCount = $event.items.length"
-      >
+        ><template #bodyAppend>
+          <tr>
+            <td colspan="12">
+              <div class="flex justify-center mt-4">
+                <VaPagination
+                  v-model="approvedCurrentPage"
+                  :pages="approvedProponentTotalPages"
+                  :visible-pages="7"
+                  boundary-numbers
+                  direction-links
+                />
+              </div>
+            </td>
+          </tr>
+        </template>
         <template #cell(createdAt)="{ value }">
           {{ formatDate(value) }}
         </template>
@@ -104,7 +134,21 @@
         :filter="filter"
         :filter-method="customFilteringFn"
         @filtered="filteredCount = $event.items.length"
-      >
+        ><template #bodyAppend>
+          <tr>
+            <td colspan="12">
+              <div class="flex justify-center mt-4">
+                <VaPagination
+                  v-model="disapprovedCurrentPage"
+                  :pages="disapprovedProponentTotalPages"
+                  :visible-pages="7"
+                  boundary-numbers
+                  direction-links
+                />
+              </div>
+            </td>
+          </tr>
+        </template>
         <template #cell(createdAt)="{ value }">
           {{ formatDate(value) }}
         </template>
@@ -115,7 +159,7 @@
         </template>
         <template #cell(actions)="{ rowIndex }">
           <VaButton preset="plain" icon="check" @click="showApproveModal(disapprovedProponents[rowIndex])" />
-          <VaModal v-model="approveModal" ok-text="Approve" @ok="approveProponent(selectedRowIndex)">
+          <VaModal v-model="approveModal" ok-text="Approve" @ok="approvedProponent(selectedRowIndex)">
             <h3 class="va-h3">Approve Proponent</h3>
             <p>Are you sure you want to approve this proponent?</p>
           </VaModal>
@@ -126,10 +170,9 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import debounce from 'lodash/debounce.js'
 import { proponentsRepository } from '../../../repository/proponentsRepository'
-import { sleep } from '../../../services/utils'
 import { useToast } from 'vuestic-ui'
 const { init } = useToast()
 
@@ -163,6 +206,7 @@ export default defineComponent({
     const input = ''
 
     return {
+      currentTable: 'pending',
       proponents,
       columns,
       approveModal: false,
@@ -175,7 +219,16 @@ export default defineComponent({
       pendingProponents,
       approvedProponents,
       disapprovedProponents,
-      isLoading: true,
+      isLoading: false,
+
+      pendingCurrentPage: 1,
+      pendingProponentTotalPages: 1,
+
+      approvedCurrentPage: 1,
+      approvedProponentTotalPages: 1,
+
+      disapprovedCurrentPage: 1,
+      disapprovedProponentTotalPages: 1,
 
       input,
       filter: input,
@@ -203,10 +256,51 @@ export default defineComponent({
         this.updateFilter(newValue)
       }
     },
+
+    currentTable(newValue) {
+      if (newValue === 'pending') {
+        this.loadPendingProponents()
+      } else if (newValue === 'approved') {
+        this.loadApprovedProponents()
+      } else if (newValue === 'disapproved') {
+        this.loadRejectedProponents()
+      }
+    },
+
+    pendingCurrentPage(newPage, oldPage) {
+      if (this.currentTable === 'pending' && newPage !== oldPage) {
+        this.loadPendingProponents()
+      }
+    },
+
+    approvedCurrentPage(newPage, oldPage) {
+      if (this.currentTable === 'pending' && newPage !== oldPage) {
+        this.loadApprovedProponents()
+      }
+    },
+
+    dissaprovedCurrentPage(newPage, oldPage) {
+      if (this.currentTable === 'pending' && newPage !== oldPage) {
+        this.loadRejectedProponents()
+      }
+    },
   },
 
   mounted() {
-    this.loadProponents()
+    this.isLoading = true
+    try {
+      this.loadPendingProponents()
+    } catch (error) {
+      console.error('Failed to load proponents:', error)
+    } finally {
+      this.isLoading = false
+    }
+  },
+
+  beforeDestroy() {
+    if (this.debouncedUpdateFilter) {
+      this.debouncedUpdateFilter.cancel()
+    }
   },
 
   methods: {
@@ -223,6 +317,18 @@ export default defineComponent({
 
     debouncedUpdateFilter: debounce(function (filter) {
       this.updateFilter(filter)
+      const shouldResetPage = filter !== this.lastUsedFilter
+      if (this.currentTable === 'pending') {
+        if (shouldResetPage) this.pendingCurrentPage = 1
+        this.loadPendingProponents()
+      } else if (this.currentTable === 'approved') {
+        if (shouldResetPage) this.approvedCurrentPage = 1
+        this.loadApprovedProponents()
+      } else if (this.currentTable === 'disapproved') {
+        if (shouldResetPage) this.disapprovedCurrentPage = 1
+        this.loadRejectedProponents()
+      }
+      this.lastUsedFilter = filter
     }, 600),
 
     formatDate(date) {
@@ -238,18 +344,46 @@ export default defineComponent({
       })
     },
 
-    async loadProponents() {
+    async loadPendingProponents() {
       this.isLoading = true
-      await sleep(1000)
       try {
-        const data = await proponentsRepository.getProponents()
-        this.proponents = data
-
-        this.pendingProponents = data.filter((proponent) => proponent.proponentStatus === 'Pending')
-        this.approvedProponents = data.filter((proponent) => proponent.proponentStatus === 'Approved')
-        this.disapprovedProponents = data.filter((proponent) => proponent.proponentStatus === 'Rejected')
+        const currentPage = this.pendingCurrentPage || 1
+        const data = await proponentsRepository.getPendingProponents(currentPage, this.filter)
+        this.pendingProponents = data.Proponents
+        this.pendingCurrentPage = data.CurrentPage
+        this.pendingProponentTotalPages = data.TotalPages
       } catch (error) {
         console.error('Failed to load proponents:', error)
+      } finally {
+        this.isLoading = false
+      }
+    },
+
+    async loadApprovedProponents() {
+      this.isLoading = true
+      try {
+        const currentPage = this.approvedCurrentPage || 1
+        const data = await proponentsRepository.getApprovedProponents(currentPage, this.filter)
+        this.approvedProponents = data.Proponents
+        this.approvedCurrentPage = data.CurrentPage
+        this.approvedProponentTotalPages = data.TotalPages
+      } catch (error) {
+        console.error('Failed t o load proponents:', error)
+      } finally {
+        this.isLoading = false
+      }
+    },
+
+    async loadRejectedProponents() {
+      this.isLoading = true
+      try {
+        const currentPage = this.approvedCurrentPage || 1
+        const data = await proponentsRepository.getRejectedProponents(currentPage, this.filter)
+        this.disapprovedProponents = data.Proponents
+        this.dissaprovedCurrentPage = data.CurrentPage
+        this.disapprovedProponentTotalPages = data.TotalPages
+      } catch (error) {
+        console.error('Failed t o load proponents:', error)
       } finally {
         this.isLoading = false
       }
@@ -265,20 +399,20 @@ export default defineComponent({
       this.rejectModal = true
     },
 
-    async approveProponent() {
+    async approvedProponent() {
       if (this.selectedRowIndex !== null) {
         try {
           this.isLoading = true
           init({ message: 'Proponent has been approved', color: 'success' })
           const item = this.proponents[this.selectedRowIndex]
-          await proponentsRepository.approveProponent(item.id)
+          await proponentsRepository.approvedProponent(item.id)
         } catch (error) {
           console.error('Failed to approve proponent:', error)
           init({ message: 'Failed to approve proponent', color: 'danger' })
         } finally {
           this.approveModal = false
           try {
-            await this.loadProponents()
+            await this.loadPendingProponents()
           } catch (error) {
             console.error('Failed to load proponents:', error)
           } finally {
@@ -301,7 +435,7 @@ export default defineComponent({
         } finally {
           this.rejectModal = false
           try {
-            await this.loadProponents()
+            await this.loadPendingProponents()
           } catch (error) {
             console.error('Failed to load proponents:', error)
           } finally {

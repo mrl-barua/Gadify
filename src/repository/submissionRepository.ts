@@ -42,13 +42,74 @@ export const submissionRepository = {
     }
   },
 
-  getCompletedSubmissions: async () => {
+  getOnHoldSubmissions: async (page: number, searchFilter: string) => {
     try {
-      const response = await apiClient.get('/api/completedSubmissions', {
-        headers: {
-          Authorization: `Bearer ${jwtStore.getToken}`,
+      const response = await apiClient.post(
+        `/api/onHoldSubmissions`,
+        { page: page, limit: 10, searchFilter: searchFilter },
+        {
+          headers: {
+            Authorization: `Bearer ${jwtStore.getToken}`,
+          },
         },
-      })
+      )
+      console.log('Data:', response.data)
+      return response.data
+    } catch (error) {
+      console.error('Error:', error)
+      throw error
+    }
+  },
+
+  getForEvaluationSubmissions: async (page: number, searchFilter: string) => {
+    try {
+      const response = await apiClient.post(
+        `/api/forEvaluationSubmissions`,
+        { page: page, limit: 10, searchFilter: searchFilter },
+        {
+          headers: {
+            Authorization: `Bearer ${jwtStore.getToken}`,
+          },
+        },
+      )
+      console.log('Data:', response.data)
+      return response.data
+    } catch (error) {
+      console.error('Error:', error)
+      throw error
+    }
+  },
+
+  getForCorrectionSubmissions: async (page: number, searchFilter: string) => {
+    try {
+      const response = await apiClient.post(
+        `/api/completedSubmissions`,
+        { page: page, limit: 10, searchFilter: searchFilter },
+        {
+          headers: {
+            Authorization: `Bearer ${jwtStore.getToken}`,
+          },
+        },
+      )
+      console.log('Data:', response.data)
+      return response.data
+    } catch (error) {
+      console.error('Error:', error)
+      throw error
+    }
+  },
+
+  getCompletedSubmissions: async (page: number, searchFilter: string) => {
+    try {
+      const response = await apiClient.post(
+        `/api/onHoldSubmissions`,
+        { page: page, limit: 10, searchFilter: searchFilter },
+        {
+          headers: {
+            Authorization: `Bearer ${jwtStore.getToken}`,
+          },
+        },
+      )
       console.log('Data:', response.data)
       return response.data
     } catch (error) {

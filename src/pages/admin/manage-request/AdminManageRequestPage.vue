@@ -39,7 +39,13 @@
           <tr>
             <td colspan="12">
               <div class="flex justify-center mt-4">
-                <VaPagination v-model="onHoldCurrentPage" :pages="onHoldPages" />
+                <VaPagination
+                  v-model="onHoldCurrentPage"
+                  :pages="onHoldTotalPages"
+                  :visible-pages="7"
+                  boundary-numbers
+                  direction-links
+                />
               </div>
             </td>
           </tr>
@@ -91,7 +97,13 @@
           <tr>
             <td colspan="12">
               <div class="flex justify-center mt-4">
-                <VaPagination v-model="evaluationCurrentPage" :pages="evaluationPages" />
+                <VaPagination
+                  v-model="evaluationCurrentPage"
+                  :pages="evaluationTotalPages"
+                  :visible-pages="7"
+                  boundary-numbers
+                  direction-links
+                />
               </div>
             </td>
           </tr>
@@ -142,7 +154,13 @@
           <tr>
             <td colspan="12">
               <div class="flex justify-center mt-4">
-                <VaPagination v-model="completedCurrentPage" :pages="completedPages" />
+                <VaPagination
+                  v-model="completedCurrentPage"
+                  :pages="completedTotalPages"
+                  :visible-pages="7"
+                  boundary-numbers
+                  direction-links
+                />
               </div>
             </td>
           </tr>
@@ -193,7 +211,13 @@
           <tr>
             <td colspan="12">
               <div class="flex justify-center mt-4">
-                <VaPagination v-model="forCorrectionCurrentPage" :pages="forCorrectionpages" />
+                <VaPagination
+                  v-model="forCorrectionCurrentPage"
+                  :pages="forCorrectionTotalPages"
+                  :visible-pages="7"
+                  boundary-numbers
+                  direction-links
+                />
               </div>
             </td>
           </tr>
@@ -358,14 +382,51 @@
                 </template>
                 <VaInput v-model="loadedSubmission.remarks" label="Remarks" placeholder="Enter remarks here" />
                 <div class="mt-4">
-                  <VaButton class="mr-2" color="warning" @click="forEvaluationSubmission()">For Evaluation</VaButton>
-                  <VaButton class="mr-2" color="danger" @click="forCorrectionSubmission()">For Correction</VaButton>
+                  <VaButton class="mr-2" color="warning" @click="confirmForEvaluationModal = !confirmForEvaluationModal"
+                    >For Evaluation</VaButton
+                  >
+                  <VaButton class="mr-2" color="danger" @click="confirmForCorrectionModal = !confirmForCorrectionModal"
+                    >For Correction</VaButton
+                  >
                   <VaButton class="mr-2" color="active" @click="closeProcessSubmissionmodal()">Close</VaButton>
                 </div>
               </VaModal>
             </VaCardContent>
           </VaCard>
         </div>
+        <section class="mt-4 modal-confirmation">
+          <VaModal
+            v-model="confirmForEvaluationModal"
+            size="small"
+            ok-text="Apply"
+            cancel-text="Cancel"
+            @ok="forEvaluationSubmission()"
+          >
+            <h3 class="va-h3">Confirm For Evaluation</h3>
+            <p>
+              Are you sure you want evaluate submission titled <strong>{{ loadedSubmission.proposalTitle }}</strong>
+            </p>
+            <blockquote class="va-blockquote">
+              <p>Note: Please clear the evaluators before sending for correction</p>
+            </blockquote>
+          </VaModal>
+          <VaModal
+            v-model="confirmForCorrectionModal"
+            size="small"
+            ok-text="Apply"
+            cancel-text="Cancel"
+            @ok="forCorrectionSubmission()"
+          >
+            <h3 class="va-h3">Confirm For Correction</h3>
+            <p>
+              Are you sure you want submit for correction the submission titled
+              <strong>{{ loadedSubmission.proposalTitle }}</strong>
+            </p>
+            <blockquote class="va-blockquote">
+              <p>Note: Please clear the evaluators before sending for correction</p>
+            </blockquote>
+          </VaModal>
+        </section>
       </VaModal>
     </VaCardContent>
   </VaCard>
@@ -396,12 +457,6 @@ const defaultSubmission = {
 
 export default defineComponent({
   data() {
-    const submissions = []
-    const onHoldSubmissions = []
-    const evaluationSubmissions = []
-    const completedSubmissions = []
-    const forCorrectionSubmissions = []
-
     const columns = [
       { key: 'fileType', label: 'File Type', sortable: true },
       { key: 'createdAt', label: 'Date Filed', sortable: true },
@@ -415,16 +470,19 @@ export default defineComponent({
     const input = ''
 
     return {
-      submissions,
-      onHoldSubmissions,
-      evaluationSubmissions,
-      completedSubmissions,
-      forCorrectionSubmissions,
+      submissions: [],
+      onHoldSubmissions: [],
+      evaluationSubmissions: [],
+      completedSubmissions: [],
+      forCorrectionSubmissions: [],
       columns,
 
       sentDocumentForEvaluationModal: false,
       documentRoutingLogModal: false,
       processSubmissionModal: false,
+      confirmForEvaluationModal: false,
+      confirmForCorrectionModal: false,
+
       selectedRowIndex: null,
 
       loadedSubmission: {
@@ -452,22 +510,22 @@ export default defineComponent({
       isVaSelectLoading,
       isButtonLoading,
 
-      perPage: 10,
       onHoldCurrentPage: 1,
+      onHoldTotalPages: 1,
+
       evaluationCurrentPage: 1,
+      evaluationTotalPages: 1,
+
       completedCurrentPage: 1,
+      completedTotalPages: 1,
+
       forCorrectionCurrentPage: 1,
+      forCorrectionTotalPages: 1,
 
       input,
       filter: input,
       isDebounceInput: true,
       isCustomFilteringFn: false,
-      filteredCount: submissions.length,
-
-      filteredOnHold: onHoldSubmissions,
-      filteredEvaluation: evaluationSubmissions,
-      filteredCompleted: completedSubmissions,
-      filteredForCorrection: forCorrectionSubmissions,
     }
   },
 
@@ -475,26 +533,7 @@ export default defineComponent({
     isNewData() {
       return Object.keys(this.createdSubmission).every((key) => !!this.createdSubmission[key])
     },
-    onHoldPages() {
-      return this.perPage && this.perPage !== 0
-        ? Math.ceil(this.filteredOnHold.length / this.perPage)
-        : this.filteredOnHold.length
-    },
-    evaluationPages() {
-      return this.perPage && this.perPage !== 0
-        ? Math.ceil(this.filteredEvaluation.length / this.perPage)
-        : this.filteredEvaluation.length
-    },
-    completedPages() {
-      return this.perPage && this.perPage !== 0
-        ? Math.ceil(this.filteredCompleted.length / this.perPage)
-        : this.filteredCompleted.length
-    },
-    forCorrectionpages() {
-      return this.perPage && this.perPage !== 0
-        ? Math.ceil(this.filteredForCorrection.length / this.perPage)
-        : this.filteredForCorrection.length
-    },
+
     customFilteringFn() {
       return this.isCustomFilteringFn ? this.filterExact : undefined
     },
@@ -508,10 +547,52 @@ export default defineComponent({
         this.updateFilter(newValue)
       }
     },
+
+    currentTable(newValue) {
+      if (newValue === 'onHold') {
+        this.loadOnHoldSubmissions()
+      } else if (newValue === 'evaluation') {
+        this.loadForEvaluationSubmissions()
+      } else if (newValue === 'forCorrection') {
+        this.loadForCorrectionSubmissions()
+      } else if (newValue === 'completed') {
+        this.loadCompletedSubmissions
+      }
+    },
+
+    onHoldCurrentPage(newPage, oldPage) {
+      if (this.currentTable === 'onHold' && newPage !== oldPage) {
+        this.loadOnHoldSubmissions()
+      }
+    },
+
+    evaluationCurrentPage(newPage, oldPage) {
+      if (this.currentTable === 'evaluation' && newPage !== oldPage) {
+        this.loadForEvaluationSubmissions()
+      }
+    },
+
+    completedCurrentPage(newPage, oldPage) {
+      if (this.currentTable === 'completed' && newPage !== oldPage) {
+        this.loadCompletedSubmissions()
+      }
+    },
+
+    forCorrectionCurrentPage(newpage, oldPage) {
+      if (this.currentTable === 'forCorrection' && newpage !== oldPage) {
+        this.loadForCorrectionSubmissions()
+      }
+    },
   },
 
   mounted() {
     this.loadSubmissions()
+  },
+
+  beforeDestroy() {
+    if (this.debouncedUpdateFilter) {
+      this.debouncedUpdateFilter.cancel()
+    }
   },
 
   methods: {
@@ -528,6 +609,23 @@ export default defineComponent({
 
     debouncedUpdateFilter: debounce(function (filter) {
       this.updateFilter(filter)
+      const shouldResetPage = filter !== this.lastUsedFilter
+
+      if (this.currentTable === 'onHold') {
+        if (shouldResetPage) this.onHoldCurrentPage = 1
+        this.loadOnHoldSubmissions()
+      } else if (this.currentTable === 'evaluation') {
+        if (shouldResetPage) this.evaluationCurrentPage = 1
+        this.loadForEvaluationSubmissions()
+      } else if (this.currentTable === 'forCorrection') {
+        if (shouldResetPage) this.forCorrectionCurrentPage = 1
+        this.loadForCorrectionSubmissions()
+      } else if (this.currentTable === 'completed') {
+        if (shouldResetPage) this.completedCurrentPage = 1
+        this.loadCompletedSubmissions()
+      }
+
+      this.lastUsedFilter = filter
     }, 600),
 
     truncateText(text, length) {
@@ -641,6 +739,14 @@ export default defineComponent({
     },
 
     async clearEvaluator() {
+      if (this.loadedSubmission.submissionStatus !== 'On Hold') {
+        toast.init({
+          message: 'Cannot clear evaluator for this submission which is already processed',
+          color: 'warning',
+        })
+        return
+      }
+      isButtonLoading.value = true
       try {
         this.EvaluatorsValue = []
         this.AssignedEvaluator = []
@@ -667,6 +773,15 @@ export default defineComponent({
           message: 'Please select at least one evaluator',
           color: 'warning',
         })
+        isButtonLoading.value = false
+        return
+      }
+      if (this.loadedSubmission.submissionStatus !== 'On Hold') {
+        toast.init({
+          message: 'Cannot assign evaluator for this submission which is already processed ',
+          color: 'warning',
+        })
+        isButtonLoading.value = false
         return
       }
       try {
@@ -772,27 +887,81 @@ export default defineComponent({
       }
     },
 
-    async loadSubmissions() {
+    loadSubmissions() {
+      this.isLoading = true
+      Promise.all([
+        this.loadOnHoldSubmissions(),
+        this.loadForEvaluationSubmissions(),
+        this.loadCompletedSubmissions(),
+        this.loadForCorrectionSubmissions(),
+      ])
+        .then(() => {
+          console.log('All submissions loaded successfully')
+        })
+        .catch((error) => {
+          console.error('Failed to load submissions:', error)
+        })
+        .finally(() => {
+          this.isLoading = false
+        })
+    },
+
+    async loadOnHoldSubmissions() {
       this.isLoading = true
       try {
-        const data = await submissionRepository.getSubmissions()
-        this.submissions = data
-        this.onHoldSubmissions = data
-          .filter((submission) => submission.submissionStatus === 'OnHold')
-          .map((submission) => ({
-            ...submission,
-            submissionStatus: 'On Hold',
-          }))
-        this.evaluationSubmissions = data.filter((submission) => submission.submissionStatus === 'Evaluation')
-        this.completedSubmissions = data.filter((submission) => submission.submissionStatus === 'Completed')
-        this.forCorrectionSubmissions = data
-          .filter((submission) => submission.submissionStatus === 'ForCorrection')
-          .map((submission) => ({
-            ...submission,
-            submissionStatus: 'For Correction',
-          }))
+        const currentPage = this.onHoldCurrentPage || 1
+        const data = await submissionRepository.getOnHoldSubmissions(currentPage, this.filter)
+        this.onHoldSubmissions = data.Submissions
+        this.onHoldCurrentPage = data.CurrentPage
+        this.onHoldTotalPages = data.TotalPages
       } catch (error) {
-        console.error('Failed to load submissions:', error)
+        console.error('Failed to load evaluation submissions:', error)
+      } finally {
+        this.isLoading = false
+      }
+    },
+
+    async loadForEvaluationSubmissions() {
+      this.isLoading = true
+      try {
+        const currentPage = this.evaluationCurrentPage || 1
+        const data = await submissionRepository.getForEvaluationSubmissions(currentPage, this.filter)
+        this.evaluationSubmissions = data.Submissions
+        this.evaluationCurrentPage = data.CurrentPage
+        this.evaluationTotalPages = data.TotalPages
+      } catch (error) {
+        console.error('Failed to load evaluation submissions:', error)
+      } finally {
+        this.isLoading = false
+      }
+    },
+
+    async loadCompletedSubmissions() {
+      this.isLoading = true
+      try {
+        const currentPage = this.completedCurrentPage || 1
+        const data = await submissionRepository.getCompletedSubmissions(currentPage, this.filter)
+        this.completedSubmissions = data.Submissions
+        this.completedCurrentPage = data.CurrentPage
+        this.completedTotalPages = data.TotalPages
+      } catch (error) {
+        console.error('Failed to load evaluation submissions:', error)
+      } finally {
+        this.isLoading = false
+      }
+    },
+
+    async loadForCorrectionSubmissions() {
+      this.isLoading = true
+      try {
+        const currentPage = this.forCorrectionCurrentPage || 1
+        const data = await submissionRepository.getForCorrectionSubmissions(currentPage, this.filter)
+
+        this.forCorrectionSubmissions = data.Submissions
+        this.forCorrectionCurrentPage = data.CurrentPage
+        this.forCorrectionTotalPages = data.TotalPages
+      } catch (error) {
+        console.error('Failed to load evaluation submissions:', error)
       } finally {
         this.isLoading = false
       }

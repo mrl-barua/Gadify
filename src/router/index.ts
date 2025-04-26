@@ -11,6 +11,22 @@ function getUserRole() {
   return userRole
 }
 
+function IsTokenExpired() {
+  const jwtStore = useJwtStore()
+  const token = jwtStore.getToken
+  if (!token) {
+    return true
+  }
+
+  const decodedToken = jwtStore.getDecodedToken
+  if (!decodedToken) {
+    return true
+  }
+
+  const currentTime = Math.floor(Date.now() / 1000)
+  return decodedToken.exp < currentTime
+}
+
 const routes = [
   {
     path: '/:pathMatch(.*)*',
@@ -196,6 +212,10 @@ router.beforeEach((to, from, next) => {
     if (!userRole) {
       return next({ name: 'login' })
     }
+
+    // if (IsTokenExpired()) {
+    //   return next({ name: 'login' })
+    // }
 
     if (to.meta.role && to.meta.role !== userRole) {
       return next({ name: '404' })

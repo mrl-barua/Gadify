@@ -25,7 +25,7 @@
         <VaForm>
           <VaSelect v-model="editedSubmission.fileType" label="File Type" :options="['File', 'Link']" />
           <VaInput v-model="editedSubmission.proposalTitle" label="Proposal Title" />
-          <VaInput v-model="editedSubmission.proposalDescription" label="Proposal Description" />
+          <VaTextarea class="w-full" v-model="editedSubmission.proposalDescription" label="Proposal Description" />
           <VaInput v-if="editedSubmission.fileType === 'Link'" v-model="editedSubmission.fileLink" label="File Link" />
           <VaFileUpload v-else v-model="submissionFile" dropzone />
         </VaForm>

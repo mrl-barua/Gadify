@@ -31,6 +31,63 @@ export const proponentsRepository = {
     }
   },
 
+  getPendingProponents: async (page: number, searchFilter: string) => {
+    try {
+      const response = await apiClient.post(
+        `/api/pendingProponents`,
+        { page: page, limit: 10, searchFilter: searchFilter },
+        {
+          headers: {
+            Authorization: `Bearer ${jwtStore.getToken}`,
+          },
+        },
+      )
+      console.log('Data:', response.data)
+      return response.data
+    } catch (error) {
+      console.error('Error:', error)
+      throw error
+    }
+  },
+
+  getApprovedProponents: async (page: number, searchFilter: string) => {
+    try {
+      const response = await apiClient.post(
+        `/api/approvedProponents`,
+        { page: page, limit: 10, searchFilter: searchFilter },
+        {
+          headers: {
+            Authorization: `Bearer ${jwtStore.getToken}`,
+          },
+        },
+      )
+      console.log('Data:', response.data)
+      return response.data
+    } catch (error) {
+      console.error('Error:', error)
+      throw error
+    }
+  },
+
+  getRejectedProponents: async (page: number, searchFilter: string) => {
+    try {
+      const response = await apiClient.post(
+        `/api/rejectedProponents`,
+        { page: page, limit: 10, searchFilter: searchFilter },
+        {
+          headers: {
+            Authorization: `Bearer ${jwtStore.getToken}`,
+          },
+        },
+      )
+      console.log('Data:', response.data)
+      return response.data
+    } catch (error) {
+      console.error('Error:', error)
+      throw error
+    }
+  },
+
   getProponentById: async (id: number) => {
     try {
       const response = await apiClient.post(
