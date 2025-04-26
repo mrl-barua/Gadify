@@ -267,7 +267,8 @@
             <p class="mb-1"><span class="font-medium">Project Proposal:</span> {{ loadedSubmission.proposalTitle }}</p>
 
             <p class="mb-1">
-              <span class="font-medium">Project Description:</span> {{ loadedSubmission.proposalDescription }}
+              <span class="font-medium">Project Description:</span>
+              {{ truncateText(loadedSubmission.proposalDescription, 30) }}
             </p>
             <p class="mb-1"><span class="font-medium">File Type:</span> {{ loadedSubmission.fileType }}</p>
           </div>
@@ -277,123 +278,177 @@
           <div class="flex flex-col md:flex-row gap-2 mb-2 justify-between">
             <div class="flex flex-col md:flex-row gap-2 justify-start">
               <VaButtonToggle
+                v-if="currentTable !== 'forCorrection'"
                 v-model="modalTable"
                 color="background-element"
                 border-color="background-element"
                 :options="[
                   { label: 'Attachments', value: 'attachments' },
                   { label: 'Receiving Division', value: 'receivingDivision' },
+                  { label: 'Logs', value: 'logs' },
+                ]"
+              />
+              <VaButtonToggle
+                v-if="currentTable === 'forCorrection'"
+                v-model="modalTable"
+                color="background-element"
+                border-color="background-element"
+                :options="[
+                  { label: 'Attachments', value: 'attachments' },
+                  { label: 'Receiving Division', value: 'receivingDivision' },
+                  { label: 'Remarks', value: 'remarks' },
+                  { label: 'Logs', value: 'logs' },
                 ]"
               />
             </div>
           </div>
         </VaCardContent>
 
-        <div v-if="modalTable === 'attachments'">
-          <VaCard>
-            <VaCardContent>
-              <div
-                v-if="loadedSubmission && loadedSubmission.submissionFiles && loadedSubmission.submissionFiles.length"
-              >
-                <VaSidebarItem
-                  v-for="(attachment, index) in loadedSubmission.submissionFiles"
-                  :key="index"
-                  :active="isActive"
-                  active-color="#C0C0C0"
-                  @click="downloadSubmission(attachment.resourcesLink, loadedSubmission.fileType)"
-                >
-                  <VaSidebarItemContent>
-                    <VaIcon name="download" />
-                    <VaSidebarItemTitle>
-                      {{ loadedSubmission.proposalTitle }} - Attachment {{ index + 1 }}
-                    </VaSidebarItemTitle>
-                  </VaSidebarItemContent>
-                </VaSidebarItem>
-              </div>
-              <div v-else>
-                <p>No attachments available</p>
-              </div>
-            </VaCardContent>
-          </VaCard>
-        </div>
+        <section class="manage-request-modals">
+          <div v-if="modalTable === 'attachments'">
+            <VaCard>
+              <VaCardTitle>Attachments</VaCardTitle>
+              <VaCardContent>
+                <div v-if="loadedSubmission?.submissionFiles?.length" class="flex flex-col gap-4">
+                  <div
+                    v-for="(attachment, index) in loadedSubmission.submissionFiles"
+                    :key="index"
+                    class="flex items-center gap-3 cursor-pointer hover:bg-gray-100 p-2 rounded transition"
+                    @click="downloadSubmission(attachment.resourcesLink, loadedSubmission.fileType)"
+                  >
+                    <VaIcon name="attach_file" color="primary" />
+                    <div class="flex flex-col">
+                      <p class="font-semibold">{{ loadedSubmission.proposalTitle }} - Attachment {{ index + 1 }}</p>
+                      <small class="text-gray-500 truncate max-w-[250px]">
+                        {{ attachment.resourcesLink }}
+                      </small>
+                    </div>
+                  </div>
+                </div>
 
-        <div v-if="modalTable === 'receivingDivision'" @click="getEvaluators()">
-          <VaCard>
-            <VaCardContent>
-              <section>
-                <h4 class="va-h6">Currently Assigned Evaluator</h4>
-                <VaDataTable class="mb-3" :items="AssignedEvaluator"></VaDataTable>
+                <div v-else class="text-center text-gray-500 py-4">No attachments available</div>
+              </VaCardContent>
+            </VaCard>
+          </div>
 
-                <VaSelect
-                  v-model="EvaluatorsValue"
-                  placeholder=""
-                  label="Select Evaluator"
-                  outer-label
-                  selected-top-shown
-                  multiple
-                  track-by="value"
-                  text-by="text"
-                  value-by="value"
-                  :options="EvaluatorOptions"
-                  :loading="isVaSelectLoading"
-                >
-                  <template #content="{ value }">
-                    <VaChip
-                      v-for="v in value"
-                      :key="v"
-                      class="mr-2"
-                      size="small"
-                      closeable
-                      @update:modelValue="deleteChip(v.value)"
-                    >
-                      {{ v.text }}
-                    </VaChip>
+          <div v-if="modalTable === 'receivingDivision'" @click="getEvaluators()">
+            <VaCard>
+              <VaCardContent>
+                <section>
+                  <h4 class="va-h6">Currently Assigned Evaluator</h4>
+                  <VaDataTable class="mb-3" :items="AssignedEvaluator"></VaDataTable>
+
+                  <VaSelect
+                    v-model="EvaluatorsValue"
+                    placeholder=""
+                    label="Select Evaluator"
+                    outer-label
+                    selected-top-shown
+                    multiple
+                    track-by="value"
+                    text-by="text"
+                    value-by="value"
+                    :options="EvaluatorOptions"
+                    :loading="isVaSelectLoading"
+                  >
+                    <template #content="{ value }">
+                      <VaChip
+                        v-for="v in value"
+                        :key="v"
+                        class="mr-2"
+                        size="small"
+                        closeable
+                        @update:modelValue="deleteChip(v.value)"
+                      >
+                        {{ v.text }}
+                      </VaChip>
+                    </template>
+                  </VaSelect>
+
+                  <div class="flex justify-between mt-4 mb-2">
+                    <div class="flex gap-2">
+                      <VaButton
+                        :loading="isAssignEvaluatorButtonLoading"
+                        :disabled="EvaluatorsValue.length === 0"
+                        @click="assignEvaluatorToSubmission()"
+                      >
+                        Assign Evaluator
+                      </VaButton>
+                      <VaButton
+                        :loading="isClearEvaluatorButtonLoading"
+                        :disabled="AssignedEvaluator.length === 0"
+                        @click="clearEvaluator()"
+                      >
+                        Clear Evaluator
+                      </VaButton>
+                    </div>
+
+                    <VaButton @click="processSubmission()">Process Submission</VaButton>
+                  </div>
+                </section>
+
+                <VaModal v-model="processSubmissionModal" size="small" hide-default-actions>
+                  <h3 class="va-h3">Sent Document for Evaluation</h3>
+                  <template>
+                    <div class="my-8">
+                      <VaDivider />
+                    </div>
                   </template>
-                </VaSelect>
-
-                <div class="flex justify-between mt-4 mb-2">
-                  <div class="flex gap-2">
+                  <VaInput v-model="loadedSubmission.remarks" label="Remarks" placeholder="Enter remarks here" />
+                  <div class="mt-4">
                     <VaButton
-                      :loading="isButtonLoading"
-                      :disabled="EvaluatorsValue.length === 0"
-                      @click="assignEvaluatorToSubmission()"
+                      class="mr-2"
+                      color="warning"
+                      @click="confirmForEvaluationModal = !confirmForEvaluationModal"
+                      >For Evaluation</VaButton
                     >
-                      Assign Evaluator
-                    </VaButton>
                     <VaButton
-                      :loading="isButtonLoading"
-                      :disabled="AssignedEvaluator.length === 0"
-                      @click="clearEvaluator()"
+                      class="mr-2"
+                      color="danger"
+                      @click="confirmForCorrectionModal = !confirmForCorrectionModal"
+                      >For Correction</VaButton
                     >
-                      Clear Evaluator
-                    </VaButton>
+                    <VaButton class="mr-2" color="active" @click="closeProcessSubmissionmodal()">Close</VaButton>
                   </div>
+                </VaModal>
+              </VaCardContent>
+            </VaCard>
+          </div>
 
-                  <VaButton @click="processSubmission()">Process Submission</VaButton>
-                </div>
-              </section>
+          <div v-if="modalTable === 'remarks'">
+            <VaCard>
+              <VaCardContent>
+                <p>Remarks</p>
+              </VaCardContent>
+            </VaCard>
+          </div>
 
-              <VaModal v-model="processSubmissionModal" size="small" hide-default-actions>
-                <h3 class="va-h3">Sent Document for Evaluation</h3>
-                <template>
-                  <div class="my-8">
-                    <VaDivider />
+          <div v-if="modalTable === 'logs'">
+            <VaCard>
+              <VaCardTitle>Submission History</VaCardTitle>
+              <VaCardContent>
+                <div v-if="loadedSubmission?.submissionHistory?.length" class="flex flex-col gap-4">
+                  <div
+                    v-for="(history, index) in loadedSubmission.submissionHistory"
+                    :key="history.id"
+                    class="flex items-start gap-3"
+                  >
+                    <VaIcon name="timeline" size="small" color="primary" />
+                    <div class="flex flex-col">
+                      <p class="font-semibold">{{ history.description }}</p>
+                      <small class="text-gray-500">
+                        {{ formatDate(history.timestamp) }} — Changed by {{ history.changedBy }}
+                      </small>
+                    </div>
                   </div>
-                </template>
-                <VaInput v-model="loadedSubmission.remarks" label="Remarks" placeholder="Enter remarks here" />
-                <div class="mt-4">
-                  <VaButton class="mr-2" color="warning" @click="confirmForEvaluationModal = !confirmForEvaluationModal"
-                    >For Evaluation</VaButton
-                  >
-                  <VaButton class="mr-2" color="danger" @click="confirmForCorrectionModal = !confirmForCorrectionModal"
-                    >For Correction</VaButton
-                  >
-                  <VaButton class="mr-2" color="active" @click="closeProcessSubmissionmodal()">Close</VaButton>
                 </div>
-              </VaModal>
-            </VaCardContent>
-          </VaCard>
-        </div>
+
+                <div v-else class="text-center text-gray-500 py-4">No History Logs for this Submission</div>
+              </VaCardContent>
+            </VaCard>
+          </div>
+        </section>
+
         <section class="mt-4 modal-confirmation">
           <VaModal
             v-model="confirmForEvaluationModal"
@@ -442,7 +497,8 @@ import { useToast } from 'vuestic-ui'
 const toast = useToast()
 
 const isVaSelectLoading = ref(false)
-const isButtonLoading = ref(false)
+const isAssignEvaluatorButtonLoading = ref(false)
+const isClearEvaluatorButtonLoading = ref(false)
 
 const defaultSubmission = {
   fileType: '',
@@ -497,6 +553,7 @@ export default defineComponent({
         evaluator: '',
         remarks: '',
         submissionFiles: [],
+        submissionHistory: [],
       },
 
       createdSubmission: { ...defaultSubmission },
@@ -508,7 +565,8 @@ export default defineComponent({
       AssignedEvaluator: [],
       isLoading: true,
       isVaSelectLoading,
-      isButtonLoading,
+      isAssignEvaluatorButtonLoading,
+      isClearEvaluatorButtonLoading,
 
       onHoldCurrentPage: 1,
       onHoldTotalPages: 1,
@@ -683,7 +741,7 @@ export default defineComponent({
         })
         return
       }
-      isButtonLoading.value = true
+      isAssignEvaluatorButtonLoading.value = true
       try {
         const data = await submissionRepository.forEvaluationSubmission(this.loadedSubmission.id)
         toast.init({
@@ -697,7 +755,7 @@ export default defineComponent({
           color: 'danger',
         })
       } finally {
-        isButtonLoading.value = false
+        isAssignEvaluatorButtonLoading.value = false
         this.loadSubmissions()
         this.processSubmissionModal = false
         this.sentDocumentForEvaluationModal = false
@@ -713,7 +771,7 @@ export default defineComponent({
         return
       }
 
-      isButtonLoading.value = true
+      isAssignEvaluatorButtonLoading.value = true
       try {
         const data = await submissionRepository.forCorrectionSubmission(this.loadedSubmission.id)
         toast.init({
@@ -727,7 +785,7 @@ export default defineComponent({
           color: 'danger',
         })
       } finally {
-        isButtonLoading.value = false
+        isAssignEvaluatorButtonLoading.value = false
         this.loadSubmissions()
         this.processSubmissionModal = false
         this.sentDocumentForEvaluationModal = false
@@ -739,14 +797,14 @@ export default defineComponent({
     },
 
     async clearEvaluator() {
-      if (this.loadedSubmission.submissionStatus !== 'On Hold') {
+      if (this.loadedSubmission.submissionStatus !== 'OnHold') {
         toast.init({
           message: 'Cannot clear evaluator for this submission which is already processed',
           color: 'warning',
         })
         return
       }
-      isButtonLoading.value = true
+      isClearEvaluatorButtonLoading.value = true
       try {
         this.EvaluatorsValue = []
         this.AssignedEvaluator = []
@@ -761,27 +819,30 @@ export default defineComponent({
           color: 'danger',
         })
       } finally {
-        isButtonLoading.value = false
+        isClearEvaluatorButtonLoading.value = false
         this.getAssignedEvaluator(this.loadedSubmission.id)
       }
     },
 
     async assignEvaluatorToSubmission() {
-      isButtonLoading.value = true
+      isAssignEvaluatorButtonLoading.value = true
       if (this.EvaluatorsValue.length === 0) {
         toast.init({
           message: 'Please select at least one evaluator',
           color: 'warning',
         })
-        isButtonLoading.value = false
+        isAssignEvaluatorButtonLoading.value = false
         return
       }
-      if (this.loadedSubmission.submissionStatus !== 'On Hold') {
+      if (
+        this.loadedSubmission.submissionStatus !== 'OnHold' &&
+        this.loadedSubmission.submissionStatus !== 'ForCorrection'
+      ) {
         toast.init({
           message: 'Cannot assign evaluator for this submission which is already processed ',
           color: 'warning',
         })
-        isButtonLoading.value = false
+        isAssignEvaluatorButtonLoading.value = false
         return
       }
       try {
@@ -792,7 +853,7 @@ export default defineComponent({
           color: 'danger',
         })
       } finally {
-        isButtonLoading.value = false
+        isAssignEvaluatorButtonLoading.value = false
         this.AssignedEvaluator = []
         this.EvaluatorsValue = []
         this.getAssignedEvaluator(this.loadedSubmission.id)
@@ -880,6 +941,7 @@ export default defineComponent({
           evaluator: data.evaluator,
           remarks: data.remarks,
           submissionFiles: data.submissionFiles,
+          submissionHistory: data.submissionHistory,
         }
         this.sentDocumentForEvaluationModal = true
       } catch (error) {
