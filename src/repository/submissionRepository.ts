@@ -24,7 +24,7 @@ interface Submission {
   submissionStatus: string
 }
 interface SubmissionFile {
-  resourcesLink: string // Assuming "resourcesLink" is a string in the files
+  resourcesLink: string 
 }
 
 const jwtStore = useJwtStore()
