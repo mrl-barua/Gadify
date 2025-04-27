@@ -278,18 +278,7 @@
           <div class="flex flex-col md:flex-row gap-2 mb-2 justify-between">
             <div class="flex flex-col md:flex-row gap-2 justify-start">
               <VaButtonToggle
-                v-if="currentTable !== 'forCorrection'"
-                v-model="modalTable"
-                color="background-element"
-                border-color="background-element"
-                :options="[
-                  { label: 'Attachments', value: 'attachments' },
-                  { label: 'Receiving Division', value: 'receivingDivision' },
-                  { label: 'Logs', value: 'logs' },
-                ]"
-              />
-              <VaButtonToggle
-                v-if="currentTable === 'forCorrection'"
+                v-if="currentTable === 'forCorrection' || currentTable === 'evaluation'"
                 v-model="modalTable"
                 color="background-element"
                 border-color="background-element"
@@ -297,6 +286,17 @@
                   { label: 'Attachments', value: 'attachments' },
                   { label: 'Receiving Division', value: 'receivingDivision' },
                   { label: 'Remarks', value: 'remarks' },
+                  { label: 'Logs', value: 'logs' },
+                ]"
+              />
+              <VaButtonToggle
+                v-else
+                v-model="modalTable"
+                color="background-element"
+                border-color="background-element"
+                :options="[
+                  { label: 'Attachments', value: 'attachments' },
+                  { label: 'Receiving Division', value: 'receivingDivision' },
                   { label: 'Logs', value: 'logs' },
                 ]"
               />
@@ -394,7 +394,7 @@
                       <VaDivider />
                     </div>
                   </template>
-                  <VaInput v-model="loadedSubmission.remarks" label="Remarks" placeholder="Enter remarks here" />
+                  <VaInput v-model="remarkInput" label="Remarks" placeholder="Enter remarks here" />
                   <div class="mt-4">
                     <VaButton
                       class="mr-2"
@@ -417,8 +417,21 @@
 
           <div v-if="modalTable === 'remarks'">
             <VaCard>
+              <VaCardTitle>Submission Remarks</VaCardTitle>
               <VaCardContent>
-                <p>Remarks</p>
+                <div v-if="loadedSubmission?.remarks?.length" class="flex flex-col gap-4">
+                  <div v-for="(remark, index) in loadedSubmission.remarks" :key="index" class="flex items-start gap-3">
+                    <VaIcon name="timeline" size="small" color="primary" />
+                    <div class="flex flex-col">
+                      <p class="font-semibold">{{ remark.remarks }}</p>
+                      <small class="text-gray-500">
+                        {{ formatDate(remark.timestamp) }}
+                      </small>
+                    </div>
+                  </div>
+                </div>
+
+                <div v-else class="text-center text-gray-500 py-4">No Remarks for this Submission</div>
               </VaCardContent>
             </VaCard>
           </div>
@@ -499,6 +512,7 @@ const toast = useToast()
 const isVaSelectLoading = ref(false)
 const isAssignEvaluatorButtonLoading = ref(false)
 const isClearEvaluatorButtonLoading = ref(false)
+const remarkInput = ref('')
 
 const defaultSubmission = {
   fileType: '',
@@ -551,10 +565,11 @@ export default defineComponent({
         submissionStatus: '',
         proponent: '',
         evaluator: '',
-        remarks: '',
+        remarks: [],
         submissionFiles: [],
         submissionHistory: [],
       },
+      remarkInput,
 
       createdSubmission: { ...defaultSubmission },
       currentTable: 'onHold',
@@ -743,11 +758,12 @@ export default defineComponent({
       }
       isAssignEvaluatorButtonLoading.value = true
       try {
-        const data = await submissionRepository.forEvaluationSubmission(this.loadedSubmission.id)
+        const data = await submissionRepository.forEvaluationSubmission(this.loadedSubmission.id, remarkInput.value)
         toast.init({
           message: data.message,
           color: 'success',
         })
+        remarkInput.value = ''
       } catch (error) {
         console.error('Failed to approve submission:', error)
         toast.init({
@@ -773,11 +789,12 @@ export default defineComponent({
 
       isAssignEvaluatorButtonLoading.value = true
       try {
-        const data = await submissionRepository.forCorrectionSubmission(this.loadedSubmission.id)
+        const data = await submissionRepository.forCorrectionSubmission(this.loadedSubmission.id, remarkInput.value)
         toast.init({
           message: data.message,
           color: 'success',
         })
+        remarkInput.value = ''
       } catch (error) {
         console.error('Failed to approve submission:', error)
         toast.init({

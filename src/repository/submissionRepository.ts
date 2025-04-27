@@ -316,12 +316,12 @@ export const submissionRepository = {
     }
   },
 
-  forCorrectionSubmission: async (submissionId: number) => {
+  forCorrectionSubmission: async (submissionId: number, remarks: string) => {
     try {
       const actorName = jwtStore.getUsername
       const response = await apiClient.post(
         '/api/forCorrectionSubmission',
-        { submissionId: submissionId, actorName: actorName },
+        { submissionId: submissionId, actorName: actorName, remarks: remarks },
         {
           headers: {
             Authorization: `Bearer ${jwtStore.getToken}`,
@@ -336,12 +336,12 @@ export const submissionRepository = {
     }
   },
 
-  forEvaluationSubmission: async (submissionId: number) => {
+  forEvaluationSubmission: async (submissionId: number, remarks: string) => {
     try {
       const actorName = jwtStore.getUsername
       const response = await apiClient.post(
         '/api/forEvaluationSubmission',
-        { submissionId: submissionId, actorName: actorName },
+        { submissionId: submissionId, actorName: actorName, remarks: remarks },
         {
           headers: {
             Authorization: `Bearer ${jwtStore.getToken}`,

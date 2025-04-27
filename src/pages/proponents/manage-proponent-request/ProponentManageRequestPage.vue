@@ -247,7 +247,8 @@
             <p class="mb-1"><span class="font-medium">Project Proposal:</span> {{ loadedSubmission.proposalTitle }}</p>
 
             <p class="mb-1">
-              <span class="font-medium">Project Description:</span> {{ loadedSubmission.proposalDescription }}
+              <span class="font-medium">Project Description:</span>
+              {{ truncateText(loadedSubmission.proposalDescription, 30) }}
             </p>
             <p class="mb-1"><span class="font-medium">File Type:</span> {{ loadedSubmission.fileType }}</p>
           </div>
@@ -257,10 +258,25 @@
           <div class="flex flex-col md:flex-row gap-2 mb-2 justify-between">
             <div class="flex flex-col md:flex-row gap-2 justify-start">
               <VaButtonToggle
+                v-if="currentTable === 'forCorrection' || currentTable === 'evaluation'"
                 v-model="modalTable"
                 color="background-element"
                 border-color="background-element"
-                :options="[{ label: 'Attachments', value: 'attachments' }]"
+                :options="[
+                  { label: 'Attachments', value: 'attachments' },
+                  { label: 'Remarks', value: 'remarks' },
+                  { label: 'Logs', value: 'logs' },
+                ]"
+              />
+              <VaButtonToggle
+                v-else
+                v-model="modalTable"
+                color="background-element"
+                border-color="background-element"
+                :options="[
+                  { label: 'Attachments', value: 'attachments' },
+                  { label: 'Logs', value: 'logs' },
+                ]"
               />
             </div>
           </div>
@@ -268,28 +284,72 @@
 
         <div v-if="modalTable === 'attachments'">
           <VaCard>
+            <VaCardTitle>Attachments</VaCardTitle>
             <VaCardContent>
-              <div
-                v-if="loadedSubmission && loadedSubmission.submissionFiles && loadedSubmission.submissionFiles.length"
-              >
-                <VaSidebarItem
+              <div v-if="loadedSubmission?.submissionFiles?.length" class="flex flex-col gap-4">
+                <div
                   v-for="(attachment, index) in loadedSubmission.submissionFiles"
                   :key="index"
-                  :active="isActive"
-                  active-color="#C0C0C0"
+                  class="flex items-center gap-3 cursor-pointer hover:bg-gray-100 p-2 rounded transition"
                   @click="downloadSubmission(attachment.resourcesLink, loadedSubmission.fileType)"
                 >
-                  <VaSidebarItemContent>
-                    <VaIcon name="download" />
-                    <VaSidebarItemTitle>
-                      {{ loadedSubmission.proposalTitle }} - Attachment {{ index + 1 }}
-                    </VaSidebarItemTitle>
-                  </VaSidebarItemContent>
-                </VaSidebarItem>
+                  <VaIcon name="attach_file" color="primary" />
+                  <div class="flex flex-col">
+                    <p class="font-semibold">{{ loadedSubmission.proposalTitle }} - Attachment {{ index + 1 }}</p>
+                    <small class="text-gray-500 truncate max-w-[250px]">
+                      {{ attachment.resourcesLink }}
+                    </small>
+                  </div>
+                </div>
               </div>
-              <div v-else>
-                <p>No attachments available</p>
+
+              <div v-else class="text-center text-gray-500 py-4">No attachments available</div>
+            </VaCardContent>
+          </VaCard>
+        </div>
+
+        <div v-if="modalTable === 'remarks'">
+          <VaCard>
+            <VaCardTitle>Submission Remarks</VaCardTitle>
+            <VaCardContent>
+              <div v-if="loadedSubmission?.remarks?.length" class="flex flex-col gap-4">
+                <div v-for="(remark, index) in loadedSubmission.remarks" :key="index" class="flex items-start gap-3">
+                  <VaIcon name="timeline" size="small" color="primary" />
+                  <div class="flex flex-col">
+                    <p class="font-semibold">{{ remark.remarks }}</p>
+                    <small class="text-gray-500">
+                      {{ formatDate(remark.timestamp) }}
+                    </small>
+                  </div>
+                </div>
               </div>
+
+              <div v-else class="text-center text-gray-500 py-4">No Remarks for this Submission</div>
+            </VaCardContent>
+          </VaCard>
+        </div>
+
+        <div v-if="modalTable === 'logs'">
+          <VaCard>
+            <VaCardTitle>Submission History</VaCardTitle>
+            <VaCardContent>
+              <div v-if="loadedSubmission?.submissionHistory?.length" class="flex flex-col gap-4">
+                <div
+                  v-for="(history, index) in loadedSubmission.submissionHistory"
+                  :key="history.id"
+                  class="flex items-start gap-3"
+                >
+                  <VaIcon name="timeline" size="small" color="primary" />
+                  <div class="flex flex-col">
+                    <p class="font-semibold">{{ history.description }}</p>
+                    <small class="text-gray-500">
+                      {{ formatDate(history.timestamp) }} — Changed by {{ history.changedBy }}
+                    </small>
+                  </div>
+                </div>
+              </div>
+
+              <div v-else class="text-center text-gray-500 py-4">No History Logs for this Submission</div>
             </VaCardContent>
           </VaCard>
         </div>
@@ -362,11 +422,12 @@ export default defineComponent({
         proposalTitle: '',
         proposalDescription: '',
         fileType: '',
-        submissionFiles: '',
         submissionStatus: '',
         proponent: '',
         evaluator: '',
-        remarks: '',
+        remarks: [],
+        submissionFiles: [],
+        submissionHistory: [],
       },
 
       editedSubmission: {
@@ -532,30 +593,6 @@ export default defineComponent({
         return data
       } catch (error) {
         console.error('Failed to upload submission file:', error)
-      }
-    },
-
-    async assignEvaluatorToSubmission() {
-      try {
-        const data = await submissionRepository.assignEvaluatorToSubmission(
-          this.loadedSubmission.id,
-          this.EvaluatorsValue,
-        )
-
-        console.log('Assigned evaluator to submission:', data)
-        toast.init({
-          message: 'Evaluator assigned successfully',
-          color: 'success',
-        })
-      } catch (error) {
-        console.error('Failed to assign evaluator to submission:', error)
-
-        toast.init({
-          message: error.response?.data?.message || 'Failed to assign evaluator',
-          color: 'danger',
-        })
-      } finally {
-        this.EvaluatorsValue = []
       }
     },
 
