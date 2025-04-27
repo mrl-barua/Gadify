@@ -23,6 +23,9 @@ interface Submission {
   resourcesLink: string | null
   submissionStatus: string
 }
+interface SubmissionFile {
+  resourcesLink: string // Assuming "resourcesLink" is a string in the files
+}
 
 const jwtStore = useJwtStore()
 
@@ -288,6 +291,45 @@ export const submissionRepository = {
           Authorization: `Bearer ${jwtStore.getToken}`,
         },
       })
+      console.log('Data:', response.data)
+      return response.data
+    } catch (error) {
+      console.error('Error:', error)
+      throw error
+    }
+  },
+
+  updateSubmission: async (
+    id: number,
+    submissionId: string,
+    fileType: string,
+    proposalTitle: string,
+    proposalDescription: string,
+    submissionStatus: string,
+    submissionFiles: SubmissionFile[],
+    actorName: string,
+  ) => {
+
+    try {
+      console.log('Updating submission...')
+      const response = await apiClient.put(
+        '/api/updateSubmission',
+        {
+          id: id,
+          submissionId: submissionId,
+          fileType: fileType,
+          proposalTitle: proposalTitle,
+          proposalDescription: proposalDescription,
+          submissionStatus: submissionStatus,
+          submissionFiles: submissionFiles,
+          actorName: actorName,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${jwtStore.getToken}`,
+          },
+        },
+      )
       console.log('Data:', response.data)
       return response.data
     } catch (error) {

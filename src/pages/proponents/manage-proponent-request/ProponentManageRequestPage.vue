@@ -284,26 +284,78 @@
 
         <div v-if="modalTable === 'attachments'">
           <VaCard>
-            <VaCardTitle>Attachments</VaCardTitle>
+            <div class="flex items-center justify-between p-4">
+              <VaCardTitle>Attachments</VaCardTitle>
+              <VaButton size="medium" color="primary" @click="isAttachmentInEditingMode = !isAttachmentInEditingMode">
+                {{ isAttachmentInEditingMode ? 'Cancel' : 'Modify' }}
+              </VaButton>
+            </div>
+
             <VaCardContent>
-              <div v-if="loadedSubmission?.submissionFiles?.length" class="flex flex-col gap-4">
-                <div
-                  v-for="(attachment, index) in loadedSubmission.submissionFiles"
-                  :key="index"
-                  class="flex items-center gap-3 cursor-pointer hover:bg-gray-100 p-2 rounded transition"
-                  @click="downloadSubmission(attachment.resourcesLink, loadedSubmission.fileType)"
-                >
-                  <VaIcon name="attach_file" color="primary" />
-                  <div class="flex flex-col">
-                    <p class="font-semibold">{{ loadedSubmission.proposalTitle }} - Attachment {{ index + 1 }}</p>
-                    <small class="text-gray-500 truncate max-w-[250px]">
-                      {{ attachment.resourcesLink }}
-                    </small>
+              <div v-if="isAttachmentInEditingMode">
+                <VaForm>
+                  <VaSelect v-model="loadedSubmission.fileType" label="File Type" :options="['File', 'Link']" />
+
+                  <VaInput v-model="loadedSubmission.proposalTitle" label="Proposal Title" />
+
+                  <VaTextarea
+                    class="w-full"
+                    v-model="loadedSubmission.proposalDescription"
+                    label="Proposal Description"
+                  />
+
+                  <div v-if="loadedSubmission.fileType === 'Link'">
+                    <div v-for="(file, index) in loadedSubmission.submissionFiles" :key="index" class="mb-4">
+                      <VaInput
+                        v-model="file.resourcesLink"
+                        :label="'File Link ' + (index + 1)"
+                        :placeholder="'Enter link ' + (index + 1)"
+                      />
+                    </div>
                   </div>
+
+                  <div v-else>
+                    <VaFileUpload v-model="submissionFile" dropzone multiple />
+
+                    <div v-if="loadedSubmission.submissionFiles?.length" class="mt-4">
+                      <p class="font-semibold mb-2">Existing Files:</p>
+                      <div class="flex flex-col gap-2">
+                        <div
+                          v-for="(file, index) in loadedSubmission.submissionFiles"
+                          :key="index"
+                          class="flex items-center gap-2 bg-gray-100 p-2 rounded"
+                        >
+                          <VaIcon name="insert_drive_file" color="primary" />
+                          <span>{{ file.resourcesLink }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </VaForm>
+                <div class="flex items-center justify-end p-4">
+                  <VaButton size="medium" color="primary" @click="updateSubmission()"> Update </VaButton>
                 </div>
               </div>
+              <div v-else>
+                <div v-if="loadedSubmission?.submissionFiles?.length" class="flex flex-col gap-4">
+                  <div
+                    v-for="(attachment, index) in loadedSubmission.submissionFiles"
+                    :key="index"
+                    class="flex items-center gap-3 cursor-pointer hover:bg-gray-100 p-2 rounded transition"
+                    @click="downloadSubmission(attachment.resourcesLink, loadedSubmission.fileType)"
+                  >
+                    <VaIcon name="attach_file" color="primary" />
+                    <div class="flex flex-col">
+                      <p class="font-semibold">{{ loadedSubmission.proposalTitle }} - Attachment {{ index + 1 }}</p>
+                      <small class="text-gray-500 truncate max-w-[250px]">
+                        {{ attachment.resourcesLink }}
+                      </small>
+                    </div>
+                  </div>
+                </div>
 
-              <div v-else class="text-center text-gray-500 py-4">No attachments available</div>
+                <div v-else class="text-center text-gray-500 py-4">No attachments available</div>
+              </div>
             </VaCardContent>
           </VaCard>
         </div>
@@ -370,6 +422,7 @@ const jwtStore = useJwtStore()
 const toast = useToast()
 
 const isVaSelectLoading = ref(false)
+const isAttachmentInEditingMode = ref(false)
 
 const defaultSubmission = {
   fileType: 'File',
@@ -450,6 +503,7 @@ export default defineComponent({
       AssignedEvaluator: [],
       isLoading: true,
       isVaSelectLoading,
+      isAttachmentInEditingMode,
 
       perPage: 10,
       onHoldCurrentPage: 1,
@@ -572,6 +626,47 @@ export default defineComponent({
       } finally {
         this.resetSubmissionForm()
         console.log('Reset the submission form and closed modal.')
+      }
+    },
+
+    async updateSubmission() {
+      try {
+        const { fileType, fileLink } = this.loadedSubmission
+
+        if (fileType === 'File') {
+          const uploadedFiles = await this.uploadSubmissionFile()
+          this.loadedSubmission.submissionFiles = uploadedFiles
+        } else if (fileType === 'Link') {
+          this.loadedSubmission.submissionFiles = [fileLink]
+        }
+        await submissionRepository.updateSubmission(
+          this.loadedSubmission.id,
+          this.loadedSubmission.submissionId,
+          this.loadedSubmission.fileType,
+          this.loadedSubmission.proposalTitle,
+          this.loadedSubmission.proposalDescription,
+          this.loadedSubmission.submissionStatus,
+          this.loadedSubmission.submissionFiles,
+          jwtStore.getUsername,
+        )
+
+        toast.init({
+          message: 'Submission updated successfully',
+          color: 'success',
+        })
+
+        this.loadSubmissions()
+      } catch (error) {
+        const message = error.response?.data?.message || 'Failed to update submission'
+
+        toast.init({
+          message,
+          color: 'danger',
+        })
+
+        console.error('Error updating submission:', message)
+      } finally {
+        this.resetSubmissionForm()
       }
     },
 
