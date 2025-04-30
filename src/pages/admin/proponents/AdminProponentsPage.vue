@@ -219,6 +219,7 @@ export default defineComponent({
       pendingProponents,
       approvedProponents,
       disapprovedProponents,
+      selectedProponentId: null,
       isLoading: false,
 
       pendingCurrentPage: 1,
@@ -390,57 +391,54 @@ export default defineComponent({
     },
 
     showApproveModal(item) {
-      this.selectedRowIndex = this.proponents.findIndex((proponent) => proponent.proponentId === item.proponentId)
+      console.log('Selected Proponent ID:', item.id)
+      this.selectedProponentId = item.id
       this.approveModal = true
     },
 
     showRejectModal(item) {
-      this.selectedRowIndex = this.proponents.findIndex((proponent) => proponent.proponentId === item.proponentId)
+      console.log('Selected Proponent ID:', item.id)
+      this.selectedProponentId = item.id
       this.rejectModal = true
     },
 
     async approvedProponent() {
-      if (this.selectedRowIndex !== null) {
+      this.isLoading = true
+      try {
+        await proponentsRepository.approveProponent(this.selectedProponentId)
+        init({ message: 'Proponent has been approved', color: 'success' })
+      } catch (error) {
+        console.error('Failed to approve proponent:', error)
+        init({ message: 'Failed to approve proponent', color: 'danger' })
+      } finally {
+        this.approveModal = false
+        this.selectedProponentId = null
         try {
-          this.isLoading = true
-          init({ message: 'Proponent has been approved', color: 'success' })
-          const item = this.proponents[this.selectedRowIndex]
-          await proponentsRepository.approvedProponent(item.id)
+          await this.loadPendingProponents()
         } catch (error) {
-          console.error('Failed to approve proponent:', error)
-          init({ message: 'Failed to approve proponent', color: 'danger' })
+          console.error('Failed to load proponents:', error)
         } finally {
-          this.approveModal = false
-          try {
-            await this.loadPendingProponents()
-          } catch (error) {
-            console.error('Failed to load proponents:', error)
-          } finally {
-            this.isLoading = false
-          }
+          this.isLoading = false
         }
       }
     },
 
     async rejectProponent() {
-      if (this.selectedRowIndex !== null) {
+      try {
+        await proponentsRepository.rejectProponent(this.selectedProponentId)
+        init({ message: 'Proponent has been rejected', color: 'success' })
+      } catch (error) {
+        console.error('Failed to reject proponent:', error)
+        init({ message: 'Failed to reject proponent', color: 'danger' })
+      } finally {
+        this.rejectModal = false
+        this.selectedProponentId = null
         try {
-          this.isLoading = true
-          init({ message: 'Proponent has been rejected', color: 'success' })
-          const item = this.proponents[this.selectedRowIndex]
-          await proponentsRepository.rejectProponent(item.id)
+          await this.loadPendingProponents()
         } catch (error) {
-          console.error('Failed to reject proponent:', error)
-          init({ message: 'Failed to reject proponent', color: 'danger' })
+          console.error('Failed to load proponents:', error)
         } finally {
-          this.rejectModal = false
-          try {
-            await this.loadPendingProponents()
-          } catch (error) {
-            console.error('Failed to load proponents:', error)
-          } finally {
-            this.isLoading = false
-          }
+          this.isLoading = false
         }
       }
     },
