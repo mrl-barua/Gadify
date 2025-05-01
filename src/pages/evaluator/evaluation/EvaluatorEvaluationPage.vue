@@ -45,13 +45,13 @@
             </td>
           </tr>
         </template>
-        <template #cell(proposalTitle)="{ value }">
+        <template #cell(submission.proposalTitle)="{ value }">
           {{ truncateText(value, 25) }}
         </template>
-        <template #cell(createdAt)="{ value }">
+        <template #cell(submission.createdAt)="{ value }">
           {{ formatDate(value) }}
         </template>
-        <template #cell(fileType)="{ value }">
+        <template #cell(submission.fileType)="{ value }">
           <VaChip v-if="value === 'File'" size="small" color="primary">
             {{ value }}
           </VaChip>
@@ -60,7 +60,7 @@
           </VaChip>
         </template>
 
-        <template #cell(submissionStatus)="{ value }">
+        <template #cell(submission.submissionStatus)="{ value }">
           <VaChip size="small" color="warning">
             {{ value }}
           </VaChip>
@@ -103,13 +103,13 @@
             </td>
           </tr>
         </template>
-        <template #cell(proposalTitle)="{ value }">
+        <template #cell(submission.proposalTitle)="{ value }">
           {{ truncateText(value, 25) }}
         </template>
-        <template #cell(createdAt)="{ value }">
+        <template #cell(submission.createdAt)="{ value }">
           {{ formatDate(value) }}
         </template>
-        <template #cell(fileType)="{ value }">
+        <template #cell(submission.fileType)="{ value }">
           <VaChip v-if="value === 'File'" size="small" color="primary">
             {{ value }}
           </VaChip>
@@ -117,7 +117,7 @@
             {{ value }}
           </VaChip>
         </template>
-        <template #cell(submissionStatus)="{ value }">
+        <template #cell(submission.submissionStatus)="{ value }">
           <VaChip size="small" color="warning">
             {{ value }}
           </VaChip>
@@ -160,13 +160,13 @@
             </td>
           </tr>
         </template>
-        <template #cell(proposalTitle)="{ value }">
+        <template #cell(submission.proposalTitle)="{ value }">
           {{ truncateText(value, 25) }}
         </template>
-        <template #cell(createdAt)="{ value }">
+        <template #cell(submission.createdAt)="{ value }">
           {{ formatDate(value) }}
         </template>
-        <template #cell(fileType)="{ value }">
+        <template #cell(submission.fileType)="{ value }">
           <VaChip v-if="value === 'File'" size="small" color="primary">
             {{ value }}
           </VaChip>
@@ -174,7 +174,7 @@
             {{ value }}
           </VaChip>
         </template>
-        <template #cell(submissionStatus)="{ value }">
+        <template #cell(submission.submissionStatus)="{ value }">
           <VaChip size="small" color="primary">
             {{ value }}
           </VaChip>
@@ -217,13 +217,13 @@
             </td>
           </tr>
         </template>
-        <template #cell(proposalTitle)="{ value }">
+        <template #cell(submission.proposalTitle)="{ value }">
           {{ truncateText(value, 25) }}
         </template>
-        <template #cell(createdAt)="{ value }">
+        <template #cell(submission.createdAt)="{ value }">
           {{ formatDate(value) }}
         </template>
-        <template #cell(fileType)="{ value }">
+        <template #cell(submission.fileType)="{ value }">
           <VaChip v-if="value === 'File'" size="small" color="primary">
             {{ value }}
           </VaChip>
@@ -231,7 +231,7 @@
             {{ value }}
           </VaChip>
         </template>
-        <template #cell(submissionStatus)="{ value }">
+        <template #cell(submission.submissionStatus)="{ value }">
           <VaChip size="small" color="danger">
             {{ value }}
           </VaChip>
