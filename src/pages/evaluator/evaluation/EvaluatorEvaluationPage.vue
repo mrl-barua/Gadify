@@ -19,21 +19,28 @@
 
       <VaDataTable
         v-if="currentTable === 'onHold'"
+        striped
         class="table-crud"
         :items="onHoldSubmissions"
         :columns="columns"
-        striped
         :loading="isLoading"
         :per-page="perPage"
         :current-page="onHoldCurrentPage"
         :filter="filter"
+        :filter-method="customFilteringFn"
         @filtered="filteredOnHold = $event.items"
       >
         <template #bodyAppend>
           <tr>
             <td colspan="12">
               <div class="flex justify-center mt-4">
-                <VaPagination v-model="onHoldCurrentPage" :pages="onHoldPages" />
+                <VaPagination
+                  v-model="onHoldCurrentPage"
+                  :pages="onHoldTotalPages"
+                  :visible-pages="7"
+                  boundary-numbers
+                  direction-links
+                />
               </div>
             </td>
           </tr>
@@ -70,21 +77,28 @@
 
       <VaDataTable
         v-if="currentTable === 'evaluation'"
+        striped
         class="table-crud"
         :items="evaluationSubmissions"
         :columns="columns"
-        striped
         :loading="isLoading"
         :per-page="perPage"
         :current-page="evaluationCurrentPage"
-        :filter="filteredEvaluation"
-        @filtered="filtered = $event.items"
+        :filter="filter"
+        :filter-method="customFilteringFn"
+        @filtered="filteredEvaluation = $event.items"
       >
         <template #bodyAppend>
           <tr>
             <td colspan="12">
               <div class="flex justify-center mt-4">
-                <VaPagination v-model="evaluationCurrentPage" :pages="evaluationPages" />
+                <VaPagination
+                  v-model="evaluationCurrentPage"
+                  :pages="evaluationTotalPages"
+                  :visible-pages="7"
+                  boundary-numbers
+                  direction-links
+                />
               </div>
             </td>
           </tr>
@@ -120,21 +134,28 @@
 
       <VaDataTable
         v-if="currentTable === 'completed'"
+        striped
         class="table-crud"
         :items="completedSubmissions"
         :columns="columns"
-        striped
         :loading="isLoading"
         :per-page="perPage"
         :current-page="completedCurrentPage"
         :filter="filter"
+        :filter-method="customFilteringFn"
         @filtered="filteredCompleted = $event.items"
       >
         <template #bodyAppend>
           <tr>
             <td colspan="12">
               <div class="flex justify-center mt-4">
-                <VaPagination v-model="completedCurrentPage" :pages="completedPages" />
+                <VaPagination
+                  v-model="completedCurrentPage"
+                  :pages="completedTotalPages"
+                  :visible-pages="7"
+                  boundary-numbers
+                  direction-links
+                />
               </div>
             </td>
           </tr>
@@ -170,21 +191,28 @@
 
       <VaDataTable
         v-if="currentTable === 'forCorrection'"
+        striped
         class="table-crud"
         :items="forCorrectionSubmissions"
         :columns="columns"
-        striped
         :loading="isLoading"
         :per-page="perPage"
         :current-page="forCorrectionCurrentPage"
         :filter="filter"
+        :filter-method="customFilteringFn"
         @filtered="filteredForCorrection = $event.items"
       >
         <template #bodyAppend>
           <tr>
             <td colspan="12">
               <div class="flex justify-center mt-4">
-                <VaPagination v-model="forCorrectionCurrentPage" :pages="forCorrectionpages" />
+                <VaPagination
+                  v-model="forCorrectionCurrentPage"
+                  :pages="forCorrectionTotalPages"
+                  :visible-pages="7"
+                  boundary-numbers
+                  direction-links
+                />
               </div>
             </td>
           </tr>
@@ -233,7 +261,10 @@
             <h3 class="text-lg font-semibold mb-2">Other Information</h3>
             <p class="mb-1"><span class="font-medium">Project Proposal:</span> {{ loadedSubmission.proposalTitle }}</p>
 
-            <p class="mb-1"><span class="font-medium">Project Description:</span> {{ loadedSubmission.description }}</p>
+            <p class="mb-1">
+              <span class="font-medium">Project Description:</span>
+              {{ truncateText(loadedSubmission.proposalDescription, 30) }}
+            </p>
             <p class="mb-1"><span class="font-medium">File Type:</span> {{ loadedSubmission.fileType }}</p>
           </div>
         </div>
@@ -727,9 +758,16 @@ export default {
 
     const perPage = ref(10)
     const onHoldCurrentPage = ref(1)
+    const onHoldTotalPages = ref(1)
+
     const evaluationCurrentPage = ref(1)
+    const evaluationTotalPages = ref(1)
+
     const completedCurrentPage = ref(1)
+    const completedTotalPages = ref(1)
+
     const forCorrectionCurrentPage = ref(1)
+    const forCorrectionTotalPages = ref(1)
     const filter = ref('')
 
     const filteredOnHold = computed(() => onHoldSubmissions.value)
