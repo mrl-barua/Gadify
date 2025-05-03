@@ -267,8 +267,7 @@
             <p class="mb-1"><span class="font-medium">Project Proposal:</span> {{ loadedSubmission.proposalTitle }}</p>
 
             <p class="mb-1">
-              <span class="font-medium">Project Description:</span>
-              {{ truncateText(loadedSubmission.proposalDescription, 30) }}
+              <span class="font-medium">Project Description:</span> {{ loadedSubmission.proposalDescription }}
             </p>
             <p class="mb-1"><span class="font-medium">File Type:</span> {{ loadedSubmission.fileType }}</p>
           </div>
