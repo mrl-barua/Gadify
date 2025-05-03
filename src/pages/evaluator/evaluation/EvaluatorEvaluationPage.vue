@@ -796,6 +796,7 @@ export default {
     const isLoading = ref(true)
     const isVaSelectLoading = ref(false)
 
+    const totalsubmissionEvaluationScore = ref(0)
     const submissionEvaluation = reactive({
       submissionId: 0,
       evaluatorId: 0,
@@ -1175,6 +1176,12 @@ export default {
             jwtStore.getUserId,
             submissionEvaluation.genderAssessments,
           )
+
+          await submissionRepository.updateSubmissionTotalScore(
+            loadedSubmission.id,
+            totalsubmissionEvaluationScore.value,
+          )
+
           toast.init({
             message: 'Evaluation submitted successfully!',
             color: 'success',
@@ -1247,6 +1254,13 @@ export default {
           submissionEvaluation.genderAssessments[21].score,
         2,
       )
+
+      totalsubmissionEvaluationScore.value =
+        submissionEvaluation.genderAssessments[0].score +
+        submissionEvaluation.genderAssessments[4].score +
+        submissionEvaluation.genderAssessments[9].score +
+        submissionEvaluation.genderAssessments[15].score +
+        submissionEvaluation.genderAssessments[18].score
     }
 
     onMounted(() => {

@@ -286,7 +286,12 @@
           <VaCard>
             <div class="flex items-center justify-between p-4">
               <VaCardTitle>Attachments</VaCardTitle>
-              <VaButton size="medium" color="primary" @click="isAttachmentInEditingMode = !isAttachmentInEditingMode">
+              <VaButton
+                v-if="currentTable !== 'completed' && currentTable !== 'evaluation'"
+                size="medium"
+                color="primary"
+                @click="isAttachmentInEditingMode = !isAttachmentInEditingMode"
+              >
                 {{ isAttachmentInEditingMode ? 'Cancel' : 'Modify' }}
               </VaButton>
             </div>
@@ -307,7 +312,7 @@
                   <div v-if="loadedSubmission.fileType === 'Link'">
                     <div v-for="(file, index) in loadedSubmission.submissionFiles" :key="index" class="mb-4">
                       <VaInput
-                        v-model="file.resourcesLink"
+                        v-model="file.fileLink"
                         :label="'File Link ' + (index + 1)"
                         :placeholder="'Enter link ' + (index + 1)"
                       />
@@ -469,27 +474,29 @@ export default defineComponent({
       selectedRowIndex: null,
 
       loadedSubmission: {
-        id: '',
-        submissionId: '',
-        createdAt: '',
-        proposalTitle: '',
-        proposalDescription: '',
-        fileType: '',
-        submissionStatus: '',
-        proponent: '',
-        evaluator: '',
+        id: null,
+        submissionId: null,
+        createdAt: null,
+        proposalTitle: null,
+        proposalDescription: null,
+        fileType: null,
+        fileLink: null,
+        submissionStatus: null,
+        proponent: null,
+        evaluator: null,
         remarks: [],
-        submissionFiles: [],
+        submissionFiles: null,
         submissionHistory: [],
       },
 
       editedSubmission: {
-        id: 0,
-        submissionId: '',
+        id: null,
+        submissionId: null,
         proponentId: null,
-        fileType: '',
-        proposalTitle: '',
-        proposalDescription: '',
+        fileType: null,
+        fileLink: null,
+        proposalTitle: null,
+        proposalDescription: null,
         submissionFiles: null,
         submissionStatus: 'OnHold',
       },
@@ -519,6 +526,14 @@ export default defineComponent({
 
       submissionFile: [],
     }
+  },
+
+  watch: {
+    sentDocumentForEvaluationModal(newValue) {
+      if (newValue === false) {
+        this.isAttachmentInEditingMode = false
+      }
+    },
   },
 
   computed: {
@@ -597,7 +612,7 @@ export default defineComponent({
         const { fileType, fileLink } = this.editedSubmission
 
         if (fileType === 'File') {
-          const uploadedFiles = await this.uploadSubmissionFile()
+          const uploadedFiles = await this.uploadSubmissionFile(this.submissionFile)
           this.editedSubmission.submissionFiles = uploadedFiles
         } else if (fileType === 'Link') {
           this.editedSubmission.submissionFiles = [fileLink]
@@ -607,6 +622,7 @@ export default defineComponent({
         this.editedSubmission.proponentId = token ? token.id : null
 
         await submissionRepository.createSubmission(this.editedSubmission)
+        this.submissionFile = null
 
         toast.init({
           message: 'Submission created successfully',
@@ -632,13 +648,15 @@ export default defineComponent({
     async updateSubmission() {
       try {
         const { fileType, fileLink } = this.loadedSubmission
-
+        alert(fileType)
+        alert(fileLink)
         if (fileType === 'File') {
-          const uploadedFiles = await this.uploadSubmissionFile()
+          const uploadedFiles = await this.uploadSubmissionFile(this.submissionFile)
           this.loadedSubmission.submissionFiles = uploadedFiles
         } else if (fileType === 'Link') {
           this.loadedSubmission.submissionFiles = [fileLink]
         }
+
         await submissionRepository.updateSubmission(
           this.loadedSubmission.id,
           this.loadedSubmission.submissionId,
@@ -681,9 +699,12 @@ export default defineComponent({
       }
     },
 
-    async uploadSubmissionFile() {
+    async uploadSubmissionFile(submissionFiles) {
       try {
-        const data = await submissionRepository.uploadSubmissionFile(this.submissionFile)
+        const data = await submissionRepository.uploadSubmissionFile(submissionFiles)
+        if (!data) {
+          throw new Error('No data returned from the server')
+        }
         console.log('Uploaded submission file:', data)
         return data
       } catch (error) {

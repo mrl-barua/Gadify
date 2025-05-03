@@ -24,7 +24,7 @@ interface Submission {
   submissionStatus: string
 }
 interface SubmissionFile {
-  resourcesLink: string 
+  resourcesLink: string
 }
 
 const jwtStore = useJwtStore()
@@ -309,6 +309,19 @@ export const submissionRepository = {
     submissionFiles: SubmissionFile[],
     actorName: string,
   ) => {
+    const submissionPayload = {
+      id,
+      submissionId,
+      fileType,
+      proposalTitle,
+      proposalDescription,
+      submissionStatus,
+      submissionFiles,
+      actorName,
+    }
+
+    // Alert as one object
+    alert(JSON.stringify(submissionPayload, null, 2))
 
     try {
       console.log('Updating submission...')
@@ -323,6 +336,28 @@ export const submissionRepository = {
           submissionStatus: submissionStatus,
           submissionFiles: submissionFiles,
           actorName: actorName,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${jwtStore.getToken}`,
+          },
+        },
+      )
+      console.log('Data:', response.data)
+      return response.data
+    } catch (error) {
+      console.error('Error:', error)
+      throw error
+    }
+  },
+
+  updateSubmissionTotalScore: async (submissionId: number, submissionTotalScore: number) => {
+    try {
+      const response = await apiClient.post(
+        '/api/updateSubmissionTotalScore',
+        {
+          submissionId: submissionId,
+          submissionTotalScore: submissionTotalScore,
         },
         {
           headers: {

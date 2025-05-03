@@ -338,6 +338,7 @@ import { defineComponent, ref } from 'vue'
 import { submissionRepository } from '../../../repository/submissionRepository'
 import { evaluatorsRepository } from '../../../repository/evaluatorRepository'
 import { useToast } from 'vuestic-ui'
+import { useJwtStore } from '../../../stores/jwtHandler'
 
 const toast = useToast()
 
@@ -665,7 +666,8 @@ export default defineComponent({
     async loadSubmissions() {
       this.isLoading = true
       try {
-        const data = await submissionRepository.getSubmissions()
+        const jwtStore = useJwtStore()
+        const data = await submissionRepository.getSubmissionByUserId(jwtStore.getUserId)
         this.submissions = data
         this.onHoldSubmissions = data.filter((submission) => submission.submissionStatus === 'OnHold')
         this.evaluationSubmissions = data.filter((submission) => submission.submissionStatus === 'Evaluation')
