@@ -731,7 +731,10 @@ export default defineComponent({
 
     async approveSubmission() {
       try {
-        const data = await submissionRepository.approveSubmission(this.loadedSubmission.id)
+        const data = await submissionRepository.approveSubmission(
+          this.loadedSubmission.id,
+          this.loadedSubmission.submissionStatus,
+        )
         toast.init({
           message: data.message,
           color: 'success',
@@ -758,7 +761,11 @@ export default defineComponent({
       }
       isAssignEvaluatorButtonLoading.value = true
       try {
-        const data = await submissionRepository.forEvaluationSubmission(this.loadedSubmission.id, remarkInput.value)
+        const data = await submissionRepository.forEvaluationSubmission(
+          this.loadedSubmission.id,
+          remarkInput.value,
+          this.loadedSubmission.submissionStatus,
+        )
         toast.init({
           message: data.message,
           color: 'success',
@@ -789,7 +796,11 @@ export default defineComponent({
 
       isAssignEvaluatorButtonLoading.value = true
       try {
-        const data = await submissionRepository.forCorrectionSubmission(this.loadedSubmission.id, remarkInput.value)
+        const data = await submissionRepository.forCorrectionSubmission(
+          this.loadedSubmission.id,
+          remarkInput.value,
+          this.loadedSubmission.submissionStatus,
+        )
         toast.init({
           message: data.message,
           color: 'success',

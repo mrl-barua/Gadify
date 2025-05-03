@@ -780,11 +780,13 @@ export default defineComponent({
           proposalTitle: data.proposalTitle,
           proposalDescription: data.proposalDescription,
           fileType: data.fileType,
-          submissionFiles: data.submissionFiles,
+          resourcesLink: data.resourcesLink,
           submissionStatus: data.submissionStatus,
           proponent: data.proponent,
           evaluator: data.evaluator,
           remarks: data.remarks,
+          submissionFiles: data.submissionFiles,
+          submissionHistory: data.submissionHistory,
         }
         this.sentDocumentForEvaluationModal = true
       } catch (error) {

@@ -341,7 +341,7 @@ export const submissionRepository = {
             Authorization: `Bearer ${jwtStore.getToken}`,
           },
         },
-      )
+      ) 
       console.log('Data:', response.data)
       return response.data
     } catch (error) {
@@ -372,12 +372,12 @@ export const submissionRepository = {
     }
   },
 
-  approveSubmission: async (submissionId: number) => {
+  approveSubmission: async (submissionId: number, fromStatus: string) => {
     try {
       const actorName = jwtStore.getUsername
       const response = await apiClient.post(
         '/api/approveSubmission',
-        { submissionId: submissionId, actorName: actorName },
+        { submissionId: submissionId, actorName: actorName, fromStatus: fromStatus },
         {
           headers: {
             Authorization: `Bearer ${jwtStore.getToken}`,
@@ -392,12 +392,12 @@ export const submissionRepository = {
     }
   },
 
-  forCorrectionSubmission: async (submissionId: number, remarks: string) => {
+  forCorrectionSubmission: async (submissionId: number, remarks: string, fromStatus: string) => {
     try {
       const actorName = jwtStore.getUsername
       const response = await apiClient.post(
         '/api/forCorrectionSubmission',
-        { submissionId: submissionId, actorName: actorName, remarks: remarks },
+        { submissionId: submissionId, actorName: actorName, remarks: remarks, fromStatus: fromStatus },
         {
           headers: {
             Authorization: `Bearer ${jwtStore.getToken}`,
@@ -412,12 +412,12 @@ export const submissionRepository = {
     }
   },
 
-  forEvaluationSubmission: async (submissionId: number, remarks: string) => {
+  forEvaluationSubmission: async (submissionId: number, remarks: string, fromStatus: string) => {
     try {
       const actorName = jwtStore.getUsername
       const response = await apiClient.post(
         '/api/forEvaluationSubmission',
-        { submissionId: submissionId, actorName: actorName, remarks: remarks },
+        { submissionId: submissionId, actorName: actorName, remarks: remarks, fromStatus: fromStatus },
         {
           headers: {
             Authorization: `Bearer ${jwtStore.getToken}`,
