@@ -66,7 +66,7 @@
       </VaModal>
 
       <!-- Edit Admin Modal -->
-      <VaModal v-model="isEditing" class="modal-crud" title="Edit Admin" size="small" hide-default-actions="true">
+      <VaModal v-model="isEditing" class="modal-crud" title="Edit Admin" size="small" hide-default-actions>
         <VaInput v-model="editedAdminModel.fullName" :rules="[rules.required]" class="mb-4" label="Full Name" />
         <VaInput v-model="editedAdminModel.email" :rules="[rules.required]" class="mb-4" label="Email Address" />
         <div class="flex justify-end gap-2 mt-4">

@@ -251,7 +251,7 @@
         </template>
       </VaDataTable>
 
-      <VaModal v-model="sentDocumentForEvaluationModal" hide-default-actions="true" size="large">
+      <VaModal v-model="sentDocumentForEvaluationModal" hide-default-actions size="large">
         <h3 class="va-h3">Sent Document for Evaluation</h3>
         <div class="flex flex-wrap -mx-2">
           <div class="w-full md:w-1/2 px-2 mb-4">

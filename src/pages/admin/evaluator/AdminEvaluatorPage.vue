@@ -78,7 +78,7 @@
       </VaModal>
 
       <!-- Edit Evaluator Modal -->
-      <VaModal v-model="editEvaluatorModal" class="modal-crud" size="small" hide-default-actions="true">
+      <VaModal v-model="editEvaluatorModal" class="modal-crud" size="small" hide-default-actions>
         <VaInput v-model="editedEvaluatorModel.fullName" :rules="[rules.required]" class="mb-4" label="Full Name" />
         <VaInput
           v-model="editedEvaluatorModel.email"

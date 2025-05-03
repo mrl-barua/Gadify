@@ -77,7 +77,7 @@
       </VaModal>
 
       <!-- Edit Office Modal -->
-      <VaModal v-model="editOfficeModal" class="modal-crud" size="small" hide-default-actions="true">
+      <VaModal v-model="editOfficeModal" class="modal-crud" size="small" hide-default-actions>
         <VaInput v-model="editedOfficeModel.fullName" :rules="[rules.required]" class="mb-4" label="Full Name" />
         <VaInput v-model="editedOfficeModel.email" :rules="[rules.required, rules.email]" class="mb-4" label="Email" />
 

@@ -50,7 +50,7 @@
       </VaModal>
 
       <!-- Edit Campus Modal -->
-      <VaModal v-model="editCampusModal" class="modal-crud" size="small" hide-default-actions="true">
+      <VaModal v-model="editCampusModal" class="modal-crud" size="small" hide-default-actions>
         <VaInput v-model="editedCampusModel.campusName" :rules="[rules.required]" class="mb-4" label="Campus Name" />
         <VaInput
           v-model="editedCampusModel.campusAddress"

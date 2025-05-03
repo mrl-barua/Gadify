@@ -36,7 +36,7 @@
         </template>
       </VaDataTable>
 
-      <VaModal v-model="addDepartmentModal" ok-text="Save" size="large" hide-default-actions="true">
+      <VaModal v-model="addDepartmentModal" ok-text="Save" size="large" hide-default-actions>
         <h3 class="va-h3">Add New Department</h3>
         <VaForm ref="formRef">
           <VaSelect
