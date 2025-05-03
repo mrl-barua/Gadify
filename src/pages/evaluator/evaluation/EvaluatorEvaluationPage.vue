@@ -1257,8 +1257,13 @@ export default {
 
       totalsubmissionEvaluationScore.value =
         submissionEvaluation.genderAssessments[0].score +
+        submissionEvaluation.genderAssessments[3].score +
         submissionEvaluation.genderAssessments[4].score +
+        submissionEvaluation.genderAssessments[7].score +
+        submissionEvaluation.genderAssessments[8].score +
         submissionEvaluation.genderAssessments[9].score +
+        submissionEvaluation.genderAssessments[13].score +
+        submissionEvaluation.genderAssessments[14].score +
         submissionEvaluation.genderAssessments[15].score +
         submissionEvaluation.genderAssessments[18].score
     }
