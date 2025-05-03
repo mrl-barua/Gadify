@@ -231,7 +231,7 @@
         </template>
       </VaDataTable>
 
-      <VaModal v-model="sentDocumentForEvaluationModal" hide-default-actions="true" size="large">
+      <VaModal v-model="sentDocumentForEvaluationModal" hide-default-actions size="large">
         <h3 class="va-h3">Sent Document for Evaluation</h3>
         <div class="flex flex-wrap -mx-2">
           <div class="w-full md:w-1/2 px-2 mb-4">
@@ -312,7 +312,7 @@
                   <div v-if="loadedSubmission.fileType === 'Link'">
                     <div v-for="(file, index) in loadedSubmission.submissionFiles" :key="index" class="mb-4">
                       <VaInput
-                        v-model="file.fileLink"
+                        v-model="file.resourcesLink"
                         :label="'File Link ' + (index + 1)"
                         :placeholder="'Enter link ' + (index + 1)"
                       />
@@ -647,14 +647,18 @@ export default defineComponent({
 
     async updateSubmission() {
       try {
-        const { fileType, fileLink } = this.loadedSubmission
-        alert(fileType)
-        alert(fileLink)
+        const { fileType } = this.loadedSubmission
+
         if (fileType === 'File') {
           const uploadedFiles = await this.uploadSubmissionFile(this.submissionFile)
-          this.loadedSubmission.submissionFiles = uploadedFiles
-        } else if (fileType === 'Link') {
-          this.loadedSubmission.submissionFiles = [fileLink]
+
+          console.log(uploadedFiles)
+
+          this.loadedSubmission.submissionFiles = uploadedFiles.map((file) => {
+            return {
+              resourcesLink: file,
+            }
+          })
         }
 
         await submissionRepository.updateSubmission(
@@ -672,6 +676,8 @@ export default defineComponent({
           message: 'Submission updated successfully',
           color: 'success',
         })
+
+        this.sentDocumentForEvaluationModal = false
 
         this.loadSubmissions()
       } catch (error) {

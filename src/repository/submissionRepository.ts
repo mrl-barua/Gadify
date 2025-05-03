@@ -320,8 +320,7 @@ export const submissionRepository = {
       actorName,
     }
 
-    // Alert as one object
-    alert(JSON.stringify(submissionPayload, null, 2))
+    console.log(JSON.stringify(submissionPayload, null, 2))
 
     try {
       console.log('Updating submission...')
