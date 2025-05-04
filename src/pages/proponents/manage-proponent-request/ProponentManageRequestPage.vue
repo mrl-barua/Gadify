@@ -27,7 +27,7 @@
           <VaInput v-model="editedSubmission.proposalTitle" label="Proposal Title" />
           <VaTextarea class="w-full" v-model="editedSubmission.proposalDescription" label="Proposal Description" />
           <VaInput v-if="editedSubmission.fileType === 'Link'" v-model="editedSubmission.fileLink" label="File Link" />
-          <VaFileUpload v-else v-model="submissionFile" dropzone />
+          <VaFileUpload v-else v-model="submissionFile" dropzone :files="submissionFile || []" />
         </VaForm>
       </VaModal>
 
@@ -489,13 +489,13 @@ export default defineComponent({
       },
 
       editedSubmission: {
-        id: null,
-        submissionId: null,
-        proponentId: null,
-        fileType: null,
-        fileLink: null,
-        proposalTitle: null,
-        proposalDescription: null,
+        id: 0,
+        submissionId: 0,
+        proponentId: 0,
+        fileType: 'File',
+        fileLink: '',
+        proposalTitle: '',
+        proposalDescription: '',
         submissionFiles: null,
         submissionStatus: 'OnHold',
       },
@@ -531,6 +531,12 @@ export default defineComponent({
     sentDocumentForEvaluationModal(newValue) {
       if (newValue === false) {
         this.isAttachmentInEditingMode = false
+      }
+    },
+
+    'editedSubmission.fileType': function (newFileType) {
+      if (newFileType === 'File') {
+        this.submissionFile = []
       }
     },
   },
@@ -629,6 +635,12 @@ export default defineComponent({
         })
 
         this.loadSubmissions()
+        this.addSubmissionModal = false
+        this.editedSubmission.fileType = 'File'
+        this.editedSubmission.fileLink = ''
+        this.editedSubmission.proposalTitle = ''
+        this.editedSubmission.proposalDescription = ''
+        this.editedSubmission.submissionStatus = 'OnHold'
       } catch (error) {
         const message = error.response?.data?.message || 'Failed to create submission'
 
@@ -639,7 +651,6 @@ export default defineComponent({
 
         console.error('Error creating submission:', message)
       } finally {
-        this.resetSubmissionForm()
         console.log('Reset the submission form and closed modal.')
       }
     },
@@ -690,17 +701,6 @@ export default defineComponent({
         console.error('Error updating submission:', message)
       } finally {
         this.resetSubmissionForm()
-      }
-    },
-
-    resetSubmissionForm() {
-      this.addSubmissionModal = false
-      this.editedSubmission = {
-        fileType: 'File',
-        proposalTitle: '',
-        proposalDescription: '',
-        submissionFiles: null,
-        submissionStatus: 'OnHold',
       }
     },
 
