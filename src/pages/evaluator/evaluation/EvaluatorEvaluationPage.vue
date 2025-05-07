@@ -309,6 +309,52 @@
           </VaCard>
         </div>
 
+        <div v-if="modalTable === 'remarks'">
+          <VaCard>
+            <VaCardTitle>Submission Remarks</VaCardTitle>
+            <VaCardContent>
+              <div v-if="loadedSubmission?.remarks?.length" class="flex flex-col gap-4">
+                <div v-for="(remark, index) in loadedSubmission.remarks" :key="index" class="flex items-start gap-3">
+                  <VaIcon name="timeline" size="small" color="primary" />
+                  <div class="flex flex-col">
+                    <p class="font-semibold">{{ remark.remarks }}</p>
+                    <small class="text-gray-500">
+                      {{ formatDate(remark.timestamp) }}
+                    </small>
+                  </div>
+                </div>
+              </div>
+
+              <div v-else class="text-center text-gray-500 py-4">No Remarks for this Submission</div>
+            </VaCardContent>
+          </VaCard>
+        </div>
+
+        <div v-if="modalTable === 'logs'">
+          <VaCard>
+            <VaCardTitle>Submission History</VaCardTitle>
+            <VaCardContent>
+              <div v-if="loadedSubmission?.submissionHistory?.length" class="flex flex-col gap-4">
+                <div
+                  v-for="(history, index) in loadedSubmission.submissionHistory"
+                  :key="history.id"
+                  class="flex items-start gap-3"
+                >
+                  <VaIcon name="timeline" size="small" color="primary" />
+                  <div class="flex flex-col">
+                    <p class="font-semibold">{{ history.description }}</p>
+                    <small class="text-gray-500">
+                      {{ formatDate(history.timestamp) }} — Changed by {{ history.changedBy }}
+                    </small>
+                  </div>
+                </div>
+              </div>
+
+              <div v-else class="text-center text-gray-500 py-4">No History Logs for this Submission</div>
+            </VaCardContent>
+          </VaCard>
+        </div>
+
         <div v-if="modalTable === 'submissionEvaluation'" @click="getEvaluators()">
           <VaCard>
             <VaCardContent>
@@ -980,31 +1026,35 @@ export default {
     })
 
     const loadedSubmission = reactive({
-      id: '',
-      submissionId: '',
-      createdAt: '',
-      proposalTitle: '',
-      proposalDescription: '',
-      fileType: '',
-      submissionStatus: '',
-      proponent: '',
-      evaluator: '',
-      remarks: '',
-      submissionFiles: [],
+      id: null,
+      submissionId: null,
+      createdAt: null,
+      proposalTitle: null,
+      proposalDescription: null,
+      fileType: null,
+      fileLink: null,
+      submissionStatus: null,
+      proponent: null,
+      evaluator: null,
+      remarks: [],
+      submissionFiles: null,
+      submissionHistory: [],
     })
 
     const defaultSubmission = {
-      id: '',
-      submissionId: '',
-      createdAt: '',
-      proposalTitle: '',
-      proposalDescription: '',
-      fileType: '',
-      submissionStatus: '',
-      proponent: '',
-      evaluator: '',
-      remarks: '',
-      submissionFiles: [],
+      id: null,
+      submissionId: null,
+      createdAt: null,
+      proposalTitle: null,
+      proposalDescription: null,
+      fileType: null,
+      fileLink: null,
+      submissionStatus: null,
+      proponent: null,
+      evaluator: null,
+      remarks: [],
+      submissionFiles: null,
+      submissionHistory: [],
     }
 
     const createdSubmission = reactive({ ...defaultSubmission })
@@ -1013,7 +1063,9 @@ export default {
 
     const filteredOptions = computed(() => {
       const options = [
-        { value: 'attachments', label: 'Attachments' },
+        { label: 'Attachments', value: 'attachments' },
+        { label: 'Remarks', value: 'remarks' },
+        { label: 'Logs', value: 'logs' },
         { value: 'submissionEvaluation', label: 'Submission Evaluation' },
       ]
       return loadedSubmission.submissionStatus === 'Completed'
@@ -1134,6 +1186,7 @@ export default {
           evaluator: data.evaluator,
           remarks: data.remarks,
           submissionFiles: data.submissionFiles,
+          submissionHistory: data.submissionHistory,
         })
         sentDocumentForEvaluationModal.value = true
       } catch (error) {
