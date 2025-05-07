@@ -27,7 +27,16 @@
           <VaInput v-model="editedSubmission.proposalTitle" label="Proposal Title" />
           <VaTextarea class="w-full" v-model="editedSubmission.proposalDescription" label="Proposal Description" />
           <VaInput v-if="editedSubmission.fileType === 'Link'" v-model="editedSubmission.fileLink" label="File Link" />
-          <VaFileUpload v-else v-model="submissionFile" dropzone :files="submissionFile || []" />
+          <div v-else>
+            <VaFileUpload v-model="submissionFile" dropzone :files="submissionFile || []" />
+
+            <VaAlert color="warning" class="mt-4" icon="info" dense border>
+              <strong>Upload Guidelines:</strong><br />
+              • Supported file types: <code>PDF</code>, <code>DOC</code>, <code>DOCX</code>, <code>TXT</code><br />
+              • Maximum file size: <strong>10 MB</strong> per file<br />
+              • Maximum number of files: <strong>10</strong>
+            </VaAlert>
+          </div>
         </VaForm>
       </VaModal>
 
@@ -492,7 +501,7 @@ export default defineComponent({
         id: 0,
         submissionId: 0,
         proponentId: 0,
-        fileType: 'File',
+        fileType: 'Link',
         fileLink: '',
         proposalTitle: '',
         proposalDescription: '',
@@ -636,7 +645,7 @@ export default defineComponent({
 
         this.loadSubmissions()
         this.addSubmissionModal = false
-        this.editedSubmission.fileType = 'File'
+        this.editedSubmission.fileType = 'Link'
         this.editedSubmission.fileLink = ''
         this.editedSubmission.proposalTitle = ''
         this.editedSubmission.proposalDescription = ''
