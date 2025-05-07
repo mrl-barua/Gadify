@@ -277,7 +277,6 @@
           <div class="flex flex-col md:flex-row gap-2 mb-2 justify-between">
             <div class="flex flex-col md:flex-row gap-2 justify-start">
               <VaButtonToggle
-                v-if="currentTable === 'forCorrection' || currentTable === 'evaluation'"
                 v-model="modalTable"
                 color="background-element"
                 border-color="background-element"
@@ -285,17 +284,6 @@
                   { label: 'Attachments', value: 'attachments' },
                   { label: 'Receiving Division', value: 'receivingDivision' },
                   { label: 'Remarks', value: 'remarks' },
-                  { label: 'Logs', value: 'logs' },
-                ]"
-              />
-              <VaButtonToggle
-                v-else
-                v-model="modalTable"
-                color="background-element"
-                border-color="background-element"
-                :options="[
-                  { label: 'Attachments', value: 'attachments' },
-                  { label: 'Receiving Division', value: 'receivingDivision' },
                   { label: 'Logs', value: 'logs' },
                 ]"
               />
