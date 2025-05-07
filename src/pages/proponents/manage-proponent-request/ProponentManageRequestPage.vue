@@ -675,7 +675,7 @@ export default defineComponent({
           this.loadedSubmission.fileType,
           this.loadedSubmission.proposalTitle,
           this.loadedSubmission.proposalDescription,
-          this.loadedSubmission.submissionStatus,
+          'OnHold',
           this.loadedSubmission.submissionFiles,
           jwtStore.getUsername,
         )
