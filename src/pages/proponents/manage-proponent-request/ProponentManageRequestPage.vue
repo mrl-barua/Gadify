@@ -28,7 +28,13 @@
           <VaTextarea class="w-full" v-model="editedSubmission.proposalDescription" label="Proposal Description" />
           <VaInput v-if="editedSubmission.fileType === 'Link'" v-model="editedSubmission.fileLink" label="File Link" />
           <div v-else>
-            <VaFileUpload v-model="submissionFile" dropzone :files="submissionFile || []" />
+            <VaFileUpload
+              undo="true"
+              file-types="pdf,doc,docx,txt"
+              v-model="submissionFile"
+              dropzone
+              :files="submissionFile || []"
+            />
 
             <VaAlert color="warning" class="mt-4" icon="info" dense border>
               <strong>Upload Guidelines:</strong><br />
@@ -611,6 +617,30 @@ export default defineComponent({
     },
 
     async createSubmission() {
+      if ((!this.submissionFile || this.submissionFile.length === 0) && this.editedSubmission.fileType === 'File') {
+        toast.init({
+          message: 'No files selected for upload',
+          color: 'warning',
+        })
+        return
+      }
+
+      if (this.submissionFile.length > 10) {
+        toast.init({
+          message: 'You can only upload a maximum of 10 files',
+          color: 'warning',
+        })
+        return
+      }
+
+      if (this.submissionFile.some((file) => file.size > 10 * 1024 * 1024)) {
+        toast.init({
+          message: 'File size exceeds the maximum limit of 10 MB',
+          color: 'warning',
+        })
+        return
+      }
+
       try {
         const { fileType, fileLink } = this.editedSubmission
 
@@ -646,10 +676,7 @@ export default defineComponent({
           message,
           color: 'danger',
         })
-
         console.error('Error creating submission:', message)
-      } finally {
-        console.log('Reset the submission form and closed modal.')
       }
     },
 
@@ -690,11 +717,6 @@ export default defineComponent({
         this.loadSubmissions()
       } catch (error) {
         const message = error.response?.data?.message || 'Failed to update submission'
-
-        toast.init({
-          message,
-          color: 'danger',
-        })
 
         console.error('Error updating submission:', message)
       } finally {
