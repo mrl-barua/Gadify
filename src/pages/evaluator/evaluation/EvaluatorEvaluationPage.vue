@@ -283,28 +283,26 @@
 
         <div v-if="modalTable === 'attachments'">
           <VaCard>
+            <VaCardTitle>Attachments</VaCardTitle>
             <VaCardContent>
-              <div
-                v-if="loadedSubmission && loadedSubmission.submissionFiles && loadedSubmission.submissionFiles.length"
-              >
-                <VaSidebarItem
+              <div v-if="loadedSubmission?.submissionFiles?.length" class="flex flex-col gap-4">
+                <div
                   v-for="(attachment, index) in loadedSubmission.submissionFiles"
                   :key="index"
-                  :active="isActive"
-                  active-color="#C0C0C0"
+                  class="flex items-center gap-3 cursor-pointer hover:bg-gray-100 p-2 rounded transition"
                   @click="downloadSubmission(attachment.resourcesLink, loadedSubmission.fileType)"
                 >
-                  <VaSidebarItemContent>
-                    <VaIcon name="download" />
-                    <VaSidebarItemTitle>
-                      {{ loadedSubmission.proposalTitle }} - Attachment {{ index + 1 }}
-                    </VaSidebarItemTitle>
-                  </VaSidebarItemContent>
-                </VaSidebarItem>
+                  <VaIcon name="attach_file" color="primary" />
+                  <div class="flex flex-col">
+                    <p class="font-semibold">{{ loadedSubmission.proposalTitle }} - Attachment {{ index + 1 }}</p>
+                    <small class="text-gray-500 truncate max-w-[250px]">
+                      {{ attachment.resourcesLink }}
+                    </small>
+                  </div>
+                </div>
               </div>
-              <div v-else>
-                <p>No attachments available</p>
-              </div>
+
+              <div v-else class="text-center text-gray-500 py-4">No attachments available</div>
             </VaCardContent>
           </VaCard>
         </div>

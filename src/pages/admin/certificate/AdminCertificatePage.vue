@@ -255,78 +255,69 @@
 
         <div v-if="modalTable === 'attachments'">
           <VaCard>
+            <VaCardTitle>Attachments</VaCardTitle>
             <VaCardContent>
-              <div
-                v-if="loadedSubmission && loadedSubmission.submissionFiles && loadedSubmission.submissionFiles.length"
-              >
-                <VaSidebarItem
+              <div v-if="loadedSubmission?.submissionFiles?.length" class="flex flex-col gap-4">
+                <div
                   v-for="(attachment, index) in loadedSubmission.submissionFiles"
                   :key="index"
-                  :active="isActive"
-                  active-color="#C0C0C0"
+                  class="flex items-center gap-3 cursor-pointer hover:bg-gray-100 p-2 rounded transition"
                   @click="downloadSubmission(attachment.resourcesLink, loadedSubmission.fileType)"
                 >
-                  <VaSidebarItemContent>
-                    <VaIcon name="download" />
-                    <VaSidebarItemTitle>
-                      {{ loadedSubmission.proposalTitle }} - Attachment {{ index + 1 }}
-                    </VaSidebarItemTitle>
-                  </VaSidebarItemContent>
-                </VaSidebarItem>
+                  <VaIcon name="attach_file" color="primary" />
+                  <div class="flex flex-col">
+                    <p class="font-semibold">{{ loadedSubmission.proposalTitle }} - Attachment {{ index + 1 }}</p>
+                    <small class="text-gray-500 truncate max-w-[250px]">
+                      {{ attachment.resourcesLink }}
+                    </small>
+                  </div>
+                </div>
               </div>
-              <div v-else>
-                <p>No attachments available</p>
-              </div>
+
+              <div v-else class="text-center text-gray-500 py-4">No attachments available</div>
             </VaCardContent>
           </VaCard>
         </div>
 
         <div v-if="modalTable === 'certificates'" @click="getEvaluators()">
           <VaCard>
+            <VaCardTitle>Assigned Evaluator/s</VaCardTitle>
+
             <VaCardContent>
-              <section>
-                <h4 class="va-h6">Assigned Evaluator/s</h4>
-                <VaDataTable class="mb-3" :items="AssignedEvaluator"></VaDataTable>
-              </section>
+              <!-- Evaluator Table -->
+              <VaDataTable class="mb-4" :items="AssignedEvaluator" />
 
+              <!-- Certificate Attachments -->
               <VaInnerLoading :loading="isInnerLoading">
-                <VaCard>
-                  <VaCardContent>
-                    <div
-                      v-if="
-                        loadedSubmission && loadedSubmission.submissionFiles && loadedSubmission.submissionFiles.length
-                      "
-                    >
-                      <VaSidebarItem
-                        v-for="(attachment, index) in loadedSubmission.submissionFiles"
-                        :key="index"
-                        :loading="true"
-                        active-color="#C0C0C0"
-                        @click="previewCertificate(attachment.url)"
-                      >
-                        <VaSidebarItemContent>
-                          <VaIcon name="download" />
-                          <VaSidebarItemTitle> {{ loadedSubmission.proposalTitle }} - Certificate </VaSidebarItemTitle>
-                        </VaSidebarItemContent>
-                      </VaSidebarItem>
+                <div v-if="loadedSubmission?.submissionFiles?.length" class="flex flex-col gap-4">
+                  <div
+                    v-for="(attachment, index) in loadedSubmission.submissionFiles"
+                    :key="index"
+                    class="flex items-center gap-3 cursor-pointer hover:bg-gray-100 p-2 rounded transition"
+                    @click="previewCertificate(attachment.url)"
+                  >
+                    <VaIcon name="download" color="primary" />
+                    <div class="flex flex-col">
+                      <p class="font-semibold">{{ loadedSubmission.proposalTitle }} - Certificate {{ index + 1 }}</p>
+                      <small class="text-gray-500 truncate max-w-[250px]">
+                        {{ attachment.url }}
+                      </small>
                     </div>
-                    <div v-else>
-                      <p>No attachments available</p>
-                    </div>
-                  </VaCardContent>
-                </VaCard>
+                  </div>
+                </div>
+                <div v-else class="text-center text-gray-500 py-4">No certificates available</div>
               </VaInnerLoading>
-
-              <!-- PDF Preview Modal -->
-              <VaModal v-model="isModalOpen">
-                <VaCard v-if="pdfUrl">
-                  <VaCardContent>
-                    <iframe :src="pdfUrl" width="100%" height="900px"></iframe>
-                  </VaCardContent>
-                </VaCard>
-              </VaModal>
             </VaCardContent>
           </VaCard>
+
+          <!-- PDF Preview Modal -->
+          <VaModal v-model="isModalOpen">
+            <VaCard v-if="pdfUrl">
+              <VaCardContent>
+                <iframe :src="pdfUrl" width="100%" height="900px"></iframe>
+              </VaCardContent>
+            </VaCard>
+          </VaModal>
         </div>
       </VaModal>
     </VaCardContent>
