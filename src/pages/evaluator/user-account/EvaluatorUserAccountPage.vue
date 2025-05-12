@@ -6,30 +6,13 @@
   <div class="flex justify-center -mb-4">
     <VaForm ref="formRef" class="flex flex-col items-baseline gap-6" @submit.prevent="showUpdateConfirmation">
       <div class="flex flex-wrap justify-center -mx-2">
-        <!-- Left Column -->
-        <div class="w-full md:w-1/2 px-2 mb-4">
-          <template v-if="isLoading">
-            <VaSkeleton v-for="n in 4" :key="n" height="40px" class="mb-4" />
-          </template>
-          <template v-else>
-            <VaInput v-model="form.proponentId" label="Proponent Id" disabled class="mb-4" />
-            <VaInput v-model="form.proponentType" label="Proponent Type" disabled class="mb-4" />
-            <VaInput v-model="form.proponentStatus" label="Proponent Status" disabled class="mb-4" />
-            <VaInput v-model="form.department" label="Department" disabled class="mb-4" />
-          </template>
-        </div>
-
-        <!-- Right Column -->
-        <div class="w-full md:w-1/2 px-2 mb-4">
-          <template v-if="isLoading">
-            <VaSkeleton v-for="n in 3" :key="n" height="40px" class="mb-4" />
-          </template>
-          <template v-else>
-            <VaInput v-model="form.fullName" label="Full Name" class="mb-4" />
-            <VaInput v-model="form.userName" label="Username" class="mb-4" />
-            <VaInput v-model="form.email" label="Email" class="mb-4" />
-          </template>
-        </div>
+        <template v-if="isLoading">
+          <VaSkeleton v-for="n in 3" :key="n" height="40px" class="mb-4" />
+        </template>
+        <template v-else>
+          <VaInput v-model="form.fullName" label="Full Name" class="mb-4" />
+          <VaInput v-model="form.email" label="Email" class="mb-4" />
+        </template>
       </div>
 
       <!-- Submit Button -->
@@ -162,7 +145,7 @@ const hideChangePasswordModal = () => {
 
 const handleSubmit = async () => {
   try {
-    await updateCurrentlyLoggedInUserData() // Await the API update
+    await updateEvaluator() // Await the API update
     init({ message: 'Account Updated Successfully', color: 'success' })
   } catch (error) {
     console.error('Failed to update user data:', error)
@@ -173,10 +156,10 @@ const handleSubmit = async () => {
   }
 }
 
-const loadCurrentlyLoggedinUser = async () => {
+const loadEvaluator = async () => {
   try {
-    const userId = jwtStore.getUserId
-    const data = await proponentsRepository.getProponentById(userId)
+    const evaluatorId = jwtStore.getUserId
+    const data = await evaluatorsRepository.getEvaluatorById(evaluatorId)
 
     Object.assign(form, {
       proponentId: data.proponentId,
@@ -187,30 +170,23 @@ const loadCurrentlyLoggedinUser = async () => {
       userName: data.userName,
       email: data.email,
     })
-
-    isLoading.value = false
   } catch (error) {
     console.error('Failed to load user data:', error)
+  } finally {
     isLoading.value = false
   }
 }
 
-const updateCurrentlyLoggedInUserData = async () => {
+const updateEvaluator = async () => {
   try {
-    const data = await proponentsRepository.getProponentById(1)
-    await proponentsRepository.updateProponent(
-      data.id,
-      data.departmentId,
-      form.proponentType,
-      form.proponentStatus,
-      form.fullName,
-      form.email,
-    )
+    const evaluatorId = jwtStore.getUserId
+    const data = await evaluatorsRepository.getEvaluatorById(evaluatorId)
+    await evaluatorsRepository.updateEvaluator(data.id, data.officeId, form.fullName, form.email)
   } catch (error) {
     console.error('Failed to update user data:', error)
     throw error
   }
 }
 
-onMounted(loadCurrentlyLoggedinUser)
+onMounted(loadEvaluator)
 </script>
