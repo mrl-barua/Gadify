@@ -247,26 +247,30 @@
       </VaDataTable>
 
       <VaModal v-model="sentDocumentForEvaluationModal" hide-default-actions size="large">
-        <h3 class="va-h3">Sent Document for Evaluation</h3>
-        <div class="flex flex-wrap -mx-2">
-          <div class="w-full md:w-1/2 px-2 mb-4">
-            <h3 class="text-lg font-semibold mb-2">Main Information</h3>
-            <p class="mb-1"><span class="font-medium">Document No:</span> {{ loadedSubmission.id }}</p>
-            <p class="mb-1"><span class="font-medium">Date Created:</span> {{ loadedSubmission.createdAt }}</p>
-            <p class="mb-1">
-              <span class="font-medium">Submission Status:</span> {{ loadedSubmission.submissionStatus }}
-            </p>
-          </div>
-          <div class="w-full md:w-1/2 px-2 mb-4">
-            <h3 class="text-lg font-semibold mb-2">Other Information</h3>
-            <p class="mb-1"><span class="font-medium">Project Proposal:</span> {{ loadedSubmission.proposalTitle }}</p>
+        <section class="Sent-Document-For-Evaluation-Header">
+          <h3 class="va-h3">Sent Document for Evaluation</h3>
+          <div class="flex flex-wrap -mx-2">
+            <div class="w-full md:w-1/2 px-2 mb-4">
+              <h3 class="text-lg font-semibold mb-2">Main Information</h3>
+              <p class="mb-1"><span class="font-medium">Document No:</span> {{ loadedSubmission.id }}</p>
+              <p class="mb-1"><span class="font-medium">Date Created:</span> {{ loadedSubmission.createdAt }}</p>
+              <p class="mb-1">
+                <span class="font-medium">Submission Status:</span> {{ loadedSubmission.submissionStatus }}
+              </p>
+            </div>
+            <div class="w-full md:w-1/2 px-2 mb-4">
+              <h3 class="text-lg font-semibold mb-2">Other Information</h3>
+              <p class="mb-1">
+                <span class="font-medium">Project Proposal:</span> {{ loadedSubmission.proposalTitle }}
+              </p>
 
-            <p class="mb-1">
-              <span class="font-medium">Project Description:</span> {{ loadedSubmission.proposalDescription }}
-            </p>
-            <p class="mb-1"><span class="font-medium">File Type:</span> {{ loadedSubmission.fileType }}</p>
+              <p class="mb-1">
+                <span class="font-medium">Project Description:</span> {{ loadedSubmission.proposalDescription }}
+              </p>
+              <p class="mb-1"><span class="font-medium">File Type:</span> {{ loadedSubmission.fileType }}</p>
+            </div>
           </div>
-        </div>
+        </section>
 
         <VaCardContent>
           <div class="flex flex-col md:flex-row gap-2 mb-2 justify-between">
@@ -1192,22 +1196,6 @@ export default {
       }
     }
 
-    const loadSubmissionsToBeEvaluated = async () => {
-      isLoading.value = true
-      try {
-        const evaluatorId = jwtStore.getUserId
-        const data = await evaluatorsRepository.getSubmissionToBeEvaluatedByEvaluatorId(evaluatorId)
-        submissions.value = data
-        onHoldSubmissions.value = data.filter((item) => item.submission.submissionStatus === 'OnHold')
-        evaluationSubmissions.value = data.filter((item) => item.submission.submissionStatus === 'Evaluation')
-        completedSubmissions.value = data.filter((item) => item.submission.submissionStatus === 'Completed')
-        forCorrectionSubmissions.value = data.filter((item) => item.submission.submissionStatus === 'ForCorrection')
-      } catch (error) {
-        console.error('Failed to load submissions:', error)
-      } finally {
-        isLoading.value = false
-      }
-    }
 
     const submitEvaluation = async () => {
       const isValid = await validate()
@@ -1317,6 +1305,24 @@ export default {
         submissionEvaluation.genderAssessments[15].score +
         submissionEvaluation.genderAssessments[18].score
     }
+
+   const loadSubmissionsToBeEvaluated = async () => {
+      isLoading.value = true
+      try {
+        const evaluatorId = jwtStore.getUserId
+        const data = await evaluatorsRepository.getSubmissionToBeEvaluatedByEvaluatorId(evaluatorId)
+        submissions.value = data
+        onHoldSubmissions.value = data.filter((item) => item.submission.submissionStatus === 'OnHold')
+        evaluationSubmissions.value = data.filter((item) => item.submission.submissionStatus === 'Evaluation')
+        completedSubmissions.value = data.filter((item) => item.submission.submissionStatus === 'Completed')
+        forCorrectionSubmissions.value = data.filter((item) => item.submission.submissionStatus === 'ForCorrection')
+      } catch (error) {
+        console.error('Failed to load submissions:', error)
+      } finally {
+        isLoading.value = false
+      }
+    }
+
 
     onMounted(() => {
       loadSubmissionsToBeEvaluated()
