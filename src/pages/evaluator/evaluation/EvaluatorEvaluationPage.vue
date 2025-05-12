@@ -1196,7 +1196,6 @@ export default {
       }
     }
 
-
     const submitEvaluation = async () => {
       const isValid = await validate()
       if (!isValid) {
@@ -1209,10 +1208,12 @@ export default {
       if (isValid) {
         try {
           calculateGenderAssessment()
+
           await evaluatorsRepository.evaluateSubmission(
             loadedSubmission.id,
             jwtStore.getUserId,
             submissionEvaluation.genderAssessments,
+            jwtStore.getUsername,
           )
 
           await submissionRepository.updateSubmissionTotalScore(
@@ -1306,7 +1307,7 @@ export default {
         submissionEvaluation.genderAssessments[18].score
     }
 
-   const loadSubmissionsToBeEvaluated = async () => {
+    const loadSubmissionsToBeEvaluated = async () => {
       isLoading.value = true
       try {
         const evaluatorId = jwtStore.getUserId
@@ -1322,7 +1323,6 @@ export default {
         isLoading.value = false
       }
     }
-
 
     onMounted(() => {
       loadSubmissionsToBeEvaluated()

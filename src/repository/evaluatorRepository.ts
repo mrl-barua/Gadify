@@ -124,6 +124,7 @@ export const evaluatorsRepository = {
       score: number
       comments?: string
     }>,
+    actorName?: string,
   ) => {
     try {
       console.log({
@@ -137,6 +138,7 @@ export const evaluatorsRepository = {
           submissionId,
           evaluatorId,
           genderAssessments,
+          actorName,
         },
         {
           headers: {
@@ -152,6 +154,4 @@ export const evaluatorsRepository = {
       throw error
     }
   },
-
-
 }

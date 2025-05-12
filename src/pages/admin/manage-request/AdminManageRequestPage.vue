@@ -326,6 +326,7 @@
                   <VaDataTable class="mb-3" :items="AssignedEvaluator"></VaDataTable>
 
                   <VaSelect
+                    v-if="loadedSubmission.submissionStatus !== 'Evaluation'"
                     v-model="EvaluatorsValue"
                     placeholder=""
                     label="Select Evaluator"
@@ -352,7 +353,7 @@
                     </template>
                   </VaSelect>
 
-                  <div class="flex justify-between mt-4 mb-2">
+                  <div class="flex justify-between mt-4 mb-2" v-if="loadedSubmission.submissionStatus !== 'Evaluation'">
                     <div class="flex gap-2">
                       <VaButton
                         :loading="isAssignEvaluatorButtonLoading"
@@ -462,7 +463,7 @@
               Are you sure you want evaluate submission titled <strong>{{ loadedSubmission.proposalTitle }}</strong>
             </p>
             <blockquote class="va-blockquote">
-              <p>Note: Please clear the evaluators before sending for correction</p>
+              <p>Note: Please assign evaluators before submitting for evaluation.</p>
             </blockquote>
           </VaModal>
           <VaModal
@@ -478,7 +479,7 @@
               <strong>{{ loadedSubmission.proposalTitle }}</strong>
             </p>
             <blockquote class="va-blockquote">
-              <p>Note: Please clear the evaluators before sending for correction</p>
+              <p>Note: Please clear the evaluators before sending for correction.</p>
             </blockquote>
           </VaModal>
         </section>
