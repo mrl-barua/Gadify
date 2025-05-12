@@ -291,16 +291,14 @@
               <VaInnerLoading :loading="isInnerLoading">
                 <div v-if="loadedSubmission?.submissionFiles?.length" class="flex flex-col gap-4">
                   <div
-                    v-for="(attachment, index) in loadedSubmission.submissionFiles"
-                    :key="index"
                     class="flex items-center gap-3 cursor-pointer hover:bg-gray-100 p-2 rounded transition"
-                    @click="previewCertificate(attachment.url)"
+                    @click="previewCertificate(loadedSubmission.submissionFiles[0].url)"
                   >
                     <VaIcon name="download" color="primary" />
                     <div class="flex flex-col">
-                      <p class="font-semibold">{{ loadedSubmission.proposalTitle }} - Certificate {{ index + 1 }}</p>
+                      <p class="font-semibold">{{ loadedSubmission.proposalTitle }} - Certificate</p>
                       <small class="text-gray-500 truncate max-w-[250px]">
-                        {{ attachment.url }}
+                        {{ loadedSubmission.submissionFiles[0].url }}
                       </small>
                     </div>
                   </div>
