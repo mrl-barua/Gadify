@@ -39,12 +39,9 @@
       <VaModal v-model="addOfficeModal" size="large" hide-default-actions>
         <h3 class="va-h3">Add New Office</h3>
         <VaForm ref="formRef" @submit.prevent="createOffice">
-          <VaInput v-model="OfficeModel.fullName" :rules="[rules.required]" class="mb-4" label="Full Name" />
-          <VaInput v-model="OfficeModel.email" :rules="[rules.required, rules.email]" class="mb-4" label="Email" />
-
           <VaSelect
-            v-model="OfficeModel.officeId"
-            label="Select Office"
+            v-model="OfficeModel.departmentId"
+            label="Select Derpartment"
             :options="departmentOptions"
             outer-label
             :loading="isVaSelectLoading"
@@ -54,19 +51,11 @@
           />
 
           <VaInput
-            v-model="OfficeModel.password"
-            :rules="[rules.required, rules.passwordStrength]"
+            v-model="OfficeModel.officeName"
+            :rules="[rules.required]"
             class="mb-4"
-            label="Password"
-            type="password"
-          />
-
-          <VaInput
-            v-model="OfficeModel.repeatPassword"
-            :rules="[rules.required, rules.matchPassword]"
-            class="mb-4"
-            label="Repeat Password"
-            type="password"
+            label="Office Name"
+            type="text"
           />
 
           <div class="flex justify-end gap-2 mt-4">
@@ -78,18 +67,23 @@
 
       <!-- Edit Office Modal -->
       <VaModal v-model="editOfficeModal" class="modal-crud" size="small" hide-default-actions>
-        <VaInput v-model="editedOfficeModel.fullName" :rules="[rules.required]" class="mb-4" label="Full Name" />
-        <VaInput v-model="editedOfficeModel.email" :rules="[rules.required, rules.email]" class="mb-4" label="Email" />
-
         <VaSelect
-          v-model="editedOfficeModel.officeId"
-          label="Select Office"
+          v-model="editedOfficeModel.departmentId"
+          label="Select Department"
           :options="departmentOptions"
           outer-label
           :loading="isVaSelectLoading"
           track-by="value"
           text-by="text"
           value-by="value"
+        />
+
+        <VaInput
+          v-model="editedOfficeModel.officeName"
+          :rules="[rules.required]"
+          class="mb-4"
+          label="Office Name"
+          type="text"
         />
         <div class="flex justify-end gap-2 mt-4">
           <VaButton color="danger" @click="editOfficeModal = false">Cancel</VaButton>
@@ -219,13 +213,7 @@ export default defineComponent({
     }
 
     const createOffice = async () => {
-      if (
-        !OfficeModel.fullName ||
-        !OfficeModel.email ||
-        !OfficeModel.password ||
-        !OfficeModel.repeatPassword ||
-        !OfficeModel.officeId
-      ) {
+      if (!OfficeModel.departmentId || !OfficeModel.officeName) {
         toast.init({
           message: 'Please fill in all required fields',
           color: 'danger',
@@ -233,21 +221,8 @@ export default defineComponent({
         return
       }
 
-      if (OfficeModel.password !== OfficeModel.repeatPassword) {
-        toast.init({
-          message: 'Passwords do not match',
-          color: 'danger',
-        })
-        return
-      }
-
       try {
-        await evaluatorsRepository.createNewEvaluator(
-          OfficeModel.officeId,
-          OfficeModel.fullName,
-          OfficeModel.email,
-          OfficeModel.password,
-        )
+        await officeRepository.createOffice(OfficeModel.departmentId, OfficeModel.officeName)
         toast.init({
           message: 'Office created successfully',
           color: 'success',
@@ -271,11 +246,10 @@ export default defineComponent({
 
     const editOffice = async () => {
       try {
-        await evaluatorsRepository.updateEvaluator(
+        await officeRepository.updateOffice(
           editedOfficeModel.id,
-          editedOfficeModel.officeId,
-          editedOfficeModel.fullName,
-          editedOfficeModel.email,
+          editedOfficeModel.departmentId,
+          editedOfficeModel.officeName,
         )
         toast.init({
           message: 'Office updated successfully',
@@ -297,9 +271,8 @@ export default defineComponent({
       try {
         const office = offices.value[id]
         editedOfficeModel.id = office.id
-        editedOfficeModel.officeId = office.officeId
-        editedOfficeModel.fullName = office.fullName
-        editedOfficeModel.email = office.email
+        editedOfficeModel.departmentId = office.departmentId
+        editedOfficeModel.officeName = office.officeName
       } catch (error) {
         console.log(error)
       } finally {
@@ -345,6 +318,7 @@ export default defineComponent({
   },
   mounted() {
     this.loadOffices()
+    this.loadDepartments()
   },
 })
 </script>
