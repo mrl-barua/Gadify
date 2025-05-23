@@ -780,7 +780,7 @@
 </template>
 
 <script>
-import { ref, reactive, computed, onMounted } from 'vue'
+  import { ref, reactive, computed, onMounted } from 'vue'
 import { useForm } from 'vuestic-ui'
 import { evaluatorsRepository } from '../../../repository/evaluatorRepository'
 import { submissionRepository } from '../../../repository/submissionRepository'

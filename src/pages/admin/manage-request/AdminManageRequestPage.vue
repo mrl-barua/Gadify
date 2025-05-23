@@ -258,6 +258,7 @@
             <h3 class="text-lg font-semibold mb-2">Main Information</h3>
             <p class="mb-1"><span class="font-medium">Document No:</span> {{ loadedSubmission.id }}</p>
             <p class="mb-1"><span class="font-medium">Date Created:</span> {{ loadedSubmission.createdAt }}</p>
+            <p class="mb-1"><span class="font-medium">Submitted by:</span> {{ loadedSubmission.proponent.fullName }}</p>
             <p class="mb-1">
               <span class="font-medium">Submission Status:</span> {{ loadedSubmission.submissionStatus }}
             </p>

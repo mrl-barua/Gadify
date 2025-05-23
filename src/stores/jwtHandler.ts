@@ -14,39 +14,54 @@ interface JwtState {
   decodedToken: DecodedToken | null
 }
 
+let _token: string | null = localStorage.getItem('token') || sessionStorage.getItem('token') || null
+
 export const useJwtStore = defineStore('jwt', {
-  state: (): JwtState => {
-    const token = localStorage.getItem('token')
-    return {
-      token,
-      decodedToken: token ? jwtDecode<DecodedToken>(token) : null,
-    }
-  },
+  state: (): JwtState => ({
+    token: _token,
+    decodedToken: _token ? jwtDecode<DecodedToken>(_token) : null,
+  }),
+
   actions: {
     setLocalStorageToken(token: string) {
-      console.log('Setting token:', token)
+      console.log('Setting token in localStorage:', token)
+      _token = token
       this.token = token
       this.decodedToken = jwtDecode<DecodedToken>(token)
       localStorage.setItem('token', token)
+      sessionStorage.removeItem('token') // Ensure only one source
     },
+
     setSessionStorageToken(token: string) {
-      console.log('Setting token:', token)
+      console.log('Setting token in sessionStorage:', token)
+      _token = token
       this.token = token
       this.decodedToken = jwtDecode<DecodedToken>(token)
       sessionStorage.setItem('token', token)
+      localStorage.removeItem('token') // Ensure only one source
     },
-    updateUserame(username: string) {
+
+    updateUsername(username: string) {
       if (!this.decodedToken) return
       this.decodedToken.username = username
     },
+
     logout() {
       console.log('Logging out')
+      _token = null
       this.token = null
       this.decodedToken = null
       localStorage.removeItem('token')
       sessionStorage.removeItem('token')
     },
+
+    loadFromStorage() {
+      _token = localStorage.getItem('token') || sessionStorage.getItem('token') || null
+      this.token = _token
+      this.decodedToken = _token ? jwtDecode<DecodedToken>(_token) : null
+    },
   },
+
   getters: {
     isAuthenticated: (state) => {
       if (!state.token || !state.decodedToken) return false

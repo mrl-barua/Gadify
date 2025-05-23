@@ -1,3 +1,4 @@
+1
 <template>
   <h1 class="page-title">Proponents</h1>
 
@@ -196,7 +197,6 @@ export default defineComponent({
     const columns = [
       { key: 'actions', label: 'Actions', width: 80 },
       { key: 'proponentId', label: 'Proponent ID', sortable: true },
-      { key: 'proponentType', label: 'Proponent Type', sortable: true },
       { key: 'proponentStatus', label: 'Proponent Status', sortable: true },
       { key: 'fullName', label: 'Full Name', sortable: true },
       { key: 'email', label: 'Email', sortable: true },

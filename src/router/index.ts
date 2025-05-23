@@ -7,8 +7,7 @@ import { useJwtStore } from '../stores/jwtHandler'
 
 function getUserRole() {
   const jwtStore = useJwtStore()
-  const userRole = jwtStore.getDecodedToken ? jwtStore.getDecodedToken.role : null
-  return userRole
+  return jwtStore.getUserRole
 }
 
 function IsTokenExpired() {
@@ -207,15 +206,14 @@ const router = createRouter({
 /* Authentication Guard */
 router.beforeEach((to, from, next) => {
   const userRole = getUserRole()
-
   if (to.meta.requiresAuth) {
     if (!userRole) {
       return next({ name: 'login' })
     }
 
-    // if (IsTokenExpired()) {
-    //   return next({ name: 'login' })
-    // }
+    if (IsTokenExpired()) {
+      return next({ name: 'login' })
+    }
 
     if (to.meta.role && to.meta.role !== userRole) {
       return next({ name: '404' })

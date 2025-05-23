@@ -13,7 +13,6 @@
           </template>
           <template v-else>
             <VaInput v-model="form.proponentId" label="Proponent Id" disabled class="mb-4" />
-            <VaInput v-model="form.proponentType" label="Proponent Type" disabled class="mb-4" />
             <VaInput v-model="form.proponentStatus" label="Proponent Status" disabled class="mb-4" />
             <VaInput v-model="form.department" label="Department" disabled class="mb-4" />
           </template>
@@ -194,8 +193,6 @@ const updateCurrentlyLoggedInUserData = async () => {
   } catch (error) {
     console.error('Failed to update user data:', error)
     throw error
-  } finally {
-    jwtStore.updateUserame(form.fullName)
   }
 }
 

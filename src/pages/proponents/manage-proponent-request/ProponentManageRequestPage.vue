@@ -253,6 +253,7 @@
             <h3 class="text-lg font-semibold mb-2">Main Information</h3>
             <p class="mb-1"><span class="font-medium">Document No:</span> {{ loadedSubmission.id }}</p>
             <p class="mb-1"><span class="font-medium">Date Created:</span> {{ loadedSubmission.createdAt }}</p>
+            <p class="mb-1"><span class="font-medium">Submitted by:</span> {{ loadedSubmission.proponent.fullName }}</p>
             <p class="mb-1">
               <span class="font-medium">Submission Status:</span> {{ loadedSubmission.submissionStatus }}
             </p>
@@ -321,7 +322,6 @@
                       />
                     </div>
                   </div>
-
                   <div v-else>
                     <VaFileUpload v-model="submissionFile" dropzone multiple />
 
@@ -455,8 +455,6 @@ export default defineComponent({
       { key: 'fileType', label: 'File Type', sortable: true },
       { key: 'createdAt', label: 'Date Filed', sortable: true },
       { key: 'submissionId', label: 'Document No.', sortable: true },
-      { key: 'proponent.fullName', label: 'Proponent', sortable: true },
-      { key: 'proponent.department.departmentName', label: 'Department', sortable: true },
       { key: 'proposalTitle', label: 'Proposal Title', sortable: true },
       { key: 'submissionStatus', label: 'Status', sortable: true },
       { key: 'actions', label: 'Actions', width: 80 },
