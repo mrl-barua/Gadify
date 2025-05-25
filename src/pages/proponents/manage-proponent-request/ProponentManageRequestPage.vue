@@ -623,7 +623,7 @@ export default defineComponent({
         return
       }
 
-      if (this.submissionFile.length > 10) {
+      if (Array.isArray(this.submissionFile) && this.submissionFile.length > 10) {
         toast.init({
           message: 'You can only upload a maximum of 10 files',
           color: 'warning',
@@ -631,7 +631,7 @@ export default defineComponent({
         return
       }
 
-      if (this.submissionFile.some((file) => file.size > 10 * 1024 * 1024)) {
+      if (Array.isArray(this.submissionFile) && this.submissionFile.some((file) => file.size > 10 * 1024 * 1024)) {
         toast.init({
           message: 'File size exceeds the maximum limit of 10 MB',
           color: 'warning',
