@@ -314,13 +314,7 @@
                   />
 
                   <div v-if="loadedSubmission.fileType === 'Link'">
-                    <div v-for="(file, index) in loadedSubmission.submissionFiles" :key="index" class="mb-4">
-                      <VaInput
-                        v-model="file.resourcesLink"
-                        :label="'File Link ' + (index + 1)"
-                        :placeholder="'Enter link ' + (index + 1)"
-                      />
-                    </div>
+                    <VaInput v-model="loadedSubmission.resourcesLink" label="File Link" placeholder="Enter link" />
                   </div>
                   <div v-else>
                     <VaFileUpload v-model="submissionFile" dropzone multiple />
@@ -692,6 +686,10 @@ export default defineComponent({
               resourcesLink: file,
             }
           })
+        } else if (fileType === 'Link') {
+          this.loadedSubmission.submissionFiles = this.loadedSubmission.resourcesLink
+            ? [{ resourcesLink: this.loadedSubmission.resourcesLink }]
+            : []
         }
 
         await submissionRepository.updateSubmission(
