@@ -357,8 +357,6 @@ export default defineComponent({
       { key: 'fileType', label: 'File Type', sortable: true },
       { key: 'createdAt', label: 'Date Filed', sortable: true },
       { key: 'submissionId', label: 'Document No.', sortable: true },
-      { key: 'proponent.fullName', label: 'Proponent', sortable: true },
-      { key: 'proponent.department.departmentName', label: 'Department', sortable: true },
       { key: 'proposalTitle', label: 'Proposal Title', sortable: true },
       { key: 'submissionStatus', label: 'Status', sortable: true },
       { key: 'actions', label: 'Actions', width: 80 },
